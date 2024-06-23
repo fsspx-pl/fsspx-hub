@@ -9,7 +9,8 @@
 export interface Config {
   collections: {
     users: User;
-    media: Media;
+    tenants: Tenant;
+    pages: Page;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -25,6 +26,17 @@ export interface Config {
  */
 export interface User {
   id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  roles: ('super-admin' | 'user')[];
+  tenants?:
+    | {
+        tenant: string | Tenant;
+        roles: ('admin' | 'user')[];
+        id?: string | null;
+      }[]
+    | null;
+  lastLoggedInTenant?: (string | null) | Tenant;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -38,22 +50,31 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "tenants".
  */
-export interface Media {
+export interface Tenant {
   id: string;
-  alt: string;
+  name: string;
+  domains?:
+    | {
+        domain: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  title: string;
+  slug?: string | null;
+  tenant: string | Tenant;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

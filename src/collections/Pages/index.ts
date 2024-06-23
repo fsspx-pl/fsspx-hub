@@ -1,0 +1,46 @@
+
+import { CollectionConfig } from 'payload'
+import { anyone } from '../../access/anyone'
+import { loggedIn } from './access/loggedIn'
+import { tenantAdmins } from './access/tenantAdmins'
+import formatSlug from './hooks/formatSlug'
+import { Tenants } from '../Tenants'
+
+export const Pages: CollectionConfig = {
+  slug: 'pages',
+  admin: {
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', 'updatedAt'],
+  },
+  access: {
+    read: anyone,
+    create: loggedIn,
+    update: tenantAdmins,
+    delete: tenantAdmins,
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'slug',
+      label: 'Slug',
+      type: 'text',
+      index: true,
+      admin: {
+        position: 'sidebar',
+      },
+      hooks: {
+        beforeValidate: [formatSlug('title')],
+      },
+    },
+    {
+      name: 'tenant',
+      type: 'relationship',
+      relationTo: 'tenants',
+      required: true,
+    },
+  ],
+}
