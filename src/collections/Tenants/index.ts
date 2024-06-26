@@ -2,12 +2,13 @@
 import { CollectionConfig } from 'payload'
 import { superAdmins } from '../../access/superAdmins'
 import { tenantAdmins } from './access/tenantAdmins'
+import { anyone } from '@/access/anyone'
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
   access: {
     create: superAdmins,
-    read: tenantAdmins,
+    read: anyone,
     update: tenantAdmins,
     delete: superAdmins,
   },

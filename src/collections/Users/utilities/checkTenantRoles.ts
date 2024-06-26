@@ -1,9 +1,9 @@
-import type { Tenant, TenantRole, User } from "../../../payload-types";
+import type { Tenant, User } from "../../../payload-types";
 
 export const checkTenantRoles = (
-  allRoles: TenantRole[] = [],
-  user?: User,
-  tenant?: Tenant
+  allRoles: ('admin' | 'user')[] = [],
+  user?: User | null,
+  tenant?: Tenant | string
 ): boolean => {
   if (!tenant) {
     return false;

@@ -1,13 +1,13 @@
-import type { AfterLoginHook } from 'payload/dist/collections/config/types'
+import { CollectionAfterLoginHook } from "payload"
 
-export const recordLastLoggedInTenant: AfterLoginHook = async ({ req, user }) => {
+export const recordLastLoggedInTenant: CollectionAfterLoginHook = async ({ req, user }) => {
   try {
     const relatedOrg = await req.payload
       .find({
         collection: 'tenants',
         where: {
           'domains.domain': {
-            in: [req.headers.host],
+            in: [req.headers.get('host')],
           },
         },
         depth: 0,
@@ -19,7 +19,8 @@ export const recordLastLoggedInTenant: AfterLoginHook = async ({ req, user }) =>
       id: user.id,
       collection: 'users',
       data: {
-        lastLoggedInTenant: relatedOrg?.id || null,
+        // @ts-ignore
+        lastLoggedInTenant: relatedOrg?.id ?? null,
       },
       req,
     })

@@ -1,6 +1,7 @@
-import type { PayloadRequest } from 'payload/dist/types'
 
+import { PayloadRequest } from 'payload'
 import { isSuperAdmin } from '../../../utilities/isSuperAdmin'
+import { Tenant } from '@/payload-types'
 
 const logs = false
 
@@ -10,13 +11,17 @@ export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promi
     req: { user, payload },
   } = args
 
+  if(!user) {
+    return false
+  }
+
   // always allow super admins through
   if (isSuperAdmin(user)) {
     return true
   }
 
   if (logs) {
-    const msg = `Finding tenant with host: '${req.headers.host}'`
+    const msg = `Finding tenant with host: '${req.headers.get('host')}'`
     payload.logger.info({ msg })
   }
 
@@ -25,7 +30,7 @@ export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promi
     collection: 'tenants',
     where: {
       'domains.domain': {
-        in: [req.headers.host],
+        in: [req.headers.get('host')],
       },
     },
     depth: 0,
@@ -36,7 +41,7 @@ export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promi
   // if this tenant does not exist, deny access
   if (foundTenants.totalDocs === 0) {
     if (logs) {
-      const msg = `No tenant found for ${req.headers.host}`
+      const msg = `No tenant found for ${req.headers.get('host')}`
       payload.logger.info({ msg })
     }
 
@@ -50,7 +55,7 @@ export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promi
 
   // finally check if the user is an admin of this tenant
   const tenantWithUser = user?.tenants?.find(
-    ({ tenant: userTenant }) => userTenant?.id === foundTenants.docs[0].id,
+    ({ tenant: userTenant }) => (userTenant as Tenant)?.id === foundTenants.docs[0].id,
   )
 
   if (tenantWithUser?.roles?.some(role => role === 'admin')) {

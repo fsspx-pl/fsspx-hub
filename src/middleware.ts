@@ -29,7 +29,7 @@ export default async function middleware(req: NextRequest) {
     searchParams.length > 0 ? `?${searchParams}` : ""
   }`;
 
-  const rewrittenURL = new URL(`/${hostname}${path}`, req.url);
-  console.log("Rewriting to: ", rewrittenURL);
+  const newPath = `/${hostname}${path}`;
+  const rewrittenURL = new URL(newPath, req.url);
   return NextResponse.rewrite(rewrittenURL);
 }

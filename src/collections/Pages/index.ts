@@ -1,10 +1,10 @@
 
+import { tenant } from '@/fields/tenant'
 import { CollectionConfig } from 'payload'
 import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
 import { tenantAdmins } from './access/tenantAdmins'
 import formatSlug from './hooks/formatSlug'
-import { Tenants } from '../Tenants'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -36,11 +36,6 @@ export const Pages: CollectionConfig = {
         beforeValidate: [formatSlug('title')],
       },
     },
-    {
-      name: 'tenant',
-      type: 'relationship',
-      relationTo: 'tenants',
-      required: true,
-    },
+    tenant
   ],
 }
