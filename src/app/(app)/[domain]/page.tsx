@@ -1,16 +1,20 @@
-import { fetchLatestDoc } from "@/_api/fetchDoc"
-import db from "@/lib/db"
+import { fetchLatestPage } from "@/_api/fetchPage"
+import { fetchTenants } from "@/_api/fetchTenants"
 
 export async function generateStaticParams() {
-  return db.map(site => ({
-      domain: `${site.subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
-    })
-  )
+  const tenants = (await fetchTenants())
+  return tenants
+    .filter(tenant => tenant.domains?.length)
+    .map(tenant => ({
+    domain: tenant.domains?.[0].domain,
+  })
+)
 }
 
 export default async function SiteHomePage({ params }: { params: { domain: string } }) {
   const domain = decodeURIComponent(params.domain)
-  const latestPost = await fetchLatestDoc(domain)
+  const subdomain = domain.split('.')[0]
+  const latestPost = await fetchLatestPage(subdomain)
   return (
     <>
       <span>{domain}</span>
