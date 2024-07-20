@@ -9,6 +9,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Tenants } from './collections/Tenants'
 import { Pages } from './collections/Pages'
+import { cachedPayloadPlugin } from './cached-local-api'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -28,6 +29,7 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
+    cachedPayloadPlugin
     // storage-adapter-placeholder
   ],
 })
