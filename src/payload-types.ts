@@ -16,6 +16,7 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   globals: {
+    settings: Settings;
     footer: Footer;
   };
   locale: null;
@@ -146,6 +147,18 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "settings".
+ */
+export interface Settings {
+  id: string;
+  postsPage?: (string | null) | Page;
+  logo: string | Media;
+  copyright?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
