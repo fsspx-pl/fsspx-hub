@@ -9,7 +9,9 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Tenants } from './collections/Tenants'
 import { Pages } from './collections/Pages'
+import { Media } from './collections/Media'
 import { cachedPayloadPlugin } from './cached-local-api'
+import { Footer } from './globals/Footer'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -18,7 +20,8 @@ export default buildConfig({
   admin: {
     user: Users.slug,
   },
-  collections: [Users, Tenants, Pages],
+  globals: [ Footer ],
+  collections: [Users, Tenants, Pages, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
