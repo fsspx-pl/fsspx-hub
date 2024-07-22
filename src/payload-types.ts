@@ -154,7 +154,6 @@ export interface PayloadMigration {
  */
 export interface Settings {
   id: string;
-  postsPage?: (string | null) | Page;
   logo: string | Media;
   copyright?: string | null;
   updatedAt?: string | null;
