@@ -1,8 +1,8 @@
-import { Footer, Settings } from '@/payload-types';
+import { Footer, Header, Settings } from '@/payload-types';
 import configPromise from '@payload-config';
 import { getPayloadHMR } from '@payloadcms/next/utilities';
 
-const FetchGlobalsFactory = <T>(slug: 'settings' | 'footer') => async () => {
+const FetchGlobalsFactory = <T>(slug: 'settings' | 'header' | 'footer') => async () => {
   const payload = await getPayloadHMR({
     config: configPromise,
   })
@@ -18,5 +18,6 @@ const FetchGlobalsFactory = <T>(slug: 'settings' | 'footer') => async () => {
   }
 }
 
-export const fetchFooter = FetchGlobalsFactory<Footer>('footer')
 export const fetchSettings = FetchGlobalsFactory<Settings>('settings')
+export const fetchHeader = FetchGlobalsFactory<Header>('header')
+export const fetchFooter = FetchGlobalsFactory<Footer>('footer')

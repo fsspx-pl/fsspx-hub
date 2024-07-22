@@ -17,6 +17,7 @@ export interface Config {
   };
   globals: {
     settings: Settings;
+    header: Header;
     footer: Footer;
   };
   locale: null;
@@ -156,6 +157,31 @@ export interface Settings {
   id: string;
   logo: string | Media;
   copyright?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header".
+ */
+export interface Header {
+  id: string;
+  textLogo: string | Media;
+  navItems?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?: {
+            relationTo: 'pages';
+            value: string | Page;
+          } | null;
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }

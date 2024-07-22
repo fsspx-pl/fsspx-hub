@@ -1,14 +1,9 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "@/_css/globals.scss";
 import { Footer } from "@/_components/Footer";
+import { Header } from "@/_components/Header";
+import "@/_css/globals.scss";
+import { Inter } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "FSSPX",
-  description: "Bractwo Św. Piusa X",
-};
 
 export default function RootLayout({
   children,
@@ -18,6 +13,7 @@ export default function RootLayout({
   return (
     <html lang="pl">
       <body className={`${inter.className} bg-gray-100`}>
+        <Header></Header>
         {children}
         <Footer></Footer>
       </body>

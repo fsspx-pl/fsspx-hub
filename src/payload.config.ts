@@ -13,6 +13,7 @@ import { Media } from './collections/Media'
 import { cachedPayloadPlugin } from './cached-local-api'
 import { Footer } from './globals/Footer'
 import { Settings } from './globals/Settings'
+import { Header } from './globals/Header'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -21,7 +22,7 @@ export default buildConfig({
   admin: {
     user: Users.slug,
   },
-  globals: [ Settings, Footer ],
+  globals: [ Settings, Header, Footer ],
   collections: [Users, Tenants, Pages, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
