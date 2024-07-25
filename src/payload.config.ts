@@ -14,6 +14,7 @@ import { cachedPayloadPlugin } from './cached-local-api'
 import { Footer } from './globals/Footer'
 import { Settings } from './globals/Settings'
 import { Header } from './globals/Header'
+import { Locations } from './collections/Locations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -23,7 +24,7 @@ export default buildConfig({
     user: Users.slug,
   },
   globals: [ Settings, Header, Footer ],
-  collections: [Users, Tenants, Pages, Media],
+  collections: [Users, Tenants, Pages, Locations, Media],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

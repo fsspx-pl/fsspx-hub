@@ -11,6 +11,7 @@ export interface Config {
     users: User;
     tenants: Tenant;
     pages: Page;
+    locations: Location;
     media: Media;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -80,6 +81,27 @@ export interface Page {
   tenant?: (string | null) | Tenant;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations".
+ */
+export interface Location {
+  id: string;
+  city: string;
+  type: 'Kaplica' | 'Misja';
+  patron?: string | null;
+  coverBackground: string | Media;
+  address: {
+    street: string;
+    zipcode: string;
+    email?: string | null;
+    phone?: string | null;
+  };
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
