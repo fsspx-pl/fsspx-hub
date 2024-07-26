@@ -1,20 +1,19 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { HTMLConverterFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+import { fileURLToPath } from 'url'
 
-import { Users } from './collections/Users'
-import { Tenants } from './collections/Tenants'
-import { Pages } from './collections/Pages'
-import { Media } from './collections/Media'
 import { cachedPayloadPlugin } from './cached-local-api'
+import { Media } from './collections/Media'
+import { Pages } from './collections/Pages'
+import { Tenants } from './collections/Tenants'
+import { Users } from './collections/Users'
 import { Footer } from './globals/Footer'
-import { Settings } from './globals/Settings'
 import { Header } from './globals/Header'
-import { Locations } from './collections/Locations'
+import { Settings } from './globals/Settings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,8 +23,15 @@ export default buildConfig({
     user: Users.slug,
   },
   globals: [ Settings, Header, Footer ],
-  collections: [Users, Tenants, Pages, Locations, Media],
-  editor: lexicalEditor(),
+  collections: [Users, Tenants, Pages, Media],
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      // The HTMLConverter Feature is the feature which manages the HTML serializers.
+      // If you do not pass any arguments to it, it will use the default serializers.
+      HTMLConverterFeature({}),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

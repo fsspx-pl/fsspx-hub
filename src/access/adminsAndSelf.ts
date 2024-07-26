@@ -1,8 +1,8 @@
-import { User } from "@/payload-types";
-import { isSuperAdmin as checkIfSuperAdmin } from "@/utilities/isSuperAdmin";
+import { isSuperAdmin as checkIfSuperAdmin } from "../utilities/isSuperAdmin";
+import { User } from "../payload-types";
 import { Access } from "payload";
 
-export const adminsAndSelf: Access<Location> = async ({ req: { user } }) => {
+export const adminsAndSelf: Access<User> = async ({ req: { user } }) => {
   if (!user) {
     return false;
   }
@@ -50,7 +50,7 @@ function tenantAdmins(isSuper: boolean, user: User & { collection: "users" }) {
                       ? tenant
                       : tenant.id
                     : null
-                )
+                ) // eslint-disable-line function-paren-newline
                 .filter(Boolean) || [],
           },
         },

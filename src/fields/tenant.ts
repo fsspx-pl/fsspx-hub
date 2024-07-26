@@ -1,9 +1,8 @@
 
 import { Tenant } from '@/payload-types'
 import { Field } from 'payload'
-import { superAdminFieldAccess } from '../../access/superAdmins'
-import { isSuperAdmin } from '../../utilities/isSuperAdmin'
-import { anyone } from '@/access/anyone'
+import { superAdminFieldAccess } from '../access/superAdmins'
+import { isSuperAdmin } from '../utilities/isSuperAdmin'
 
 export const tenant: Field = {
   name: 'tenant',

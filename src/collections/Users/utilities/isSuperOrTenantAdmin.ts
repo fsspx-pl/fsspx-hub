@@ -29,7 +29,7 @@ export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promi
   const foundTenants = await payload.find({
     collection: 'tenants',
     where: {
-      'domains.domain': {
+      'domain': {
         in: [req.headers.get('host')],
       },
     },

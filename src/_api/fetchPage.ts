@@ -11,14 +11,16 @@ export const fetchLatestPage = async (domain: string): Promise<Page> => {
   const cachedPayload = getCachedPayload(payload)
 
   try {
-    const result = await cachedPayload.find({
+    // const result = await cachedPayload.find({
+    const result = await payload.find({
       collection: 'pages',
       where: {
-        ['tenant.domains.domain']: {
+        ['tenant.domain']: {
           contains: domain
         }
       },
       sort: '-createdAt',
+      depth: 2,
       limit: 1
     })
     const [ doc ] = result.docs

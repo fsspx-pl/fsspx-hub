@@ -3,11 +3,21 @@ import { tenant } from '@/fields/tenant'
 import { CollectionConfig } from 'payload'
 import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
-import { tenantAdmins } from './access/tenantAdmins'
 import formatSlug from './hooks/formatSlug'
+import { tenantAdmins } from '@/access/tenantAdmins'
+import { richText } from 'payload/shared'
+import { lexicalHTML } from '@payloadcms/richtext-lexical'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
+  labels: {
+    singular: {
+      pl: 'Strona',
+    },
+    plural: {
+      pl: 'Strony',
+    },
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
@@ -17,6 +27,9 @@ export const Pages: CollectionConfig = {
     create: loggedIn,
     update: tenantAdmins,
     delete: tenantAdmins,
+  },
+  versions: {
+    drafts: true,
   },
   fields: [
     {
@@ -36,6 +49,11 @@ export const Pages: CollectionConfig = {
         beforeValidate: [formatSlug('title')],
       },
     },
-    tenant
+    tenant,
+    {
+      name: 'content',
+      type: 'richText'
+    },
+    lexicalHTML('content', { name: 'content_html' }),
   ],
 }

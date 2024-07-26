@@ -1,8 +1,9 @@
 
 import { CollectionConfig } from 'payload'
 import { superAdmins } from '../../access/superAdmins'
-import { tenantAdmins } from './access/tenantAdmins'
 import { anyone } from '@/access/anyone'
+import { tenantAdmins } from '@/access/tenantAdmins'
+import { location } from '@/fields/location'
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -22,16 +23,10 @@ export const Tenants: CollectionConfig = {
       required: true,
     },
     {
-      name: 'domains',
-      type: 'array',
-      index: true,
-      fields: [
-        {
-          name: 'domain',
-          type: 'text',
-          required: true,
-        },
-      ],
+      name: 'domain',
+      type: 'text',
+      required: true,
     },
+    ...location
   ],
 }

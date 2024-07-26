@@ -11,7 +11,6 @@ export interface Config {
     users: User;
     tenants: Tenant;
     pages: Page;
-    locations: Location;
     media: Media;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -61,33 +60,7 @@ export interface User {
 export interface Tenant {
   id: string;
   name: string;
-  domains?:
-    | {
-        domain: string;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: string;
-  title: string;
-  slug?: string | null;
-  tenant?: (string | null) | Tenant;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "locations".
- */
-export interface Location {
-  id: string;
+  domain: string;
   city: string;
   type: 'Kaplica' | 'Misja';
   patron?: string | null;
@@ -98,10 +71,8 @@ export interface Location {
     email?: string | null;
     phone?: string | null;
   };
-  slug?: string | null;
   updatedAt: string;
   createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -136,6 +107,35 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: string;
+  title: string;
+  slug?: string | null;
+  tenant?: (string | null) | Tenant;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  content_html?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
