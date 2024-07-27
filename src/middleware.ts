@@ -6,10 +6,9 @@ export const config = {
      * Match all paths except for:
      * 1. /api routes
      * 2. /_next (Next.js internals)
-     * 3. /_static (inside /public)
      */
     "/",
-    "/((?!admin))|((?!api/|_next/|_static/|admin/\\w-]+\\.\\w+).*)",
+    "/((?!admin))|((?!api/|_next/|admin/\\w-]+\\.\\w+).*)",
   ],
 };
 
