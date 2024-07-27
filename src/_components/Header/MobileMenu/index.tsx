@@ -1,4 +1,5 @@
-import { CMSLink } from '../../Link'
+import { CMSLink } from '@/_components/Link';
+import { Header as HeaderType } from '@/payload-types'
 
 const CloseIcon: React.FC = () => {
   return (
@@ -40,7 +41,7 @@ export const MobileMenu: React.FC<
           </div>
         </div>
         <div className="flex flex-col items-start">
-          {navItems.map(({ link }, i) => {
+          {navItems?.map(({ link }, i) => {
             return (
               <CMSLink className="w-full !justify-start" key={i} {...link} appearance="secondary" />
             )

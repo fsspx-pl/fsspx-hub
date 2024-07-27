@@ -27,7 +27,7 @@ export const Logo = ({
             height={0}
           />
         )}
-        <div id="title" className="flex flex-col text-sm leading-none relative top-[18px]">
+        <div id="title" className="flex flex-col text-sm leading-none relative top-[18px] text-left">
           <span className={gothicExtraLight.className}>Bractwo</span>
           <span className={gothicMedium.className}>św. Piusa X</span>
         </div>

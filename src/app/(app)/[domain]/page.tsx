@@ -26,8 +26,8 @@ export default async function SiteHomePage({ params }: { params: { domain: strin
   return (
     <>
       <MediumImpactHero media={tenant.coverBackground as Media} />
-      <Gutter>
-        <div dangerouslySetInnerHTML={{ __html: latestPost.content_html }}></div>
+      <Gutter className="py-6">
+        <div className="text-justify flex flex-col gap-4" dangerouslySetInnerHTML={{ __html: latestPost.content_html }}></div>
       </Gutter>
     </>
   )

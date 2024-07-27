@@ -5,14 +5,14 @@ import { Button, Props as ButtonProps } from '../Button'
 import { Page } from '@/payload-types'
 
 type CMSLinkType = {
-  type?: 'custom' | 'reference'
-  url?: string
-  newTab?: boolean
+  type?: 'custom' | 'reference' | null
+  url?: string | null
+  newTab?: boolean | null
   reference?: {
-    value: number | Page
+    value: string | Page
     relationTo: 'pages'
-  }
-  label?: string
+  } | null
+  label?: string |  null
   appearance?: ButtonProps['appearance']
   children?: React.ReactNode
   className?: string
@@ -51,6 +51,9 @@ export const CMSLink: React.FC<CMSLinkType> = ({
       )
     }
   }
+
+  if(!newTab) return null
+  if(!label) return null
 
   return (
     <Button
