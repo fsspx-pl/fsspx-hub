@@ -10,10 +10,14 @@ Information hub for [FSSPX](https://fsspx.org/) chapels in Poland.
 nvm use
 ```
 
-1. Create `.env` file with required env vars. Use `.env.example` as a base. Don't forget to adjust/change the default values of secrets!
+2. Create `.env` file with required env vars. Use `.env.example` as a base. Don't forget to adjust/change the default values of secrets!
+2. Make sure you have a running MongoDB instance, matching `DATABASE_URI` from `.env`. With Docker, you can achieve that quickly with:
 
+```
+docker run --name fsspx-hub-db -v fsspx-hub-db:/data/db -d -p 27017:27017 mongo
+```
 
-1. Run the development server:
+2. Run the development server:
 
 ```bash
 pnpm dev
