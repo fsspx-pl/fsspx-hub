@@ -10,7 +10,10 @@ Information hub for [FSSPX](https://fsspx.org/) chapels in Poland.
 nvm use
 ```
 
-Run the development server:
+1. Create `.env` file with required env vars. Use `.env.example` as a base. Don't forget to adjust/change the default values of secrets!
+
+
+1. Run the development server:
 
 ```bash
 pnpm dev
