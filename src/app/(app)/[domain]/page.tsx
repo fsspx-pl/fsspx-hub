@@ -25,7 +25,7 @@ export default async function SiteHomePage({ params }: { params: { domain: strin
 
   return (
     <>
-      <MediumImpactHero media={tenant.coverBackground as Media} />
+      <MediumImpactHero media={tenant.coverBackground as Media} title={tenant.city} subtitle={`${tenant.type} ${tenant.patron}`} />
       <Gutter className="py-6">
         <div className="text-justify flex flex-col gap-4" dangerouslySetInnerHTML={{ __html: latestPost.content_html }}></div>
       </Gutter>
