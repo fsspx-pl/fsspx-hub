@@ -25,11 +25,10 @@ export const fetchTenant = async (id: string) => {
   const cachedPayload = getCachedPayload(payload)
 
   try {
-    const result = await cachedPayload.findOne({
+    return await cachedPayload.findOne({
       collection: 'tenants',
       value: id
     })
-    return result.docs
   } catch(err) {
     return Promise.reject(err)
   }

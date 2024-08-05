@@ -9,6 +9,7 @@ export const { cachedPayloadPlugin, getCachedPayload } = buildCachedPayload({
       slug: 'pages',
     },
     {
+      findOneFields: ['domain'],
       slug: 'tenants'
     }
   ],
