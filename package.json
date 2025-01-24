@@ -35,7 +35,6 @@
     "sharp": "0.32.6"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^3.2.4",
     "@storybook/addon-essentials": "^8.5.1",
     "@storybook/addon-interactions": "^8.5.1",
     "@storybook/addon-onboarding": "^8.5.1",
