@@ -16,7 +16,9 @@
     "ci": "payload migrate && pnpm build",
     "generate:types": "payload generate:types",
     "generate:schema": "payload-graphql generate:schema",
-    "standalone-script": "node ./src/scripts/standalone-script.js"
+    "standalone-script": "node ./src/scripts/standalone-script.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@payload-enchants/cached-local-api": "^1.2.2",
@@ -33,6 +35,14 @@
     "sharp": "0.32.6"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^3.2.4",
+    "@storybook/addon-essentials": "^8.5.1",
+    "@storybook/addon-interactions": "^8.5.1",
+    "@storybook/addon-onboarding": "^8.5.1",
+    "@storybook/blocks": "^8.5.1",
+    "@storybook/nextjs": "^8.5.1",
+    "@storybook/react": "^8.5.1",
+    "@storybook/test": "^8.5.1",
     "@tailwindcss/typography": "^0.5.13",
     "@types/escape-html": "^1.0.4",
     "@types/node": "^20",
@@ -41,7 +51,9 @@
     "cross-env": "^7.0.3",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
+    "eslint-plugin-storybook": "^0.11.2",
     "postcss": "^8",
+    "storybook": "^8.5.1",
     "tailwindcss": "^3.4.1",
     "typescript": "5.4.5"
   }
