@@ -36,25 +36,21 @@ export const Default: Story = {
 
 export const Small: Story = {
   args: {
-    author: 'Jerzy Brzęczyszczykiewicz',
-    timestamp: '12 minut temu',
-    avatar: defaultAvatar,
+    ...Default.args,
     small: true,
   },
 }
 
 export const WithoutAvatar: Story = {
   args: {
-    author: 'Jerzy Brzęczyszczykiewicz',
-    timestamp: '12 minut temu',
+    ...Default.args,
     avatar: null,
   },
 }
 
 export const SmallWithoutAvatar: Story = {
   args: {
-    author: 'Jerzy Brzęczyszczykiewicz',
-    timestamp: '12 minut temu',
+    ...Default.args,
     avatar: null,
     small: true,
   },
