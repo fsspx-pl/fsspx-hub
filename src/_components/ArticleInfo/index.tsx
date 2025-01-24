@@ -12,13 +12,20 @@ type Props = {
   author: string,
   avatar?: MediaType | null
   timestamp: string
+  small?: boolean
 }
 
-export const ArticleInfo: React.FC<Props> = ({ author, avatar, timestamp }) => {
+export const ArticleInfo: React.FC<Props> = ({ author, avatar, timestamp, small = false }) => {
   return (
-    <div className={`flex items-center gap-2 ${gothicA1.className} text-gray-500`}>
+    <div className={`flex items-center gap-2 ${gothicA1.className} text-gray-500 ${small ? 'text-sm' : ''}`}>
       {avatar?.url && (
-        <Image src={avatar.url} alt={author} className="rounded-full h-full" width={30} height={30} />
+        <Image 
+          src={avatar.url} 
+          alt={author} 
+          className="rounded-full h-full" 
+          width={small ? 24 : 30} 
+          height={small ? 24 : 30} 
+        />
       )}
       <span>
         {author}
