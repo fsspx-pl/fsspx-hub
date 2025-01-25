@@ -34,24 +34,9 @@ export const Default: Story = {
   },
 }
 
-export const Small: Story = {
-  args: {
-    ...Default.args,
-    small: true,
-  },
-}
-
 export const WithoutAvatar: Story = {
   args: {
     ...Default.args,
     avatar: null,
-  },
-}
-
-export const SmallWithoutAvatar: Story = {
-  args: {
-    ...Default.args,
-    avatar: null,
-    small: true,
   },
 }

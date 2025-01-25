@@ -18,10 +18,3 @@ export const Default: Story = {
     minutes: 4,
   },
 }
-
-export const Small: Story = {
-  args: {
-    ...Default.args,
-    small: true,
-  },
-} 
