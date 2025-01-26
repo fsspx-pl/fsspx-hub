@@ -55,12 +55,3 @@ export const LongTitle: Story = {
     title: 'The Sources of the New Synodal Doctrine and Its Impact on Modern Catholic Church',
   },
 }
-
-export const Mobile: Story = {
-  args: defaultArgs,
-  parameters: {
-    viewport: {
-      defaultViewport: 'mobile1',
-    },
-  },
-} 
