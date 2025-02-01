@@ -26,12 +26,14 @@
     "@payloadcms/next": "3.0.0-beta.53",
     "@payloadcms/plugin-cloud": "3.0.0-beta.53",
     "@payloadcms/richtext-lexical": "3.0.0-beta.53",
+    "date-fns": "^4.1.0",
     "escape-html": "^1.0.3",
     "graphql": "^16.8.1",
     "next": "14.2.4",
     "payload": "3.0.0-beta.53",
     "react": "^18",
     "react-dom": "^18",
+    "react-tooltip": "^5.28.0",
     "sharp": "0.32.6"
   },
   "devDependencies": {

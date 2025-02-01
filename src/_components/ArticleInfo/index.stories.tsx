@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ArticleInfo } from './index'
+import { subDays } from 'date-fns'
 
 const meta = {
   title: 'Components/ArticleInfo',
@@ -29,8 +30,9 @@ const defaultAvatar = {
 export const Default: Story = {
   args: {
     author: 'Jerzy Brzęczyszczykiewicz',
-    timestamp: '12 minut temu',
     avatar: defaultAvatar,
+    createdAt: subDays(new Date(), 3).toISOString(),
+    updatedAt: subDays(new Date(), 1).toISOString(),
   },
 }
 

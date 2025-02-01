@@ -14,7 +14,8 @@ type Props = {
   title: string
   author: string
   authorAvatar?: MediaType | null
-  timestamp: string
+  createdAt: string,
+  updatedAt: string,
   image: MediaType
   className?: string
 }
@@ -23,7 +24,8 @@ export const NewMediumImpact: React.FC<Props> = ({
   title,
   author,
   authorAvatar,
-  timestamp,
+  createdAt,
+  updatedAt,
   image,
   className,
 }) => {
@@ -47,7 +49,8 @@ export const NewMediumImpact: React.FC<Props> = ({
       <ArticleInfo
         author={author}
         avatar={authorAvatar}
-        timestamp={timestamp}
+        createdAt={createdAt}
+        updatedAt={updatedAt}
       />
     </Gutter>
   )
