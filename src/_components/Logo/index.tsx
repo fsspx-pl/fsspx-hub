@@ -15,10 +15,12 @@ export const Logo = ({
     <div id="logo" className="flex flex-row gap-2 items-baseline md:gap-4">
       <TwoHeartsLogo width={34} height={45} />
       {!skipMainText && (
-        <TextLogo
-          width={163}
-          height={26}
-        />
+        <div className="hidden sm:flex">
+          <TextLogo
+            width={163}
+            height={26}
+          />
+        </div>
       )}
       <div id="title" className="flex flex-col text-sm leading-none relative top-[-15px] text-left">
         <span className={gothicExtraLight.className}>Bractwo</span>

@@ -27,7 +27,7 @@ export async function Footer() {
       <Gutter className="py-24 flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
         <div className="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left flex flex-col gap-4">
           <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
-            <Logo logo={settings.logo as Media} skipMainText />
+            <Logo skipMainText />
           </a>
           <span className="text-sm">{slogan}</span>
           {/* <p className="mt-2 text-sm text-gray-500">{footer.slogan}</p> */}

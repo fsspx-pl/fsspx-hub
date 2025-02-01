@@ -1,6 +1,7 @@
 
 import { tenant } from '@/fields/tenant'
-import { CollectionConfig } from 'payload'
+import { user } from '@/fields/user'
+import { CollectionConfig, Field } from 'payload'
 import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
 import formatSlug from './hooks/formatSlug'
@@ -49,6 +50,10 @@ export const Pages: CollectionConfig = {
         beforeValidate: [formatSlug('title')],
       },
     },
+    {
+      ...user as Field,
+      name: 'author'
+    } as Field,
     tenant,
     {
       name: 'content',

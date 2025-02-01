@@ -20,7 +20,7 @@ export const Default: Story = {
   args: {},
 }
 
-export const WithoutText: Story = {
+export const WithoutLogoText: Story = {
   args: {
     skipMainText: true,
   },

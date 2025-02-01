@@ -1,9 +1,11 @@
 import { fetchSettings } from "@/_api/fetchGlobals"
 import { fetchLatestPage } from "@/_api/fetchPage"
 import { fetchTenant, fetchTenants } from "@/_api/fetchTenants"
+import { BreadcrumbItem, Breadcrumbs } from "@/_components/Breadcrumbs"
 import { Gutter } from "@/_components/Gutter"
 import { MediumImpactHero } from "@/_components/_heros/MediumImpact"
-import { Media, Settings, Tenant } from "@/payload-types"
+import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact"
+import { Media, Settings, Tenant, User } from "@/payload-types"
 import Head from "next/head"
 
 export async function generateStaticParams() {
@@ -49,9 +51,25 @@ export default async function SiteHomePage({ params }: { params: { domain: strin
 
   const tenant = latestPost.tenant as Tenant
 
+  const breadcrumbs: BreadcrumbItem[] = [
+    {
+      label: 'Kaplice',
+      href: ''
+    },
+    {
+      label: (latestPost.tenant as Tenant).city,
+      href: ''
+    }
+  ]
+
+  const author = `${(latestPost.author as User).firstName} ${(latestPost.author as User).lastName}`
+  
   return (
     <>
-      <MediumImpactHero media={tenant.coverBackground as Media} title={tenant.city} subtitle={`${tenant.type} ${tenant.patron}`} />
+      <Gutter className="mb-4">
+        <Breadcrumbs items={breadcrumbs}/>
+      </Gutter>
+      <NewMediumImpact image={tenant.coverBackground as Media} title={latestPost.title} author={author} authorAvatar={(latestPost.author as User).avatar as Media} timestamp="2 min temu"/>
       <Gutter className="py-6">
         <div className="text-justify flex flex-col gap-4" dangerouslySetInnerHTML={{ __html: latestPost.content_html }}></div>
       </Gutter>

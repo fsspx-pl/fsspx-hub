@@ -1,7 +1,6 @@
-import React from 'react'
 import Link from 'next/link'
+import React from 'react'
 
-import { Button, Props as ButtonProps } from '../Button'
 import { Page } from '@/payload-types'
 
 type CMSLinkType = {
@@ -13,10 +12,8 @@ type CMSLinkType = {
     relationTo: 'pages'
   } | null
   label?: string |  null
-  appearance?: ButtonProps['appearance']
   children?: React.ReactNode
   className?: string
-  invert?: ButtonProps['invert']
 }
 
 export const CMSLink: React.FC<CMSLinkType> = ({
@@ -25,10 +22,8 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   newTab,
   reference,
   label,
-  appearance,
   children,
   className,
-  invert,
 }) => {
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
@@ -39,30 +34,14 @@ export const CMSLink: React.FC<CMSLinkType> = ({
 
   if (!href) return null
 
-  if (!appearance) {
-    const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+  const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
 
-    if (href) {
-      return (
-        <Link {...newTabProps} href={href} className={className}>
-          {label && label}
-          {children && children}
-        </Link>
-      )
-    }
+  if (href) {
+    return (
+      <Link {...newTabProps} href={href} className={className}>
+        {label && label}
+        {children && children}
+      </Link>
+    )
   }
-
-  if(!newTab) return null
-  if(!label) return null
-
-  return (
-    <Button
-      className={className}
-      newTab={newTab}
-      href={href}
-      appearance={appearance}
-      label={label}
-      invert={invert}
-    />
-  )
 }

@@ -29,11 +29,8 @@ const nextConfig = {
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
-      use: [
-        {
-          loader: '@svgr/webpack'
-        },
-      ],
+      exclude: /app\/icon\.svg$/,
+      use: ['@svgr/webpack'],
     });
     return config;
   },

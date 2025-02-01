@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 
-import { Header, Media, Settings } from '@/payload-types'
 import { Logo } from '@/_components/Logo'
+import { Header, Settings } from '@/payload-types'
 import { MobileMenu } from '../MobileMenu'
 
 export const Menu: React.FC<
-  Pick<Settings, 'copyright' | 'logo'> & Pick<Header, 'textLogo' | 'navItems'>
-> = ({ copyright, textLogo, logo, navItems }) => {
+  Pick<Settings, 'copyright'> & Pick<Header, 'navItems'>
+> = ({ copyright, navItems }) => {
   const [mobileMenuActive, setMobileMenuActive] = useState(false)
   
   if(!copyright) return null
@@ -34,7 +34,7 @@ export const Menu: React.FC<
           copyright={copyright}
           navItems={navItems}
         >
-          <Logo skipMainText logo={logo as Media} textLogo={textLogo as Media} />
+          <Logo skipMainText />
         </MobileMenu>
       )}
     </>

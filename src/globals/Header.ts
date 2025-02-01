@@ -9,12 +9,6 @@ export const Header: GlobalConfig = {
   },
   fields: [
     {
-      name: 'textLogo',
-      type: 'upload',
-      relationTo: 'media',
-      required: true,
-    },
-    {
       name: 'navItems',
       type: 'array',
       maxRows: 6,

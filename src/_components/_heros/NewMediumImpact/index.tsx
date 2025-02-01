@@ -6,14 +6,14 @@ import { Media } from '@/_components/Media'
 import { Media as MediaType } from '@/payload-types'
 
 const garamond = EB_Garamond({
-  weight: '700',
+  weight: '600',
   subsets: ['latin'],
 })
 
 type Props = {
   title: string
   author: string
-  authorAvatar: MediaType | null
+  authorAvatar?: MediaType | null
   timestamp: string
   image: MediaType
   className?: string
@@ -37,7 +37,7 @@ export const NewMediumImpact: React.FC<Props> = ({
           />
         </div>
         <div className="relative h-full flex flex-col justify-end">
-          <div className="prose max-w-none bg-gradient-to-b from-transparent to-white to-40% pt-4">
+          <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-white to-70% pt-24">
             <h1 className={garamond.className}>
               {title}
             </h1>

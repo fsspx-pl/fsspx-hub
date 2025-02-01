@@ -33,6 +33,7 @@ export interface User {
   id: string;
   firstName?: string | null;
   lastName?: string | null;
+  avatar: string | Media;
   roles: ('super-admin' | 'user')[];
   tenants?:
     | {
@@ -52,27 +53,6 @@ export interface User {
   loginAttempts?: number | null;
   lockUntil?: string | null;
   password?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants".
- */
-export interface Tenant {
-  id: string;
-  name: string;
-  domain: string;
-  city: string;
-  type: 'Kaplica' | 'Misja';
-  patron?: string | null;
-  coverBackground: string | Media;
-  address: {
-    street: string;
-    zipcode: string;
-    email?: string | null;
-    phone?: string | null;
-  };
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -110,12 +90,34 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: string;
+  name: string;
+  domain: string;
+  city: string;
+  type: 'Kaplica' | 'Misja';
+  patron?: string | null;
+  coverBackground: string | Media;
+  address: {
+    street: string;
+    zipcode: string;
+    email?: string | null;
+    phone?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
   id: string;
   title: string;
   slug?: string | null;
+  author?: (string | null) | User;
   tenant?: (string | null) | Tenant;
   content?: {
     root: {
@@ -188,7 +190,6 @@ export interface Settings {
  */
 export interface Header {
   id: string;
-  textLogo: string | Media;
   navItems?:
     | {
         link: {

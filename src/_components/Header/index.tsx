@@ -20,21 +20,17 @@ export async function Header() {
   if (!header || !settings) return null
 
   return (
-    <>
       <Gutter>
         <header className="flex flex-row justify-between items-center w-full py-4 lg:py-8">
-          <Logo logo={settings.logo as Media} textLogo={header.textLogo as Media} />
+          <Logo />
           <div className="hidden md:block">
             <HeaderNav navItems={header.navItems} />
           </div>
           <Menu
-            logo={settings.logo}
-            textLogo={header.textLogo}
             copyright={settings.copyright}
             navItems={header.navItems}
           />
         </header>
       </Gutter>
-    </>
   )
 }
