@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react'
 import { Mass as MassType } from '@/payload-types'
-import { addMonths, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays, addDays, startOfWeek, endOfWeek } from 'date-fns'
+import { addMonths, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays, addDays, startOfWeek, endOfWeek, isSameDay } from 'date-fns'
 import { Feast } from '@/feast'
 
 type FeastWithMasses = Feast & { masses: MassType[] }
@@ -20,10 +20,16 @@ type FeastDataContextType = {
 
 const FeastDataContext = createContext<FeastDataContextType | undefined>(undefined)
 
+const selectTodayOrFirstFeast = (feasts: FeastWithMasses[]) => {
+  const now = new Date()
+  const todayFeast = feasts.find((feast) => isSameDay(now, feast.date))
+  return todayFeast ?? feasts[0]
+}
+
 export const FeastDataProvider: React.FC<{ children: React.ReactNode, initialFeasts: FeastWithMasses[] }> = ({ children, initialFeasts }) => {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [feasts] = useState<FeastWithMasses[]>(initialFeasts)
-  const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(feasts[0])
+  const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(selectTodayOrFirstFeast(initialFeasts))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

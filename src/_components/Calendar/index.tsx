@@ -24,6 +24,18 @@ const gothic = Gothic_A1({
 
 export type FeastWithMasses = Feast & {masses: MassType[] }
 
+const colorToHex = (color: string): string => {
+  const colorMap: Record<string, string> = {
+    'biały': 'text-black',
+    'czerwony': 'text-red-500',
+    'fioletowy': 'text-purple-500',
+    'zielony': 'text-green-500',
+    'czarny': 'text-black',
+  };
+  return colorMap[color.toLowerCase()] || color;
+};
+
+
 export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
   const firstFeastDate = feasts[0]?.date
@@ -31,12 +43,19 @@ export const Calendar: React.FC = () => {
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
   const [firstDaySelected, setFirstDaySelected] = React.useState(false);
   const [lastDaySelected, setLastDaySelected] = React.useState(false);
+  const [selectedDayColor, setSelectedDayColor] = React.useState(colorToHex('czarny'));
 
   React.useEffect(() => {
     const [ firstFeast, _ ] = feasts;
     setFirstDaySelected(selectedDay?.id === firstFeast.id);
     setLastDaySelected(selectedDay?.id === feasts[feasts.length - 1].id);
   }, [selectedDay, feasts]);
+
+  React.useEffect(() => {
+    if (selectedDay) {
+      setSelectedDayColor(colorToHex(selectedDay.colors[0]));
+    }
+  }, [selectedDay]);
 
   return (
     <div className="w-full flex-col justify-start items-start gap-6 inline-flex">
@@ -56,10 +75,10 @@ export const Calendar: React.FC = () => {
             {monthFormatted}
           </div>
           <div className="self-stretch justify-between items-center inline-flex">
-            {feasts.map((day) => (
+            {feasts.map((day, index) => (
               <Day
                 className="flex-1"
-                key={day.id}
+                key={day.id + index}
                 date={day.date}
                 isSelected={isEqual(day.date, selectedDay?.date ?? '')}
                 onClick={() => handleDateSelect(day.date)}
@@ -84,7 +103,7 @@ export const Calendar: React.FC = () => {
                     {selectedDay.colors.join(' ') && (
                       <>
                         <span className="leading-[14px]">  ·  kolor szat:  </span>
-                        <span className="text-[#c81910] leading-[14px]">{selectedDay.colors.join(' ')}</span>
+                        <span className={`${selectedDay.colors[0] === 'biały' ? 'bg-white px-2 py-1 rounded-lg' : null} ${selectedDayColor} leading-[14px]`}>{selectedDay.colors.join(' ')}</span>
                       </>
                     )}
                   </div>
@@ -93,8 +112,8 @@ export const Calendar: React.FC = () => {
             )}
             <div className="flex-col text-sm justify-start items-start flex text-[#4a4b4f]">
               {selectedDay.masses.length > 0 ? (
-                selectedDay.masses.map((mass, index) => (
-                  <Mass key={index} time={mass.time} type={mass.type} />
+                selectedDay.masses.map(mass => (
+                  <Mass key={mass.id} time={mass.time} type={mass.type} />
                 ))
               ) : (
                 <div className='self-center text-[#a8a9ab]'>Brak nabożeństw tego dnia.</div>

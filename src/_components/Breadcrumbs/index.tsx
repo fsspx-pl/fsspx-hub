@@ -23,7 +23,7 @@ export const Breadcrumbs: React.FC<Props> = ({ items }) => {
       {items.map((item, index) => {
         const isLast = index === items.length - 1
         return (
-          <React.Fragment key={item.href}>
+          <React.Fragment key={index}>
             {index > 0 && <ChevronIcon />}
             <span
               className={`${isLast ? 'text-[#EB6265]' : 'text-[#7F8186]'}`}

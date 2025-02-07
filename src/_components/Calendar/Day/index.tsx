@@ -1,5 +1,7 @@
 'use client'
 
+import { format } from 'date-fns'
+import { pl } from 'date-fns/locale'
 import { EB_Garamond } from 'next/font/google'
 import React from 'react'
 
@@ -19,7 +21,8 @@ export const Day: React.FC<Props> = ({ date, isSelected, onClick, className }) =
   const isSunday = date.getDay() === 0;
   const textColor = isSunday ? 'text-[#c81910]' : 'text-[#4a4b4f]';
   const dayNumber = date.getDate();
-  const dayName = date.toLocaleDateString('pl-PL', { weekday: 'short' });
+  const dayName = format(date, 'EEE', { locale: pl }).replace('.', '');
+  // const dayName = 
   
   return (
     <button 
