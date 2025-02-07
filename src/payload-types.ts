@@ -12,6 +12,7 @@ export interface Config {
     tenants: Tenant;
     pages: Page;
     media: Media;
+    masses: Mass;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -138,6 +139,19 @@ export interface Page {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "masses".
+ */
+export interface Mass {
+  id: string;
+  time: string;
+  type: 'sung' | 'read' | 'silent';
+  tenant: string | Tenant;
+  priest?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

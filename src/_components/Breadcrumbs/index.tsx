@@ -1,6 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
 import { Gothic_A1 } from 'next/font/google'
+import React from 'react'
 import ChevronIcon from './chevron.svg'
 
 

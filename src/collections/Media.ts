@@ -1,4 +1,3 @@
-import path from 'path'
 import { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
