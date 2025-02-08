@@ -21,7 +21,8 @@ export const BigImpact: React.FC<Props> = ({
   image,
   author,
   authorAvatar,
-  timestamp,
+  createdAt,
+  updatedAt,
   title,
   excerpt,
   readingTimeMinutes,
@@ -38,7 +39,8 @@ export const BigImpact: React.FC<Props> = ({
           <ArticleInfo
             author={author}
             avatar={authorAvatar}
-            timestamp={timestamp}
+            createdAt={createdAt}
+            updatedAt={updatedAt}
           />
           <div className='prose'>
             <h1 className={`${garamond.className}`}>

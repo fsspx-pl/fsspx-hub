@@ -18,7 +18,7 @@ export const Default: Story = {
     items: [
       { label: 'Kaplice', href: '/kaplice' },
       { label: 'Poznań', href: '/kaplice/poznan' },
-      { label: 'Ogłoszenia', href: '/kaplice/poznan/ogloszenia', isLast: true },
+      { label: 'Ogłoszenia', href: '/kaplice/poznan/ogloszenia' },
     ],
   },
 }
@@ -26,7 +26,7 @@ export const Default: Story = {
 export const SingleItem: Story = {
   args: {
     items: [
-      { label: 'Kaplice', href: '/kaplice', isLast: true },
+      { label: 'Kaplice', href: '/kaplice' },
     ],
   },
 }
