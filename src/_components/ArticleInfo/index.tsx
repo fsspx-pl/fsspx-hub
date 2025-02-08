@@ -8,7 +8,7 @@ import Clock from "./clock.svg";
 import Pencil from "./pencil.svg";
 
 type Props = {
-  author: string;
+  author?: string;
   avatar?: MediaType | null;
   createdAt: string;
   updatedAt: string;
@@ -24,7 +24,7 @@ export const ArticleInfo: React.FC<Props> = ({
     <div
       className="flex items-center gap-2 whitespace-nowrap text-gray-500"
     >
-      {avatar?.url && (
+      {author && avatar?.url && (
         <Image
           src={avatar.url}
           alt={author}

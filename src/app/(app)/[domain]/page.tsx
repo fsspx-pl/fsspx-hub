@@ -92,9 +92,9 @@ export default async function SiteHomePage({
     },
   ];
 
-  const author = `${(latestPost.author as User).firstName} ${
+  const author = latestPost.author ? `${(latestPost.author as User).firstName} ${
     (latestPost.author as User).lastName
-  }`;
+  }` : undefined;
 
   return (
     <div>  

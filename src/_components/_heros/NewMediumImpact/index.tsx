@@ -7,7 +7,7 @@ import { garamond } from '@/fonts'
 
 type Props = {
   title: string
-  author: string
+  author?: string
   authorAvatar?: MediaType | null
   createdAt: string,
   updatedAt: string,
