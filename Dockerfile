@@ -9,6 +9,7 @@ WORKDIR /app
 COPY pnpm-lock.yaml* package.json ./
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
 RUN corepack enable pnpm && pnpm i --frozen-lockfile
+RUN pnpm rebuild sharp
 
 # Rebuild the source code only when needed
 FROM base AS builder
