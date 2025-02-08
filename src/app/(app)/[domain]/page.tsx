@@ -8,7 +8,7 @@ import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
 import { Feast } from "@/feast";
 import { Media, Settings, Tenant, User } from "@/payload-types";
-import { addDays, endOfWeek, isSameDay, parseISO, startOfWeek, subDays } from "date-fns";
+import { addDays, endOfWeek, isSameDay, parseISO, startOfWeek } from "date-fns";
 import { Metadata } from "next";
 import { getFeasts } from "./getFeasts";
 import { getMasses } from "./getMasses";
@@ -105,7 +105,7 @@ export default async function SiteHomePage({
         image={tenant.coverBackground as Media}
         title={latestPost.title}
         author={author}
-        authorAvatar={(latestPost.author as User).avatar as Media}
+        authorAvatar={(latestPost.author as User)?.avatar as Media}
         createdAt={latestPost.createdAt}
         updatedAt={latestPost.updatedAt}
       />
