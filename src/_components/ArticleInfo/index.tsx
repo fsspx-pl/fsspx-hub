@@ -1,17 +1,11 @@
 'use client'
 
 import { Media as MediaType } from "@/payload-types";
-import { Gothic_A1 } from "next/font/google";
 import Image from "next/image";
 import React from "react";
 import { DateLabel, DateWithTooltip } from "./DateTooltip";
 import Clock from "./clock.svg";
 import Pencil from "./pencil.svg";
-
-const gothicA1 = Gothic_A1({
-  weight: "500",
-  subsets: ["latin"],
-});
 
 type Props = {
   author: string;
@@ -28,7 +22,7 @@ export const ArticleInfo: React.FC<Props> = ({
 }) => {
   return (
     <div
-      className={`flex items-center gap-2 whitespace-nowrap ${gothicA1.className} text-gray-500`}
+      className="flex items-center gap-2 whitespace-nowrap text-gray-500"
     >
       {avatar?.url && (
         <Image

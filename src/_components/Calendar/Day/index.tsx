@@ -1,14 +1,9 @@
 'use client'
 
+import { garamond } from '@/fonts'
 import { format } from 'date-fns'
 import { pl } from 'date-fns/locale'
-import { EB_Garamond } from 'next/font/google'
 import React from 'react'
-
-const garamond = EB_Garamond({
-  weight: '600',
-  subsets: ['latin'],
-})
 
 type Props = {
   date: Date

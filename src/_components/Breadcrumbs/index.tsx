@@ -1,12 +1,5 @@
-import { Gothic_A1 } from 'next/font/google'
 import React from 'react'
 import ChevronIcon from './chevron.svg'
-
-
-const gothicA1 = Gothic_A1({
-  weight: '500',
-  subsets: ['latin'],
-})
 
 export type BreadcrumbItem = {
   label: string
@@ -19,7 +12,7 @@ type Props = {
 
 export const Breadcrumbs: React.FC<Props> = ({ items }) => {
   return (
-    <nav className={`flex items-center gap-2 ${gothicA1.className}`}>
+    <nav className="flex items-center gap-2">
       {items.map((item, index) => {
         const isLast = index === items.length - 1
         return (

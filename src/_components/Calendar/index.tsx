@@ -4,23 +4,13 @@ import { Feast } from '@/feast'
 import { Mass as MassType } from '@/payload-types'
 import { addDays, format, isEqual, subDays } from 'date-fns'
 import { pl } from 'date-fns/locale'
-import { EB_Garamond, Gothic_A1 } from 'next/font/google'
 import React from 'react'
 import { Day } from './Day'
 import { LeftRightNav as Nav } from './LeftRightNav'
 import Mass from './Mass'
 import { useFeastData } from './context/FeastDataContext'
 import { romanize } from './utils/romanize'
-
-const garamond = EB_Garamond({
-  weight: [ '600', '400'],
-  subsets: ['latin'],
-})
-
-const gothic = Gothic_A1({
-  weight: ['400', '600', '800'],
-  subsets: ['latin'],
-})
+import { garamond } from '@/fonts'
 
 export type FeastWithMasses = Feast & {masses: MassType[] }
 
@@ -60,7 +50,7 @@ export const Calendar: React.FC = () => {
   return (
     <div className="w-full flex-col justify-start items-start gap-6 inline-flex">
       <div className="prose self-stretch flex flex-row justify-between items-center gap-4">
-        <h2 className={`mb-0 text-[#34363b] ${garamond.className}`}>
+        <h2 className={`mb-0 ${garamond.className}`}>
           Porządek nabożeństw
         </h2>
         <Nav
@@ -71,7 +61,7 @@ export const Calendar: React.FC = () => {
       </div>
       <div className="self-stretch flex-col justify-start items-start flex">
         <div className="self-stretch flex-col justify-center items-start gap-1.5 flex">
-          <div className={`self-stretch text-center text-[#4a4b4f] text-sm tracking-[3.78px] ${garamond.className} font-normal`}>
+          <div className={`self-stretch text-center text-sm ${garamond.className} font-normal`}>
             {monthFormatted}
           </div>
           <div className="self-stretch justify-between items-center inline-flex">
@@ -89,14 +79,14 @@ export const Calendar: React.FC = () => {
         {selectedDay && (
           <div className={`self-stretch p-4 rounded-b-lg ${ !firstDaySelected && 'rounded-tl-lg' } ${ !lastDaySelected && 'rounded-tr-lg' } flex-col justify-start items-start gap-6 flex bg-[#f8f7f7]`}>
             {(selectedDay.title || selectedDay.rank) && (
-              <div className={`self-stretch flex-col justify-start items-start gap-1.5 flex ${gothic.className}`}>
+              <div className="self-stretch flex-col justify-start items-start gap-1.5 flex">
                 {selectedDay.title && (
-                  <div className="text-[#4a4b4f] font-semibold leading-5">
+                  <div className="font-semibold leading-5">
                     {selectedDay.title}
                   </div>
                 )}
                 {selectedDay.rank && (
-                  <div className="self-stretch text-sm text-[#4a4b4f]">
+                  <div className="self-stretch text-sm">
                     <span className="leading-[14px]">
                       święto { romanize(selectedDay.rank)} klasy
                     </span>

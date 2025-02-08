@@ -1,20 +1,10 @@
 import { Gutter } from '@/_components/Gutter'
 import { Media } from '@/_components/Media'
+import { garamond, gothic } from '@/fonts'
 import { Media as MediaType } from '@/payload-types'
-import { EB_Garamond, Gothic_A1 } from 'next/font/google'
 import React from 'react'
 import { ArticleInfo } from '../../ArticleInfo'
 import { ReadingTime } from '../../ReadingTime'
-
-const garamond = EB_Garamond({
-  weight: '700',
-  subsets: ['latin'],
-})
-
-const gothicA1 = Gothic_A1({
-  weight: '500',
-  subsets: ['latin'],
-})
 
 type Props = {
   image: MediaType & { alt: string }
@@ -51,10 +41,10 @@ export const BigImpact: React.FC<Props> = ({
             timestamp={timestamp}
           />
           <div className='prose'>
-            <h1 className={`${garamond.className} text-[#313238]`}>
+            <h1 className={`${garamond.className}`}>
               {title}
             </h1>
-            <span className={`text-[#6A6C72] text-justify leading-relaxed ${gothicA1.className}`}>
+            <span className={`text-[#6A6C72] text-justify leading-relaxed ${gothic.className}`}>
               {excerpt}
             </span>
           </div>

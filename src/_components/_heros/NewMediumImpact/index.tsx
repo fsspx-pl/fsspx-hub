@@ -1,14 +1,9 @@
-import React from 'react'
-import { EB_Garamond } from 'next/font/google'
 import { Gutter } from '@/_components/Gutter'
-import { ArticleInfo } from '../../ArticleInfo'
 import { Media } from '@/_components/Media'
 import { Media as MediaType } from '@/payload-types'
-
-const garamond = EB_Garamond({
-  weight: '600',
-  subsets: ['latin'],
-})
+import React from 'react'
+import { ArticleInfo } from '../../ArticleInfo'
+import { garamond } from '@/fonts'
 
 type Props = {
   title: string

@@ -1,9 +1,7 @@
 import { Footer } from "@/_components/Footer";
 import { Header } from "@/_components/Header";
 import "@/_css/globals.scss";
-import { Inter } from "next/font/google";
-
-const inter = Inter({ subsets: ["latin"] });
+import { gothic  } from "@/fonts"
 
 export default function RootLayout({
   children,
@@ -12,7 +10,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl">
-      <body className={`${inter.className}`}>
+      <body className={`${gothic.className}`}>
         <Header></Header>
         {children}
         <Footer></Footer>
