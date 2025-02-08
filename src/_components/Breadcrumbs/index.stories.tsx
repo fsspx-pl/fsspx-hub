@@ -35,7 +35,7 @@ export const TwoItems: Story = {
   args: {
     items: [
       { label: 'Kaplice', href: '/kaplice' },
-      { label: 'Poznań', href: '/kaplice/poznan', isLast: true },
+      { label: 'Poznań', href: '/kaplice/poznan' },
     ],
   },
 } 

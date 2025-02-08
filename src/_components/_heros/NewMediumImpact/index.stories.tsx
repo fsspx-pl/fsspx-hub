@@ -30,6 +30,8 @@ const defaultArgs = {
     updatedAt: new Date().toISOString(),
     alt: 'Author avatar',
   },
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
   image: {
     id: '2',
     url: 'https://placehold.co/1200x800/234/fff',

@@ -43,7 +43,7 @@ export const MobileMenu: React.FC<
         <div className="flex flex-col items-start">
           {navItems?.map(({ link }, i) => {
             return (
-              <CMSLink className="w-full !justify-start" key={i} {...link} appearance="secondary" />
+              <CMSLink className="w-full !justify-start" key={i} {...link} />
             )
           })}
           {/* <li className="mb-1">

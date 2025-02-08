@@ -10,7 +10,8 @@ type Props = {
   image: MediaType & { alt: string }
   author: string
   authorAvatar: MediaType | null
-  timestamp: string
+  createdAt: string,
+  updatedAt: string,
   title: string
   excerpt: string
   readingTimeMinutes: number

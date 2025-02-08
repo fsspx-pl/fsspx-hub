@@ -11,7 +11,7 @@ export const HeaderNav: React.FC<Pick<HeaderType, 'navItems'>> = ({ navItems }) 
   return (
     <nav>
       {navItems.map(({ link }, i) => {
-        return <CMSLink key={i} {...link} appearance="none" />
+        return <CMSLink key={i} {...link} />
       })}
     </nav>
   )
