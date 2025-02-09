@@ -16,8 +16,8 @@ const meta: Meta<typeof Calendar> = {
 export default meta
 type Story = StoryObj<typeof Calendar>
 
-const baseDate = new Date(2024, 0, 10)
-const mockFeasts: FeastWithMasses[]  = Array.from({ length: 7 }, (_, i) => {
+const baseDate = new Date(2024, 0, 21 )
+const mockFeasts: FeastWithMasses[]  = Array.from({ length: 8 }, (_, i) => {
     const date = addDays(baseDate, i)
     return ({
         id: `feast-${i}`,

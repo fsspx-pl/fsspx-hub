@@ -22,7 +22,7 @@ export const Day: React.FC<Props> = ({ date, isSelected, onClick, className }) =
   return (
     <button 
       onClick={onClick}
-      className={`p-3 flex-col justify-start items-center inline-flex ${isSelected ? 'bg-[#f8f7f7] rounded-t-lg' : ''} ${className}`}
+      className={`p-1 sm:p-3 flex-col justify-start items-center inline-flex ${isSelected ? 'bg-[#f8f7f7] rounded-t-lg' : ''} ${className}`}
     >
       <div className={`self-stretch text-[21.80px] font-semibold ${textColor} ${garamond.className}`}>
         {dayNumber}
