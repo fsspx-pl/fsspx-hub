@@ -1,18 +1,16 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react'
-import { Mass as MassType } from '@/payload-types'
-import { addMonths, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays, addDays, startOfWeek, endOfWeek, isSameDay } from 'date-fns'
 import { Feast } from '@/feast'
+import { Service as ServiceType } from '@/payload-types'
+import { addDays, isSameDay, subDays } from 'date-fns'
+import React, { createContext, useContext, useState } from 'react'
 
-type FeastWithMasses = Feast & { masses: MassType[] }
+type FeastWithMasses = Feast & { masses: ServiceType[] }
 
 type FeastDataContextType = {
   currentDate: Date
   feasts: FeastWithMasses[]
   selectedDay: FeastWithMasses | undefined
-  loading: boolean
-  error: string | null
   handlePrevious: () => void
   handleNext: () => void
   handleDateSelect: (date: Date) => void
@@ -27,11 +25,10 @@ const selectTodayOrFirstFeast = (feasts: FeastWithMasses[]) => {
 }
 
 export const FeastDataProvider: React.FC<{ children: React.ReactNode, initialFeasts: FeastWithMasses[] }> = ({ children, initialFeasts }) => {
-  const [currentDate, setCurrentDate] = useState(new Date())
+  const now = new Date()
+  const [currentDate, setCurrentDate] = useState(now)
   const [feasts] = useState<FeastWithMasses[]>(initialFeasts)
   const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(selectTodayOrFirstFeast(initialFeasts))
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   const handlePrevious = () => {
     setCurrentDate((prev) => subDays(prev, 1))
@@ -44,7 +41,7 @@ export const FeastDataProvider: React.FC<{ children: React.ReactNode, initialFea
   }
 
   const handleDateSelect = (date: Date) => {
-    const selected = feasts.find((feast) => new Date(feast.date).getTime() === date.getTime())
+    const selected = feasts.find(feast => isSameDay(feast.date, date))
     setSelectedDay(selected)
   }
 
@@ -52,8 +49,6 @@ export const FeastDataProvider: React.FC<{ children: React.ReactNode, initialFea
     currentDate,
     feasts,
     selectedDay,
-    loading,
-    error,
     handlePrevious,
     handleNext,
     handleDateSelect,

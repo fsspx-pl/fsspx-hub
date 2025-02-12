@@ -7,6 +7,7 @@ import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
 import { cachedPayloadPlugin } from './cached-local-api'
+import { Services } from './collections/Services'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Tenants } from './collections/Tenants'
@@ -14,7 +15,6 @@ import { Users } from './collections/Users'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
-import { Masses } from './collections/Masses'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,7 +24,7 @@ export default buildConfig({
     user: Users.slug,
   },
   globals: [ Settings, Header, Footer ],
-  collections: [Users, Tenants, Pages, Media, Masses],
+  collections: [Users, Tenants, Pages, Media, Services],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,

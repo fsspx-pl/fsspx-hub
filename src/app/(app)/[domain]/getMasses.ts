@@ -1,14 +1,14 @@
 import configPromise from '@payload-config';
 import { getPayloadHMR } from '@payloadcms/next/utilities';
 
-export const getMasses = async (tenant: string, start: string, end: string) => {
+export const getServices = async (tenant: string, start: string, end: string) => {
   const payload = await getPayloadHMR({
     config: configPromise,
   })
 
   try {
     const result = await payload.find({
-      collection: 'masses',
+      collection: 'services',
       where: {
         tenant: {
           equals: tenant

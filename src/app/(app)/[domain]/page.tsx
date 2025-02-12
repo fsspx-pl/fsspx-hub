@@ -8,10 +8,10 @@ import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
 import { Feast } from "@/feast";
 import { Media, Settings, Tenant, User } from "@/payload-types";
-import { addDays, endOfWeek, isSameDay, parseISO, startOfWeek } from "date-fns";
+import { isSameDay, parseISO, startOfWeek } from "date-fns";
 import { Metadata } from "next";
 import { getFeasts } from "./getFeasts";
-import { getMasses } from "./getMasses";
+import { getServices } from "./getMasses";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -64,14 +64,17 @@ export default async function SiteHomePage({
   if (!latestPost.content_html) return null;
 
   const tenant = latestPost.tenant as Tenant;
-  const now = new Date();
-  const start = startOfWeek(now, { weekStartsOn: 0 });
-  const end = addDays(endOfWeek(now, { weekStartsOn: 0 }), 1);
+  const start = startOfWeek(parseISO(latestPost.period.start as string), { weekStartsOn: 0 });
+  const end = parseISO(latestPost.period.end);
   const feasts = await getFeasts(start, end);
-  const masses = await getMasses(tenant.id, start.toISOString(), end.toISOString());
+  const masses = await getServices(
+    tenant.id,
+    start.toISOString(),
+    end.toISOString()
+  );
 
   const feastsWithMasses: FeastWithMasses[] = feasts.map((feast: Feast) => {
-    const feastMasses = masses.filter(mass => {
+    const feastMasses = masses.filter((mass) => {
       const massDate = parseISO(mass.time);
       return isSameDay(massDate, feast.date);
     });
@@ -92,12 +95,14 @@ export default async function SiteHomePage({
     },
   ];
 
-  const author = latestPost.author ? `${(latestPost.author as User).firstName} ${
-    (latestPost.author as User).lastName
-  }` : undefined;
+  const user = latestPost.author as User;
+
+  const author = user
+    ? `${user.salutation === 'father' ? 'Ks.' : ''} ${user.firstName} ${user.lastName}`.trim()
+    : undefined;
 
   return (
-    <div>  
+    <div>
       <Gutter className="mb-4">
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
@@ -105,13 +110,15 @@ export default async function SiteHomePage({
         image={tenant.coverBackground as Media}
         title={latestPost.title}
         author={author}
-        authorAvatar={(latestPost.author as User)?.avatar as Media}
+        authorAvatar={user.avatar as Media}
         createdAt={latestPost.createdAt}
         updatedAt={latestPost.updatedAt}
       />
       <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 md:flex-row">
         <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3">
-          <FeastDataProvider initialFeasts={feastsWithMasses}>
+          <FeastDataProvider
+            initialFeasts={feastsWithMasses}
+          >
             <Calendar />
           </FeastDataProvider>
         </div>

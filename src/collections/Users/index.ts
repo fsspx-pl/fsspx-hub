@@ -27,6 +27,37 @@ export const Users: CollectionConfig = {
   },
   fields: [
     {
+      name: 'salutation',
+      label: {
+        en: 'Salutation',
+        pl: 'Tytuł',
+      },
+      type: 'select',
+      options: [
+        {
+          label: {
+            en: 'Mr',
+            pl: 'Pan',
+          },
+          value: 'mr',
+        },
+        {
+          label: {
+            en: 'Ms',
+            pl: 'Pani',
+          },
+          value: 'ms',
+        },
+        {
+          label: {
+            en: 'Fr',
+            pl: 'Ks.',
+          },
+          value: 'father',
+        },
+      ],
+    },
+    {
       name: 'firstName',
       type: 'text',
     },

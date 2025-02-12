@@ -12,7 +12,7 @@ export interface Config {
     tenants: Tenant;
     pages: Page;
     media: Media;
-    masses: Mass;
+    services: Service;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
@@ -32,6 +32,7 @@ export interface Config {
  */
 export interface User {
   id: string;
+  salutation?: ('mr' | 'ms' | 'father') | null;
   firstName?: string | null;
   lastName?: string | null;
   avatar: string | Media;
@@ -116,7 +117,13 @@ export interface Tenant {
  */
 export interface Page {
   id: string;
+  type: 'pastoral-announcements';
   title: string;
+  period: {
+    start?: string | null;
+    end: string;
+  };
+  masses?: (string | Service)[] | null;
   slug?: string | null;
   author?: (string | null) | User;
   tenant?: (string | null) | Tenant;
@@ -142,9 +149,9 @@ export interface Page {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "masses".
+ * via the `definition` "services".
  */
-export interface Mass {
+export interface Service {
   id: string;
   time: string;
   type: 'sung' | 'read' | 'silent';

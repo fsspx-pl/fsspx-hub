@@ -1,7 +1,7 @@
 'use client'
 
-import { Feast } from '@/feast'
-import { Mass as MassType } from '@/payload-types'
+import { Feast, VestmentColor } from '@/feast'
+import { Service as ServiceType } from '@/payload-types'
 import { addDays, format, isEqual, subDays } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import React from 'react'
@@ -12,17 +12,17 @@ import { useFeastData } from './context/FeastDataContext'
 import { romanize } from './utils/romanize'
 import { garamond } from '@/fonts'
 
-export type FeastWithMasses = Feast & {masses: MassType[] }
+export type FeastWithMasses = Feast & {masses: ServiceType[] }
 
-const colorToHex = (color: string): string => {
-  const colorMap: Record<string, string> = {
-    'biały': 'text-black',
-    'czerwony': 'text-red-500',
-    'fioletowy': 'text-purple-500',
-    'zielony': 'text-green-500',
-    'czarny': 'text-black',
+const colorToHex = (color: VestmentColor): string => {
+  const colorMap: Record<VestmentColor, string> = {
+    [VestmentColor.WHITE]: 'text-black',
+    [VestmentColor.RED]: 'text-red-500',
+    [VestmentColor.VIOLET]: 'text-purple-500',
+    [VestmentColor.GREEN]: 'text-green-500',
+    [VestmentColor.BLACK]: 'text-black',
   };
-  return colorMap[color.toLowerCase()] || color;
+  return colorMap[color];
 };
 
 
@@ -33,7 +33,7 @@ export const Calendar: React.FC = () => {
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
   const [firstDaySelected, setFirstDaySelected] = React.useState(false);
   const [lastDaySelected, setLastDaySelected] = React.useState(false);
-  const [selectedDayColor, setSelectedDayColor] = React.useState(colorToHex('czarny'));
+  const [selectedDayColor, setSelectedDayColor] = React.useState(colorToHex(VestmentColor.BLACK));
 
   React.useEffect(() => {
     const [ firstFeast, _ ] = feasts;
@@ -43,7 +43,7 @@ export const Calendar: React.FC = () => {
 
   React.useEffect(() => {
     if (selectedDay) {
-      setSelectedDayColor(colorToHex(selectedDay.colors[0]));
+      setSelectedDayColor(colorToHex(selectedDay.color));
     }
   }, [selectedDay]);
 
@@ -90,10 +90,10 @@ export const Calendar: React.FC = () => {
                     <span className="leading-[14px]">
                       święto { romanize(selectedDay.rank)} klasy
                     </span>
-                    {selectedDay.colors.join(' ') && (
+                    {selectedDay.color && (
                       <>
                         <span className="leading-[14px]">  ·  kolor szat:  </span>
-                        <span className={`${selectedDay.colors[0] === 'biały' ? 'bg-white px-2 py-1 rounded-lg' : null} ${selectedDayColor} leading-[14px]`}>{selectedDay.colors.join(' ')}</span>
+                        <span className={`${selectedDay.color as VestmentColor === VestmentColor.WHITE ? 'bg-white px-2 py-1 rounded-lg' : null} ${selectedDayColor} leading-[14px]`}>{selectedDay.color}</span>
                       </>
                     )}
                   </div>

@@ -1,7 +1,7 @@
-import { Mass as MassType } from "@/payload-types";
+import { Service as ServiceType } from "@/payload-types";
 import { format } from "date-fns";
 
-const Mass: React.FC<{ type: MassType['type'], time: string }> = ({ type, time }) => {
+const Mass: React.FC<{ type: ServiceType['type'], time: string }> = ({ type, time }) => {
     const getMassLabel = () => {
       return format(new Date(time), 'HH:mm') + ' - ' + (() => {
         switch (type) {

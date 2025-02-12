@@ -1,13 +1,14 @@
 
+import { tenantAdmins } from '@/access/tenantAdmins'
 import { tenant } from '@/fields/tenant'
 import { user } from '@/fields/user'
+import { period } from '@/fields/period'
+import { lexicalHTML } from '@payloadcms/richtext-lexical'
 import { CollectionConfig, Field } from 'payload'
 import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
 import formatSlug from './hooks/formatSlug'
-import { tenantAdmins } from '@/access/tenantAdmins'
-import { richText } from 'payload/shared'
-import { lexicalHTML } from '@payloadcms/richtext-lexical'
+import { addPeriodStartDate } from './hooks/addPeriodStartDate'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -34,9 +35,41 @@ export const Pages: CollectionConfig = {
   },
   fields: [
     {
+      name: 'type',
+      type: 'select',
+      options: [
+        {
+          label: {
+            pl: 'Ogłoszenia duszpasterskie',
+            en: 'Pastoral announcements'
+          },
+          value: 'pastoral-announcements',
+        },
+      ],
+      defaultValue: 'pastoral-announcements',
+      required: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'title',
       type: 'text',
       required: true,
+    },
+    period,
+    {
+      name: 'masses',
+      label: {
+        pl: 'Nabożeństwa',
+        en: 'Services'
+      },
+      type: 'relationship',
+      relationTo: 'services',
+      hasMany: true,
+      admin: {
+        condition: (_, siblingData) => siblingData.type === 'pastoral-announcements',
+      },
     },
     {
       name: 'slug',
@@ -47,7 +80,7 @@ export const Pages: CollectionConfig = {
         position: 'sidebar',
       },
       hooks: {
-        beforeValidate: [formatSlug('title')],
+        beforeValidate: [formatSlug('title'), addPeriodStartDate],
       },
     },
     {

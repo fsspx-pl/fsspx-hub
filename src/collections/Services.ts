@@ -1,10 +1,25 @@
+import { anyone } from '@/access/anyone';
+import { tenantAdmins } from '@/access/tenantAdmins';
 import { CollectionConfig } from 'payload';
 
-export const Masses: CollectionConfig = {
-  slug: 'masses',
+export const Services: CollectionConfig = {
+  slug: 'services',
+  labels: {
+    singular: {
+      pl: 'Nabożeństwo',
+      en: 'Service'
+    },
+    plural: {
+      pl: 'Nabożeństwa',
+      en: 'Services'
+    }
+  }, 
   access: {
     // TODO make this more secure, only a member of a given tenant should be able to do this
-    read: () => true,
+    read: anyone,
+    create: tenantAdmins,
+    update: tenantAdmins,
+    delete: tenantAdmins,
   },
   fields: [
     {
