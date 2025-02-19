@@ -3,7 +3,7 @@ import configPromise from '@payload-config';
 import { Page } from "@/payload-types";
 import { getCachedPayload } from "@/cached-local-api";
 
-export const fetchLatestPage = async (domain: string): Promise<Page> => {
+export const fetchLatestPage = async (domain: string): Promise<Page | undefined> => {
   const payload = await getPayloadHMR({
     config: configPromise,
   })

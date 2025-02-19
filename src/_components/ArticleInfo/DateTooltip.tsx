@@ -19,11 +19,12 @@ export const DateWithTooltip: React.FC<{
   date: string;
 }> = ({ icon: Icon, label, date }) => {
   const now = new Date();
-  const formattedDate = formatDistance(parseISO(date), now, {
+  const inputDate = parseISO(date);
+  const formattedDate = formatDistance(inputDate, now, {
     locale: pl,
     addSuffix: true,
   });
-  const tooltip = parseISO(date).toLocaleString("pl-PL", {
+  const tooltip = inputDate.toLocaleString("pl-PL", {
     dateStyle: "full",
     timeStyle: "short",
   });

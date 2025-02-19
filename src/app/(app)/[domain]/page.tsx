@@ -8,10 +8,11 @@ import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
 import { Feast } from "@/feast";
 import { Media, Settings, Tenant, User } from "@/payload-types";
-import { isSameDay, parseISO, startOfWeek } from "date-fns";
+import { addDays, isSameDay, parseISO, startOfWeek } from "date-fns";
 import { Metadata } from "next";
 import { getFeasts } from "./getFeasts";
 import { getServices } from "./getMasses";
+import { Page as PageType } from "@/payload-types";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -61,45 +62,18 @@ export default async function SiteHomePage({
   const [subdomain] = domain.split(".");
   const latestPost = await fetchLatestPage(subdomain);
 
-  if (!latestPost.content_html) return null;
+  if (!latestPost?.content_html) return null;
 
-  const tenant = latestPost.tenant as Tenant;
-  const start = startOfWeek(parseISO(latestPost.period.start as string), { weekStartsOn: 0 });
-  const end = parseISO(latestPost.period.end);
-  const feasts = await getFeasts(start, end);
-  const masses = await getServices(
-    tenant.id,
-    start.toISOString(),
-    end.toISOString()
-  );
+  const tenant = latestPost.tenant ? latestPost.tenant as Tenant : null;
+  const period = latestPost?.period ? latestPost.period as PageType['period'] : null;
+  const feastsWithMasses: FeastWithMasses[] = period && tenant ? await getFeastsWithMasses(period, tenant) : [];
+  const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant) : [];
 
-  const feastsWithMasses: FeastWithMasses[] = feasts.map((feast: Feast) => {
-    const feastMasses = masses.filter((mass) => {
-      const massDate = parseISO(mass.time);
-      return isSameDay(massDate, feast.date);
-    });
-    return {
-      ...feast,
-      masses: feastMasses,
-    };
-  });
-
-  const breadcrumbs: BreadcrumbItem[] = [
-    {
-      label: "Kaplice",
-      href: "",
-    },
-    {
-      label: (latestPost.tenant as Tenant).city,
-      href: "",
-    },
-  ];
-
-  const user = latestPost.author as User;
-
-  const author = user
-    ? `${user.salutation === 'father' ? 'Ks.' : ''} ${user.firstName} ${user.lastName}`.trim()
-    : undefined;
+  const user = latestPost.author ? latestPost.author as User : null;
+  const author = formatAuthorName(user);
+  const authorAvatar = user?.avatar 
+    ? user.avatar as Media 
+    : null;
 
   return (
     <div>
@@ -107,10 +81,10 @@ export default async function SiteHomePage({
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
       <NewMediumImpact
-        image={tenant.coverBackground as Media}
+        image={tenant?.coverBackground as Media}
         title={latestPost.title}
         author={author}
-        authorAvatar={user.avatar as Media}
+        authorAvatar={authorAvatar}
         createdAt={latestPost.createdAt}
         updatedAt={latestPost.updatedAt}
       />
@@ -129,4 +103,45 @@ export default async function SiteHomePage({
       </Gutter>
     </div>
   );
+}
+
+function getBreadcrumbs(tenant: Tenant): BreadcrumbItem[] {
+  return [
+    {
+      label: "Kaplice",
+      href: "",
+    },
+    {
+      label: tenant.city,
+      href: "",
+    },
+  ];
+}
+
+async function getFeastsWithMasses(period: PageType['period'], tenant: Tenant) {
+  const start = period?.start ? startOfWeek(parseISO(period.start as string), { weekStartsOn: 0 }) : new Date();
+  const end = period?.end ? parseISO(period.end) : addDays(start, 7);
+  const feasts = await getFeasts(start, end);
+  const masses = tenant?.id ? await getServices(
+    tenant?.id,
+    start,
+    end
+  ) : [];
+
+  return feasts.map((feast: Feast) => {
+    const feastMasses = masses.filter((mass) => {
+      const massDate = parseISO(mass.time);
+      return isSameDay(massDate, feast.date);
+    });
+    return {
+      ...feast,
+      masses: feastMasses,
+    };
+  });
+}
+
+function formatAuthorName(user: User | null): string | undefined {
+  if (!user) return undefined;
+  
+  return `${user.salutation === 'father' ? 'Ks.' : ''} ${user.firstName} ${user.lastName}`.trim();
 }

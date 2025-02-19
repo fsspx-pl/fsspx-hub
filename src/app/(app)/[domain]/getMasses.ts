@@ -1,7 +1,7 @@
 import configPromise from '@payload-config';
 import { getPayloadHMR } from '@payloadcms/next/utilities';
 
-export const getServices = async (tenant: string, start: string, end: string) => {
+export const getServices = async (tenant: string, start: Date, end: Date) => {
   const payload = await getPayloadHMR({
     config: configPromise,
   })
@@ -14,8 +14,8 @@ export const getServices = async (tenant: string, start: string, end: string) =>
           equals: tenant
         },
         time: {
-          greater_than_equal: start,
-          less_than_equal: end
+          greater_than_equal: start.toISOString(),
+          less_than_equal: end.toISOString()
         }
       },
       sort: 'time' 
