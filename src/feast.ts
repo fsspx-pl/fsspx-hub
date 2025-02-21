@@ -1,9 +1,9 @@
 export enum VestmentColor {
-  WHITE,
-  RED,
-  VIOLET,
-  GREEN,
-  BLACK,
+  WHITE = 'biały',
+  RED = 'czerwony',
+  VIOLET = 'fioletowy',
+  GREEN = 'zielony',
+  BLACK = 'czarny',
 }
 
 export type Feast = {

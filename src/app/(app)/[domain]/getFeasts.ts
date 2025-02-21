@@ -28,7 +28,7 @@ export const getFeasts = async (start: Date, end: Date): Promise<Feast[]> => {
     })
     .map(feast => ({
       ...feast,
-      colors: mapToVestmentColor(feast.colors[0]),
+      color: mapToVestmentColor(feast.colors[0]),
       date: parse(feast.id, 'yyyy-MM-dd', now),
     }));
 };

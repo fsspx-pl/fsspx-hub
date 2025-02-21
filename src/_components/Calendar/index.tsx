@@ -90,10 +90,10 @@ export const Calendar: React.FC = () => {
                     <span className="leading-[14px]">
                       święto { romanize(selectedDay.rank)} klasy
                     </span>
-                    {selectedDay.color && (
+                    {selectedDay.color !== undefined && (
                       <>
                         <span className="leading-[14px]">  ·  kolor szat:  </span>
-                        <span className={`${selectedDay.color as VestmentColor === VestmentColor.WHITE ? 'bg-white px-2 py-1 rounded-lg' : null} ${selectedDayColor} leading-[14px]`}>{selectedDay.color}</span>
+                        <span className={`${selectedDay.color === VestmentColor.WHITE ? 'bg-white px-2 py-1 rounded-lg' : null} ${selectedDayColor} leading-[14px]`}>{selectedDay.color}</span>
                       </>
                     )}
                   </div>
