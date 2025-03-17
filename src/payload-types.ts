@@ -125,6 +125,7 @@ export interface Page {
   };
   masses?: (string | Service)[] | null;
   slug?: string | null;
+  campaignId?: string | null;
   author?: (string | null) | User;
   tenant?: (string | null) | Tenant;
   content?: {

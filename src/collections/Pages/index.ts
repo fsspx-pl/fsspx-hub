@@ -1,4 +1,3 @@
-
 import { tenantAdmins } from '@/access/tenantAdmins'
 import { tenant } from '@/fields/tenant'
 import { user } from '@/fields/user'
@@ -9,6 +8,7 @@ import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
 import formatSlug from './hooks/formatSlug'
 import { addPeriodStartDate } from './hooks/addPeriodStartDate'
+import { SendNewsletterButton } from './components/SendNewsletterButton'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -81,6 +81,27 @@ export const Pages: CollectionConfig = {
       },
       hooks: {
         beforeValidate: [formatSlug('title'), addPeriodStartDate],
+      },
+    },
+    {
+      name: 'sendNewsletter',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: SendNewsletterButton
+        }
+      }
+    },
+    {
+      name: 'campaignId',
+      type: 'text',
+      label: 'Campaign ID from the campaign API provider',
+      defaultValue: '',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        hidden: true,
       },
     },
     {
