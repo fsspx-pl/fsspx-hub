@@ -26,9 +26,9 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: { domain: string };
+  params: Promise<{ domain: string }>;
 }): Promise<Metadata | null> {
-  const domain = decodeURIComponent(params.domain);
+  const domain = decodeURIComponent((await params).domain);
   const [subdomain] = domain.split(".");
 
   let settings: Settings | null = null;
@@ -41,6 +41,7 @@ export async function generateMetadata({
     console.error(error);
   }
 
+  if (!tenant) return null;
   if (!settings?.copyright) return null;
 
   const copyright = settings?.copyright || "";
@@ -56,9 +57,9 @@ export async function generateMetadata({
 export default async function SiteHomePage({
   params,
 }: {
-  params: { domain: string };
+  params: Promise<{ domain: string }>;
 }) {
-  const domain = decodeURIComponent(params.domain);
+  const domain = decodeURIComponent((await params).domain);
   const [subdomain] = domain.split(".");
   const latestPost = await fetchLatestPage(subdomain);
 

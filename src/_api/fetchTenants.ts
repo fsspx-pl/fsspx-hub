@@ -1,9 +1,8 @@
-import { getCachedPayload } from '@/cached-local-api';
 import configPromise from '@payload-config';
-import { getPayloadHMR } from '@payloadcms/next/utilities';
+import { getPayload } from 'payload';
 
 export const fetchTenants = async () => {
-  const payload = await getPayloadHMR({
+  const payload = await getPayload({
     config: configPromise,
   })
 
@@ -17,18 +16,21 @@ export const fetchTenants = async () => {
   }
 }
 
-export const fetchTenant = async (id: string) => {
-  const payload = await getPayloadHMR({
+export const fetchTenant = async (name: string) => {
+  const payload = await getPayload({
     config: configPromise,
   })
 
-  const cachedPayload = getCachedPayload(payload)
-
   try {
-    return await cachedPayload.findOne({
+    const result = await payload.find({
       collection: 'tenants',
-      value: id
+      where: {
+        domain: {
+          equals: name
+        }
+      }
     })
+    return result.docs[0]
   } catch(err) {
     return Promise.reject(err)
   }

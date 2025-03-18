@@ -1,8 +1,8 @@
 import configPromise from '@payload-config';
-import { getPayloadHMR } from '@payloadcms/next/utilities';
+import { getPayload } from 'payload';
 
 export const getServices = async (tenant: string, start: Date, end: Date) => {
-  const payload = await getPayloadHMR({
+  const payload = await getPayload({
     config: configPromise,
   })
 

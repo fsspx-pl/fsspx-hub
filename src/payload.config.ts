@@ -1,4 +1,3 @@
-// storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { HTMLConverterFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
@@ -6,7 +5,6 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 
-import { cachedPayloadPlugin } from './cached-local-api'
 import { Services } from './collections/Services'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
@@ -41,8 +39,4 @@ export default buildConfig({
     url: process.env.DATABASE_URI || '',
   }),
   sharp,
-  plugins: [
-    cachedPayloadPlugin
-    // storage-adapter-placeholder
-  ],
 })
