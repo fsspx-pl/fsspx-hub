@@ -1,17 +1,14 @@
 import { Footer, Header, Settings } from '@/payload-types';
 import configPromise from '@payload-config';
-import { getPayloadHMR } from '@payloadcms/next/utilities';
-import { getCachedPayload } from "@/cached-local-api";
+import { getPayload } from 'payload';
 
 const FetchGlobalsFactory = <T>(slug: 'settings' | 'header' | 'footer') => async () => {
-  const payload = await getPayloadHMR({
+  const payload = await getPayload({
     config: configPromise,
   })
 
-  const cachedPayload = getCachedPayload(payload)
-
   try {
-    const result = await cachedPayload.findGlobal({
+    const result = await payload.findGlobal({
       slug
     })
     return result as T

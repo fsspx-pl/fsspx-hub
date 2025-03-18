@@ -34,6 +34,7 @@ const nextConfig = {
     });
     return config;
   },
+  allowedDevOrigins: ['poznan.localhost'],
 };
 
 export default withPayload(nextConfig);
