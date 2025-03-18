@@ -1,17 +1,14 @@
-import { getPayloadHMR } from "@payloadcms/next/utilities";
 import configPromise from '@payload-config';
 import { Page } from "@/payload-types";
-import { getCachedPayload } from "@/cached-local-api";
+import { getPayload } from 'payload';
 
 export const fetchLatestPage = async (domain: string): Promise<Page | undefined> => {
-  const payload = await getPayloadHMR({
+  const payload = await getPayload({
     config: configPromise,
   })
 
-  const cachedPayload = getCachedPayload(payload)
-
   try {
-    const result = await cachedPayload.find({
+    const result = await payload.find({
       collection: 'pages',
       where: {
         ['tenant.domain']: {

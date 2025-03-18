@@ -39,3 +39,5 @@ next-env.d.ts
 /media
 
 *storybook.log
+
+src/collections/media
