@@ -48,7 +48,7 @@ async function createCampaign(page: Page) {
       ${page.content_html}
       ${unsubscribeText}
     `,
-    groups: [process.env.SENDER_LIST_KEY],
+    groups: [(page.tenant as Tenant).senderListId],
   };
 
 

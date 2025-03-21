@@ -15,7 +15,7 @@ export const SendButton: React.FC<{ page: Page }> = ({
     if (isLoading) return
     
     setIsLoading(true)
-    toast.loading('Sending newsletter...')
+    const toastId = toast.loading('Sending newsletter...')
     try {
       const response = await fetch(`/api/pages/${page.id}/send-newsletter`, {
         method: 'POST',
@@ -38,6 +38,7 @@ export const SendButton: React.FC<{ page: Page }> = ({
       toast.error(`Failed to send newsletter: ${errorMessage}`);
     } finally {
       setIsLoading(false);
+      toast.dismiss(toastId)
     }
   }
 
@@ -48,9 +49,15 @@ export const SendButton: React.FC<{ page: Page }> = ({
       onClick={() => {
         handleSendNewsletter()
       }}
-      disabled={isLoading || isNewsletterSent}
+      disabled={isLoading || isNewsletterSent || page?._status === 'draft'}
     >
-      {isLoading ? 'Sending...' : isNewsletterSent ? 'Newsletter already sent' : 'Send Newsletter'}
+      {isLoading 
+        ? 'Sending...' 
+        : isNewsletterSent 
+          ? 'Newsletter already sent' 
+          : page?._status === 'draft'
+            ? 'Publish page to send newsletter'
+            : 'Send Newsletter'}
     </Button>
   )
 } 

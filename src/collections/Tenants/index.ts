@@ -27,6 +27,17 @@ export const Tenants: CollectionConfig = {
       type: 'text',
       required: true,
     },
-    ...location
+    ...location,
+    {
+      name: 'senderListId',
+      type: 'text',
+      label: 'Sender List ID',
+      admin: {
+        description: {
+          pl: 'ID listy mailingowej w Sender.net. UWAGA: zmiana ID listy mailingowej wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
+          en: 'The ID of the mailing list in Sender.net. NOTE: changing the mailing list ID will affect the newsletter recipients for this location.'
+        }
+      }
+    },
   ],
 }
