@@ -8,7 +8,6 @@ import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
 import formatSlug from './hooks/formatSlug'
 import { addPeriodStartDate } from './hooks/addPeriodStartDate'
-import { SendNewsletterButton } from './components/SendNewsletterButton'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -84,16 +83,6 @@ export const Pages: CollectionConfig = {
       },
     },
     {
-      name: 'sendNewsletter',
-      type: 'ui',
-      admin: {
-        position: 'sidebar',
-        components: {
-          Field: SendNewsletterButton
-        }
-      }
-    },
-    {
       name: 'campaignId',
       type: 'text',
       label: 'Campaign ID from the campaign API provider',
@@ -114,5 +103,29 @@ export const Pages: CollectionConfig = {
       type: 'richText'
     },
     lexicalHTML('content', { name: 'content_html' }),
+    {
+      name: 'sendNewsletter',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: {
+            path: '@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton'
+          }
+        }
+      }
+    }
   ],
+  hooks: {
+    beforeValidate: [
+      async ({ operation, data, originalDoc }) => {
+        if(operation !== 'create') return data;
+        if(!data?.campaignId) return originalDoc;
+        return {
+          ...data,
+          campaignId: undefined,
+        };
+      },
+    ],
+  },
 }

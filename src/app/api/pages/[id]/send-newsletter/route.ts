@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPayloadHMR } from '@payloadcms/next/utilities';
 import config from '@payload-config';
 import { Page, Tenant } from '@/payload-types';
+import { getPayload } from 'payload';
+import { format, parseISO } from 'date-fns';
+import { pl } from 'date-fns/locale';
 
 /**
  * Fetches page content from Payload CMS
  */
 async function getPageContent(id: string) {
-  const payload = await getPayloadHMR({ config });
+  const payload = await getPayload({ config });
   
   const page = await payload.findByID({
     collection: 'pages',
@@ -22,26 +24,30 @@ async function getPageContent(id: string) {
   return page;
 }
 
-/**
- * Creates a campaign in Sender API
- */
+
 async function createCampaign(page: Page) {
-  // Add unsubscribe link at the bottom
-  const emailWithUnsubscribe = `
+  const unsubscribeText = `
     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-      <a href="{$unsubscribe_link}">{$unsubscribe_text}</a>
+      <p>Nie chcesz otrzymywać ogłoszeń? <a href="{$unsubscribe_link}">
+        Wypisz się z newslettera
+      </a></p>
     </div>
   `;
+
+  const startDate = page.period.start ? parseISO(page.period.start as string) : null;
+  const dateSuffix = startDate ? `(${format(startDate, 'dd.MM.yyyy', { locale: pl })})` : null;
   
-  // Prepare campaign data for Sender API
   const campaignData = {
-    title: page.title,
+    title: [page.title, dateSuffix].filter(Boolean).join(' '),
     subject: page.title,
     from: `${(page.tenant as Tenant).type} ${(page.tenant as Tenant).patron} - ${(page.tenant as Tenant).city} | FSSPX`,
     reply_to: process.env.SENDER_SENDER_EMAIL,
     preheader: "Preview text of my campaign",
     content_type: "html",
-    content: emailWithUnsubscribe,
+    content: `
+      ${page.content_html}
+      ${unsubscribeText}
+    `,
     groups: [process.env.SENDER_LIST_KEY],
   };
 
@@ -108,17 +114,14 @@ async function sendCampaign(campaignId: string) {
   return responseData;
 }
 
-/**
- * Updates the page document to mark the newsletter as sent
- */
-async function markNewsletterAsSent(id: string, campaignId: string) {
-  const payload = await getPayloadHMR({ config });
+async function assignCampaign(id: string, campaignId: string) {
+  const payload = await getPayload({ config });
   
   const updatedPage = await payload.update({
     collection: 'pages',
-    id: id,
+    id,
     data: {
-      campaignId: campaignId
+      campaignId
     },
   });
   
@@ -142,8 +145,8 @@ export async function POST(
     }
     
     const campaignResponse = await createCampaign(page);
-    const sendResponse = await sendCampaign(campaignResponse.id);
-    await markNewsletterAsSent(id, campaignResponse.id);
+    const sendResponse = await sendCampaign(campaignResponse.data.id);
+    await assignCampaign(id, campaignResponse.data.id);
     
     return NextResponse.json({ 
       message: 'Newsletter created and sent successfully',
