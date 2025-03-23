@@ -78,6 +78,7 @@ export const Pages: CollectionConfig = {
       index: true,
       admin: {
         position: 'sidebar',
+        condition: (_, siblingData) => siblingData.type !== 'pastoral-announcements',
       },
       hooks: {
         beforeValidate: [formatSlug('title'), addPeriodStartDate],
