@@ -4,7 +4,9 @@ import { Page, Tenant } from '@/payload-types';
 import { getPayload } from 'payload';
 import { format, parseISO } from 'date-fns';
 import { pl } from 'date-fns/locale';
-
+import Email from '@/emails/pastoral-announcements';
+import { render } from '@react-email/components';
+import { fetchFooter, fetchSettings } from '@/_api/fetchGlobals';
 /**
  * Fetches page content from Payload CMS
  */
@@ -36,16 +38,24 @@ async function createCampaign(page: Page) {
 
   const startDate = page.period.start ? parseISO(page.period.start as string) : null;
   const dateSuffix = startDate ? `(${format(startDate, 'dd.MM.yyyy', { locale: pl })})` : null;
+  const titleWithDateSuffix = [page.title, dateSuffix].filter(Boolean).join(' ');
   
+  const footer = await fetchFooter()
+  const settings = await fetchSettings()
+
+  const html = await render(<Email title={titleWithDateSuffix} content_html={page.content_html as string} copyright={settings.copyright as string} slogan={footer.slogan as string} />, {
+    pretty: true,
+  });
+
   const campaignData = {
-    title: [page.title, dateSuffix].filter(Boolean).join(' '),
+    title: titleWithDateSuffix,
     subject: page.title,
     from: `${(page.tenant as Tenant).type} ${(page.tenant as Tenant).patron} - ${(page.tenant as Tenant).city} | FSSPX`,
     reply_to: process.env.SENDER_SENDER_EMAIL,
     preheader: "Preview text of my campaign",
     content_type: "html",
     content: `
-      ${page.content_html}
+      ${html}
       ${unsubscribeText}
     `,
     groups: [(page.tenant as Tenant).senderListId],
@@ -130,9 +140,9 @@ async function assignCampaign(id: string, campaignId: string) {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
   
   try {
     const page = await getPageContent(id);
@@ -145,13 +155,13 @@ export async function POST(
     }
     
     const campaignResponse = await createCampaign(page);
-    const sendResponse = await sendCampaign(campaignResponse.data.id);
+    // const sendResponse = await sendCampaign(campaignResponse.data.id);
     await assignCampaign(id, campaignResponse.data.id);
     
     return NextResponse.json({ 
       message: 'Newsletter created and sent successfully',
       campaignId: campaignResponse.id,
-      sendStatus: sendResponse
+      // sendStatus: sendResponse
     });
   } catch (error) {
     console.error('Error in newsletter process:', error);
