@@ -11,6 +11,7 @@ export const period: Field = {
     {
       name: 'start',
       type: 'date',
+      required: true,
     },
     {
       name: 'end',

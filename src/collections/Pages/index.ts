@@ -1,4 +1,3 @@
-
 import { tenantAdmins } from '@/access/tenantAdmins'
 import { tenant } from '@/fields/tenant'
 import { user } from '@/fields/user'
@@ -85,6 +84,17 @@ export const Pages: CollectionConfig = {
       },
     },
     {
+      name: 'campaignId',
+      type: 'text',
+      label: 'Campaign ID from the campaign API provider',
+      defaultValue: '',
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        hidden: true,
+      },
+    },
+    {
       ...user as Field,
       name: 'author'
     } as Field,
@@ -94,5 +104,29 @@ export const Pages: CollectionConfig = {
       type: 'richText'
     },
     lexicalHTML('content', { name: 'content_html' }),
+    {
+      name: 'sendNewsletter',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: {
+            path: '@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton'
+          }
+        }
+      }
+    }
   ],
+  hooks: {
+    beforeValidate: [
+      async ({ operation, data, originalDoc }) => {
+        if(operation !== 'create') return data;
+        if(!data?.campaignId) return originalDoc;
+        return {
+          ...data,
+          campaignId: undefined,
+        };
+      },
+    ],
+  },
 }
