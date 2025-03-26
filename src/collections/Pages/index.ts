@@ -58,19 +58,6 @@ export const Pages: CollectionConfig = {
     },
     period,
     {
-      name: 'masses',
-      label: {
-        pl: 'Nabożeństwa',
-        en: 'Services'
-      },
-      type: 'relationship',
-      relationTo: 'services',
-      hasMany: true,
-      admin: {
-        condition: (_, siblingData) => siblingData.type === 'pastoral-announcements',
-      },
-    },
-    {
       name: 'slug',
       label: 'Slug',
       type: 'text',
