@@ -227,11 +227,10 @@ export interface Page {
     start: string;
     end: string;
   };
-  masses?: (string | Service)[] | null;
   slug?: string | null;
   campaignId?: string | null;
   author?: (string | null) | User;
-  tenant?: (string | null) | Tenant;
+  tenant: string | Tenant;
   content?: {
     root: {
       type: string;
@@ -398,7 +397,6 @@ export interface PagesSelect<T extends boolean = true> {
         start?: T;
         end?: T;
       };
-  masses?: T;
   slug?: T;
   campaignId?: T;
   author?: T;

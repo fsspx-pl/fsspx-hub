@@ -42,14 +42,14 @@ export const SendButton: React.FC<{ page: Page }> = ({
     }
   }
 
+  const disabled = isLoading || isNewsletterSent || page?._status === 'draft' || !page.tenant
+
   return (
     <Button 
       className={classes.button} 
       buttonStyle='secondary'
-      onClick={() => {
-        handleSendNewsletter()
-      }}
-      disabled={isLoading || isNewsletterSent || page?._status === 'draft'}
+      onClick={handleSendNewsletter}
+      disabled={disabled}
     >
       {isLoading 
         ? 'Sending...' 

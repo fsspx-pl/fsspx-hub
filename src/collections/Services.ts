@@ -21,6 +21,10 @@ export const Services: CollectionConfig = {
     update: tenantAdmins,
     delete: tenantAdmins,
   },
+  admin: {
+    useAsTitle: 'time',
+    defaultColumns: ['time', 'type', 'tenant'],
+  },
   fields: [
     {
       name: 'time',
