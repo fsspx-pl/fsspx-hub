@@ -231,7 +231,7 @@ export interface Page {
   slug?: string | null;
   campaignId?: string | null;
   author?: (string | null) | User;
-  tenant?: (string | null) | Tenant;
+  tenant: string | Tenant;
   content?: {
     root: {
       type: string;

@@ -7,24 +7,13 @@ import { pl } from 'date-fns/locale'
 import React from 'react'
 import { Day } from './Day'
 import { LeftRightNav as Nav } from './LeftRightNav'
-import Mass from './Mass'
 import { useFeastData } from './context/FeastDataContext'
 import { romanize } from './utils/romanize'
 import { garamond } from '@/fonts'
+import { vestmentColorToTailwind } from './utils/vestmentColorToHex'
+import { getMassLabel } from './utils/getMassLabel'
 
 export type FeastWithMasses = Feast & {masses: ServiceType[] }
-
-const colorToHex = (color: VestmentColor): string => {
-  const colorMap: Record<VestmentColor, string> = {
-    [VestmentColor.WHITE]: 'text-black',
-    [VestmentColor.RED]: 'text-red-500',
-    [VestmentColor.VIOLET]: 'text-purple-500',
-    [VestmentColor.GREEN]: 'text-green-500',
-    [VestmentColor.BLACK]: 'text-black',
-  };
-  return colorMap[color];
-};
-
 
 export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
@@ -33,7 +22,7 @@ export const Calendar: React.FC = () => {
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
   const [firstDaySelected, setFirstDaySelected] = React.useState(false);
   const [lastDaySelected, setLastDaySelected] = React.useState(false);
-  const [selectedDayColor, setSelectedDayColor] = React.useState(colorToHex(VestmentColor.BLACK));
+  const [selectedDayColor, setSelectedDayColor] = React.useState(vestmentColorToTailwind(VestmentColor.BLACK));
 
   React.useEffect(() => {
     const [ firstFeast, _ ] = feasts;
@@ -43,7 +32,7 @@ export const Calendar: React.FC = () => {
 
   React.useEffect(() => {
     if (selectedDay) {
-      setSelectedDayColor(colorToHex(selectedDay.color));
+      setSelectedDayColor(vestmentColorToTailwind(selectedDay.color));
     }
   }, [selectedDay]);
 
@@ -102,8 +91,8 @@ export const Calendar: React.FC = () => {
             )}
             <div className="flex-col text-sm justify-start items-start flex text-[#4a4b4f]">
               {selectedDay.masses.length > 0 ? (
-                selectedDay.masses.map(mass => (
-                  <Mass key={mass.id} time={mass.time} type={mass.type} />
+                selectedDay.masses.map((mass, idx) => (
+                  <span key={idx}>{getMassLabel(mass.type, mass.time)}</span>
                 ))
               ) : (
                 <div className='self-center text-[#a8a9ab]'>Brak nabożeństw tego dnia.</div>

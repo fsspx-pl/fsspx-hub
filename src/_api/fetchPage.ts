@@ -18,7 +18,6 @@ export const fetchLatestPage = async (domain: string): Promise<Page | undefined>
       sort: '-createdAt',
       depth: 2,
       limit: 1,
-      tags: [`page-${domain}-latest`]
     })
     const [ doc ] = result.docs
     return doc

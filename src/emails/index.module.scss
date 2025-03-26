@@ -1,0 +1,21 @@
+.container {
+    margin: 30px 0; padding: 0;
+}
+.header {
+  font-size: 24px; color: #333; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid #eee; font-weight: 400;
+}
+.dayHeader {
+    font-size: 18px; color: #333; margin-top: 24px; font-weight: 500;
+}
+.commemorationTitle {
+    font-size: 16px; color: #333; font-weight: 500; margin: 10px 0 5px 0;
+}
+.commemorationClass {
+    font-size: 14px; color: #555; margin: 0 0 15px 0; font-weight: 200; margin-bottom: 8px;
+}
+.serviceRow {
+    padding: 12px 0; color: #4B5563;
+}
+.noServices {
+    padding: 15px; background-color: #f8f9fa; color: #4B5563; text-align: center;
+}

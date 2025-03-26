@@ -6,13 +6,11 @@ import { Calendar, FeastWithMasses } from "@/_components/Calendar";
 import { FeastDataProvider } from "@/_components/Calendar/context/FeastDataContext";
 import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
-import { Feast } from "@/feast";
 import { Media, Settings, Tenant, User } from "@/payload-types";
-import { addDays, isSameDay, parseISO, startOfWeek } from "date-fns";
 import { Metadata } from "next";
-import { getFeasts } from "./getFeasts";
-import { getServices } from "./getMasses";
 import { Page as PageType } from "@/payload-types";
+import { getFeastsWithMasses } from "../../../common/getFeastsWithMasses";
+import { formatAuthorName } from "../../../utilities/formatAuthorName";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -117,32 +115,4 @@ function getBreadcrumbs(tenant: Tenant): BreadcrumbItem[] {
       href: "",
     },
   ];
-}
-
-async function getFeastsWithMasses(period: PageType['period'], tenant: Tenant) {
-  const start = period?.start ? startOfWeek(parseISO(period.start as string), { weekStartsOn: 0 }) : new Date();
-  const end = period?.end ? parseISO(period.end) : addDays(start, 7);
-  const feasts = await getFeasts(start, end);
-  const masses = tenant?.id ? await getServices(
-    tenant?.id,
-    start,
-    end
-  ) : [];
-
-  return feasts.map((feast: Feast) => {
-    const feastMasses = masses.filter((mass) => {
-      const massDate = parseISO(mass.time);
-      return isSameDay(massDate, feast.date);
-    });
-    return {
-      ...feast,
-      masses: feastMasses,
-    };
-  });
-}
-
-function formatAuthorName(user: User | null): string | undefined {
-  if (!user) return undefined;
-  
-  return `${user.salutation === 'father' ? 'Ks.' : ''} ${user.firstName} ${user.lastName}`.trim();
 }

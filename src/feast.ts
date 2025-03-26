@@ -13,6 +13,7 @@ export type Feast = {
   rank: number
   tags?: string[]
   title: string
+  commemorations?: string[]
 }
 
 export type ApiFeast = Feast & {

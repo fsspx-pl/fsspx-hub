@@ -23,6 +23,12 @@
           "uriFormat": "%s",
           "action": "debugWithChrome"
         }
+      },
+      {
+        "name": "Next.js: debug emails",
+        "type": "node-terminal",
+        "request": "launch",
+        "command": "pnpm dev:email"
       }
     ]
   }

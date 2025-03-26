@@ -21,7 +21,7 @@ export const Pages: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'slug', 'updatedAt'],
+    defaultColumns: ['title', 'type', 'period'],
   },
   access: {
     read: anyone,
@@ -98,7 +98,10 @@ export const Pages: CollectionConfig = {
       ...user as Field,
       name: 'author'
     } as Field,
-    tenant,
+    {
+      ...tenant,
+      required: true,
+    } as Field,
     {
       name: 'content',
       type: 'richText'
@@ -119,9 +122,9 @@ export const Pages: CollectionConfig = {
   ],
   hooks: {
     beforeValidate: [
-      async ({ operation, data, originalDoc }) => {
+      async ({ operation, data }) => {
         if(operation !== 'create') return data;
-        if(!data?.campaignId) return originalDoc;
+        if(!data?.campaignId) return data;
         return {
           ...data,
           campaignId: undefined,
