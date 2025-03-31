@@ -1,5 +1,5 @@
 import { FeastWithMasses } from "@/common/getFeastsWithMasses";
-import { VestmentColor } from "@/feast";
+import { Feast, VestmentColor } from "@/feast";
 import { romanize } from '@/_components/Calendar/utils/romanize';
 import { vestmentColorToTailwind } from '@/_components/Calendar/utils/vestmentColorToHex';
 import { getMassLabel } from '@/_components/Calendar/utils/getMassLabel';
@@ -15,23 +15,51 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { format, parse } from "date-fns";
+import { addDays, format, isSunday, parse } from "date-fns";
 import { pl } from 'date-fns/locale';
 import React from 'react';
+import { Service as ServiceType } from "@/payload-types";
 
+const getMassTime = (time: string) => {
+  const now = new Date();
+  return parse(time, "HH:mm", now).toISOString();
+}
+
+const referenceDate = parse("2025-03-30", "yyyy-MM-dd", new Date()); // sunday
+const feastBase = { title: "Test Feast", color: VestmentColor.VIOLET, date: referenceDate, rank: 1 } as Feast;
 const testFeasts: FeastWithMasses[] = [
   {
-    ...{ id: "1", title: "Test Feast", color: VestmentColor.VIOLET, date: parse("2025-01-01", "yyyy-MM-dd", new Date()), rank: 1 },
-    masses: [{ time: "10:00", type: 'read', id: "1", tenant: "1", updatedAt: new Date().toISOString(), createdAt: new Date().toISOString() }],
+    ...feastBase,
+    commemorations: ["Świętych Apostołów Piotra i Pawła"],
+    masses: [
+      { time: getMassTime("10:00"), type: 'read'} as ServiceType,
+      { time: getMassTime("11:00"), type: 'silent'} as ServiceType,
+      { time: getMassTime("12:00"), type: 'silent'} as ServiceType,
+    ],
+  },
+  {
+    ...{
+      ...feastBase,
+      date: addDays(referenceDate, 1),
+      color: VestmentColor.RED,
+      commemorations: ["Świętego Józefa"],
+    },
+    masses: [],
+  },
+  {
+    ...{
+      ...feastBase,
+      date: addDays(referenceDate, 2),
+      color: VestmentColor.GREEN,
+      commemorations: ["Świętego Alfonsa Lwówskiego"],
+    },
+    masses: [
+      { time: getMassTime("12:00"), type: 'silent'} as ServiceType,
+    ],
   },
 ];
 
-// MassesList component to display masses for each feast
 const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsWithMasses }) => {
-  if (feastsWithMasses.length === 0) {
-    return <div>Brak nabożeństw tego dnia.</div>;
-  }
-  
   return (
     <Section style={{ margin: "0", padding: 0 }}>
       {feastsWithMasses.map((feast, feastIndex) => {
@@ -43,42 +71,40 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
 
         return (
           <Section key={`${feastIndex}-${dayNum}-${monthName}`}>
-            <Heading as="h3" style={{ fontSize: "18px", color: "#333", marginTop: "24px", marginBottom: "8px", fontWeight: 500 }}>
-              <Text style={{ color: dayName === 'niedziela' ? '#C62828' : '#333', fontWeight: 600 }}>
+            <Heading as="h3" style={{ fontSize: "18px", color: "#333", marginTop: "24px", marginBottom: "24px", fontWeight: 500 }}>
+              <Text className={`${isSunday(feast.date) ? 'text-[#C62828]' : 'text-[#333]'} font-bold text-base p-0`}>
                 {dayNum} {monthName}, {dayName}
               </Text>
             </Heading>
             
-            <Text style={{ fontSize: "16px", color: "#333", fontWeight: 500, margin: "10px 0 5px 0" }}>
+            <Text className="text-[#333] font-medium text-base mb-0">
               {feast.title}
             </Text>
             
             {commemoration && (
-              <Text style={{ fontSize: "16px", color: "#333", fontWeight: 500, margin: "10px 0 5px 0" }}>
+              <Text className="text-[#333] font-medium text-base mb-0 mt-0">
                 {commemoration}
               </Text>
             )}
             
-            <Text style={{ fontSize: "14px", color: "#555", margin: "0 0 15px 0", fontWeight: 200 }}>
-              święto {romanize(feast.rank)} klasy · kolor szat:{" "}
-              <span style={{ color: vestmentColor }}>{feast.color}</span>
+            <Text style={{ fontSize: "14px", color: "#555", margin: "0 0 15px 0" }}>
+              święto {romanize(feast.rank)} klasy · kolor szat:&nbsp;
+              <span className={`${vestmentColor}`}>{feast.color}</span>
             </Text>
             
-            {feast.masses.length === 0 ? (
-              <Text style={{ padding: "15px", backgroundColor: "#f8f9fa", color: "#4B5563", textAlign: "center" }}>
-                Brak nabożeństw tego dnia.
-              </Text>
-            ) : (
-              <Section>
-                {feast.masses.map((service, idx) => (
-                  <Row key={idx} style={{ padding: "12px 0", borderTop: "1px dotted #eee" }}>
-                    <Column>
-                      <Text style={{ color: "#4B5563" }}>{getMassLabel(service.type, service.time)}</Text>
-                    </Column>
-                  </Row>
-                ))}
-              </Section>
-            )}
+            <Section className="rounded-md bg-[#f8f9fa] py-0 px-4">
+              {feast.masses.length === 0 ? (
+                <Text className="text-[#4B5563]">
+                  Brak nabożeństw tego dnia.
+                </Text>
+              ) : (
+                <>
+                  {feast.masses.map((service, idx) => (
+                    <Text className="text-[#4B5563] m-0" key={idx}>{getMassLabel(service.type, service.time)}</Text>
+                  ))}
+                </>
+              )}
+            </Section>
           </Section>
         );
       })}
@@ -91,7 +117,7 @@ export default function Email({
   content_html = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <br /> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
   slogan = "Ad maiorem Dei gloriam!",
   copyright = "city.fsspx.pl",
-  feastsWithMasses = [],
+  feastsWithMasses = testFeasts,
 }: {
   title: string;
   content_html: string;
@@ -107,7 +133,6 @@ export default function Email({
         <Font
           fontFamily="Helvetica"
           fallbackFontFamily={["Arial", "sans-serif"]}
-          fontWeight={200}
           fontStyle="normal"
         />
         <style>
@@ -132,7 +157,6 @@ export default function Email({
               fontSize: "24px",
               fontWeight: 600,
               paddingTop: "12px",
-              paddingBottom: "24px",
               textAlign: "center",
             }}
           >
@@ -143,14 +167,13 @@ export default function Email({
           style={{
             paddingLeft: "24px",
             paddingRight: "24px",
-            color: "#4B5563",
           }}
         >
           <div dangerouslySetInnerHTML={{ __html: content_html }} />
         </Section>
 
         <Section style={{ paddingLeft: "24px", paddingRight: "24px" }}>
-          <Heading as="h2" style={{ fontSize: "24px", color: "#333", marginBottom: "20px", paddingBottom: "8px", borderBottom: "1px solid #eee", fontWeight: 400 }}>
+          <Heading as="h2" style={{ fontSize: "24px", color: "#333", marginBottom: "0", borderBottom: "1px solid #eee", fontWeight: 400 }}>
             Plan nabożeństw
           </Heading>
             { feastsWithMasses.length > 0 ? (
