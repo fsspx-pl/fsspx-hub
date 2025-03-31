@@ -1,4 +1,3 @@
-
 import { Field } from 'payload'
 import { deepMerge } from 'payload/shared'
 
@@ -145,7 +144,7 @@ const link: LinkType = ({ appearances, disableLabel = false, overrides = {} } = 
     })
   }
 
-  return deepMerge(linkResult, overrides)
+  return deepMerge(linkResult, overrides) as Field
 }
 
 export default link
