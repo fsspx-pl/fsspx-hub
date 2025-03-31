@@ -4,7 +4,6 @@ import { Page, Tenant, Page as PageType } from "@/payload-types";
 import { getPayload } from "payload";
 import { format, parseISO } from "date-fns";
 import { pl } from "date-fns/locale";
-import Email from "@/emails/pastoral-announcements";
 import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
