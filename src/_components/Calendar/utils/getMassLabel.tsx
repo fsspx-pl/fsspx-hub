@@ -8,5 +8,6 @@ export const massTypeMap = {
 }
 
 export const getMassLabel = (type: ServiceType['type'], time: string): string => {
+  console.log(type, time)
   return format(new Date(time), 'HH:mm') + ' - ' + (massTypeMap[type] ?? '')
 };

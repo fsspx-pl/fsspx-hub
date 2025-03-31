@@ -35,6 +35,10 @@ const nextConfig = {
     return config;
   },
   allowedDevOrigins: ['poznan.localhost'],
+  images: {
+    domains: ['poznan.fsspx.pl'],
+    unoptimized: true, // For static exports if needed
+  },
 };
 
 export default withPayload(nextConfig);

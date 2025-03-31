@@ -53,7 +53,8 @@ export const location: Field[] = [
           pl: 'Kod pocztowy',
         },
         type: 'text',
-        validate: (value: string) => {
+        validate: (value: string | null | undefined) => {
+          if (!value) return true
           const regex = /^\d{2}-\d{3}$/
           if (!regex.test(value)) {
             return 'Field must match the pattern XX-XXX'
@@ -72,9 +73,9 @@ export const location: Field[] = [
         label: {
           pl: 'Numer telefonu',
         },
-        validate: value => {
+        validate: (value: string | null | undefined) => {
           if(!value) return true
-          if (value?.length !== 9 || !/^\d{9}$/.test(value)) {
+          if (value.length !== 9 || !/^\d{9}$/.test(value)) {
             return 'Mobile number must be exactly 9 digits in the format XXX-XXX-XXX'
           }
           return true
