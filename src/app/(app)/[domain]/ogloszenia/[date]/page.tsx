@@ -96,7 +96,7 @@ export default async function AnnouncementPage({
         updatedAt={latestPost.updatedAt}
       />
       <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 md:flex-row">
-        <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3">
+        <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
           >
@@ -104,7 +104,7 @@ export default async function AnnouncementPage({
           </FeastDataProvider>
         </div>
         <div
-          className="overflow-auto flex-1 prose"
+          className="overflow-auto flex-1 prose max-w-none text-justify md:text-left"
           dangerouslySetInnerHTML={{ __html: latestPost.content_html }}
         ></div>
       </Gutter>
@@ -127,7 +127,7 @@ function getBreadcrumbs(tenant: Tenant, date: string): BreadcrumbItem[] {
       href: "",
     },
     {
-      label: format(parseISO(date), 'dd-MM-yyyy'),
+      label: format(parseISO(date), 'dd.MM.yyyy'),
       href: "",
     },
   ];

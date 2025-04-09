@@ -38,7 +38,7 @@ export const Calendar: React.FC = () => {
 
   return (
     <div className="w-full flex-col justify-start items-start gap-6 inline-flex">
-      <div className="prose self-stretch flex flex-row justify-between items-center gap-4">
+      <div className="prose max-w-none self-stretch flex flex-row justify-between items-center gap-4">
         <h2 className={`mb-0 ${garamond.className} text-xl sm:text-2xl`}>
           Porządek nabożeństw
         </h2>
