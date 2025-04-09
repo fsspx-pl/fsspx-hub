@@ -1,5 +1,5 @@
-import configPromise from '@payload-config';
 import { Page } from "@/payload-types";
+import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 
 export const fetchLatestPage = async (domain: string): Promise<Page | undefined> => {
