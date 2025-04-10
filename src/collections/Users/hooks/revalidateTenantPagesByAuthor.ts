@@ -1,7 +1,7 @@
 import { revalidateTag } from "next/cache";
 import { CollectionAfterChangeHook } from "payload";
 
-export const revalidateTenantsPages: CollectionAfterChangeHook = async ({
+export const revalidateTenantPagesByAuthor: CollectionAfterChangeHook = async ({
   doc,
   req: { payload },
   operation,
@@ -21,6 +21,6 @@ export const revalidateTenantsPages: CollectionAfterChangeHook = async ({
   if(!result.docs.length) return;
   result.docs.forEach(async (tenant) => {
     await revalidateTag(`tenant:${tenant.domain}`);
-    console.log(`Revalidated tag: 'tenant:${tenant.domain}'`);
+    payload.logger.info(`Revalidated tag: 'tenant:${tenant.domain}'`);
   });
 };

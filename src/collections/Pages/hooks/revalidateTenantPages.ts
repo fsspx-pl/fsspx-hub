@@ -19,5 +19,5 @@ export const revalidateTenantPages: CollectionAfterChangeHook = async ({
 
   if (!result) return;
   await revalidateTag(`tenant:${result.domain}`);
-  console.log(`Revalidated tag: 'tenant:${result.domain}'`);
+  payload.logger.info(`Revalidated tag: 'tenant:${result.domain}'`);
 };
