@@ -1,13 +1,14 @@
 import { tenantAdmins } from '@/access/tenantAdmins'
+import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenantPages'
+import { period } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
 import { user } from '@/fields/user'
-import { period } from '@/fields/period'
 import { lexicalHTML } from '@payloadcms/richtext-lexical'
 import { CollectionConfig, Field } from 'payload'
 import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
-import formatSlug from './hooks/formatSlug'
 import { addPeriodStartDate } from './hooks/addPeriodStartDate'
+import formatSlug from './hooks/formatSlug'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -118,5 +119,6 @@ export const Pages: CollectionConfig = {
         };
       },
     ],
+    afterChange: [revalidateTenantPages],
   },
 }
