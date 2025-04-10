@@ -33,7 +33,7 @@ export const DateWithTooltip: React.FC<{
   return (
     <>
       <Icon className="w-4 h-4" />
-      <span className="hidden md:flex">{label}</span>
+      <span className="hidden lg:flex">{label}</span>
       <span id={id} className="underline">
         {formattedDate}
       </span>

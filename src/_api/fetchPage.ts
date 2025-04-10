@@ -1,27 +1,38 @@
-import configPromise from '@payload-config';
 import { Page } from "@/payload-types";
+import configPromise from '@payload-config';
 import { getPayload } from 'payload';
+import { unstable_cache } from 'next/cache';
 
-export const fetchLatestPage = async (domain: string): Promise<Page | undefined> => {
-  const payload = await getPayload({
-    config: configPromise,
-  })
+export const fetchLatestPage = (domain: string): Promise<Page | undefined> => {
+  const cacheKey = `latest-page-${domain}`;
+  return unstable_cache(
+    async (): Promise<Page | undefined> => {
+      const payload = await getPayload({
+        config: configPromise,
+      });
 
-  try {
-    const result = await payload.find({
-      collection: 'pages',
-      where: {
-        ['tenant.domain']: {
-          contains: domain
-        }
-      },
-      sort: '-createdAt',
-      depth: 2,
-      limit: 1,
-    })
-    const [ doc ] = result.docs
-    return doc
-  } catch (err: unknown) {
-    return Promise.reject(err);
-  }
+      try {
+        const result = await payload.find({
+          collection: 'pages',
+          where: {
+            ['tenant.domain']: {
+              contains: domain
+            }
+          },
+          sort: '-createdAt',
+          depth: 2,
+          limit: 1,
+        });
+        const [doc] = result.docs;
+        return doc;
+      } catch (err: unknown) {
+        return Promise.reject(err);
+      }
+    },
+    [cacheKey],
+    {
+      tags: [ `tenant:${domain}`,'pages'],
+      revalidate: 60 * 60 * 24,
+    }
+  )();
 };

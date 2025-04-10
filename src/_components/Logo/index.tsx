@@ -12,7 +12,7 @@ export const Logo = ({
   skipMainText?: boolean
 }) => {
   return (
-    <div id="logo" className="flex flex-row gap-2 items-baseline md:gap-4">
+    <div id="logo" className="flex flex-row gap-4 items-baseline">
       <TwoHeartsLogo width={34} height={45} />
       {!skipMainText && (
         <div className="hidden sm:flex">

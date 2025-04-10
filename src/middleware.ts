@@ -7,26 +7,27 @@ export const config = {
      * 1. /api routes
      * 2. /_next (Next.js internals)
      */
-    "/",
-    "/((?!admin))|((?!api/|_next/|admin/\\w-]+\\.\\w+).*)",
-  ],
+    "/((?!api/|_next/|admin).*)"
+  ]
 };
 
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  // Get hostname of request
-  let hostname = req.headers
-    .get("host")
-    ?.replace(".localhost:3000", `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
+  const hostname = req.headers.get("host") || "";
+  const subdomain = hostname.split(".")[0];
+
+  if (!subdomain) {
+    return NextResponse.next();
+  }
 
   const searchParams = req.nextUrl.searchParams.toString();
-  // Get the pathname of the request (e.g. /, /about, /blog/first-post)
   const path = `${url.pathname}${
     searchParams.length > 0 ? `?${searchParams}` : ""
   }`;
 
-  const newPath = `/${hostname}${path}`;
+  const newPath = `/${subdomain}${path}`;
   const rewrittenURL = new URL(newPath, req.url);
+
   return NextResponse.rewrite(rewrittenURL);
 }
