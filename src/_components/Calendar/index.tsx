@@ -1,6 +1,7 @@
 'use client'
 
 import { Feast, VestmentColor } from '@/feast'
+import { garamond } from '@/fonts'
 import { Service as ServiceType } from '@/payload-types'
 import { addDays, format, isEqual, subDays } from 'date-fns'
 import { pl } from 'date-fns/locale'
@@ -8,12 +9,19 @@ import React from 'react'
 import { Day } from './Day'
 import { LeftRightNav as Nav } from './LeftRightNav'
 import { useFeastData } from './context/FeastDataContext'
+import { massTypeMap } from './utils/massTypeMap'
 import { romanize } from './utils/romanize'
-import { garamond } from '@/fonts'
 import { vestmentColorToTailwind } from './utils/vestmentColorToHex'
-import { massTypeMap } from './utils/getMassLabel'
-
 export type FeastWithMasses = Feast & {masses: ServiceType[] }
+
+const getServiceTitle = (service: ServiceType) => {
+  if(service.category === 'lamentations') return `Gorzkie żale`;
+  if(service.category === 'rosary') return `Różaniec`;
+  if(service.category === 'mass' && service.massType) {
+    return massTypeMap[service.massType];
+  }
+  return service.customTitle ?? '';
+};
 
 export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
@@ -94,7 +102,7 @@ export const Calendar: React.FC = () => {
                 selectedDay.masses.map((mass, idx) => (
                   <div key={idx} className="grid grid-cols-[auto_1fr] gap-x-4">
                     <span className='font-semibold'>{format(mass.time, 'HH:mm')}</span>
-                    <div>{ massTypeMap[mass.type] }</div>
+                    <div>{getServiceTitle(mass)}</div>
                     {mass.notes && <div></div>}
                     {mass.notes && (
                       <div className="text-xs text-[#6b7280]">{mass.notes}</div>

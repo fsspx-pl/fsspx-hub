@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 
+## [0.2.0] - 2025-04-12
+### Added
+- Other service types - rosary, laments, misc (#8)
+- Revalidate pastoral announcements, when changed services is covered in that announcement's page period (#8)
+
 ## [0.1.0] - 2025-04-12
 ### Added
 - Services can be attached with notes (#7)

@@ -258,11 +258,18 @@ export interface Page {
 export interface Service {
   id: string;
   time: string;
-  type: 'sung' | 'read' | 'silent';
   tenant: string | Tenant;
-  priest?: (string | null) | User;
+  category: 'mass' | 'rosary' | 'lamentations' | 'other';
   /**
-   * Additional information about the service
+   * Holy Mass type, visible in the calendar and newsletter
+   */
+  massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+  /**
+   * Service title, visible in the calendar and newsletter
+   */
+  customTitle?: string | null;
+  /**
+   * Additional information about the service, visible below the service title in the calendar and newsletter
    */
   notes?: string | null;
   updatedAt: string;
@@ -436,9 +443,10 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ServicesSelect<T extends boolean = true> {
   time?: T;
-  type?: T;
   tenant?: T;
-  priest?: T;
+  category?: T;
+  massType?: T;
+  customTitle?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
