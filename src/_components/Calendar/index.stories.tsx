@@ -28,16 +28,18 @@ const mockFeasts: FeastWithMasses[]  = Array.from({ length: 8 }, (_, i) => {
         masses: [
           {
             id: '1',
+            category: 'mass',
             time: setHours(date, 7).toISOString(),
-            type: 'sung' as ServiceType['type'],
+            type: 'sung' as ServiceType['massType'],
             createdAt: '',
             updatedAt: '',
             tenant: ''
           },
           {
             id: '2',
+            category: 'mass',
             time: setHours(date, 18).toISOString(),
-            type: 'read' as ServiceType['type'],
+            type: 'read' as ServiceType['massType'],
             createdAt: '',
             updatedAt: '',
             tenant: ''
