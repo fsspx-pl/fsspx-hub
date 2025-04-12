@@ -205,7 +205,7 @@ export const Services: CollectionConfig = {
         const [ page ] = pages.docs;
         if (!page) return;
         const domain = (page.tenant as Tenant).domain;
-        const date = format(doc.time, 'dd-MM-yyyy');
+        const date = format(page.period.start, 'dd-MM-yyyy');
         revalidateTag(`page-${domain}-${date}`);
       }
     ]
