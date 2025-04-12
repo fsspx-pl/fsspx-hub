@@ -2,7 +2,6 @@ import { FeastWithMasses } from "@/common/getFeastsWithMasses";
 import { Feast, VestmentColor } from "@/feast";
 import { romanize } from '@/_components/Calendar/utils/romanize';
 import { vestmentColorToTailwind } from '@/_components/Calendar/utils/vestmentColorToHex';
-import { getMassLabel } from '@/_components/Calendar/utils/getMassLabel';
 import {
   Column,
   Font,
