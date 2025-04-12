@@ -31,9 +31,32 @@ const testFeasts: FeastWithMasses[] = [
     ...feastBase,
     commemorations: ["Świętych Apostołów Piotra i Pawła"],
     masses: [
-      { time: getMassTime("10:00"), type: 'read'} as ServiceType,
-      { time: getMassTime("11:00"), type: 'silent', notes: 'Msza w intencji zmarłych ofiarodawców'} as ServiceType,
-      { time: getMassTime("12:00"), type: 'silent', notes: 'Po Mszy Św. odbędzie się nabożeństwo do świętego Józefa'} as ServiceType,
+      { 
+        time: getMassTime("10:00"), 
+        category: 'mass',
+        massType: 'read',
+        tenant: 'test-tenant',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as ServiceType,
+      { 
+        time: getMassTime("11:00"), 
+        category: 'mass',
+        massType: 'silent', 
+        notes: 'Msza w intencji zmarłych ofiarodawców',
+        tenant: 'test-tenant',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as ServiceType,
+      { 
+        time: getMassTime("12:00"), 
+        category: 'other',
+        customTitle: 'Nabożeństwo do świętego Józefa',
+        notes: 'Po Mszy Św. odbędzie się nabożeństwo do świętego Józefa',
+        tenant: 'test-tenant',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as ServiceType,
     ],
   },
   {
@@ -53,10 +76,30 @@ const testFeasts: FeastWithMasses[] = [
       commemorations: ["Świętego Alfonsa Lwówskiego"],
     },
     masses: [
-      { time: getMassTime("12:00"), type: 'silent'} as ServiceType,
+      { 
+        time: getMassTime("12:00"), 
+        category: 'mass',
+        massType: 'solemn',
+        tenant: 'test-tenant',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      } as ServiceType,
     ],
   },
 ];
+
+const getServiceTitle = (service: ServiceType) => {
+  if (service.category === 'mass' && service.massType) {
+    const massTypeMap = {
+      'sung': 'śpiewana',
+      'read': 'czytana',
+      'silent': 'cicha',
+      'solemn': 'solenna'
+    } as const;
+    return `Msza Św. ${massTypeMap[service.massType]}`;
+  }
+  return service.customTitle || '';
+};
 
 const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsWithMasses }) => {
   return (
@@ -106,8 +149,8 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                             <Text className="my-0 font-semibold">{format(service.time, 'HH:mm')}</Text>
                           </td>
                           <td style={{ padding: "4px 0" }}>
-                            <Text className="my-0">Msza Św. {service.type === 'sung' ? 'śpiewana' : service.type === 'read' ? 'czytana' : 'cicha'}</Text>
-                            <Text className="text-[#6B7280] my-0 text-sm mt-1 leading-tight">{service.notes ?? 'text'}</Text>
+                            <Text className="my-0">{getServiceTitle(service)}</Text>
+                            <Text className="text-[#6B7280] my-0 text-sm mt-1 leading-tight">{service.notes ?? ''}</Text>
                           </td>
                         </tr>
                       ))}
