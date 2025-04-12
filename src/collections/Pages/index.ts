@@ -9,6 +9,8 @@ import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
 import { addPeriodStartDate } from './hooks/addPeriodStartDate'
 import formatSlug from './hooks/formatSlug'
+import { endOfDay } from 'date-fns'
+import { startOfDay } from 'date-fns'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -116,6 +118,15 @@ export const Pages: CollectionConfig = {
         return {
           ...data,
           campaignId: undefined,
+        };
+      },
+    ],
+    beforeChange: [
+      async ({ data }) => {
+        if(!data?.period?.start) return data;
+        return {
+          ...data,
+          period: { ...data.period, start: startOfDay(data.period.start), end: endOfDay(data.period.end) },
         };
       },
     ],

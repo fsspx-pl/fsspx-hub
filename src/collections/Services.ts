@@ -1,6 +1,11 @@
 import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
 import { CollectionConfig } from 'payload';
+import { revalidateTag } from 'next/cache';
+import { getPayload } from 'payload';
+import config from '@payload-config';
+import { Tenant } from '@/payload-types';
+import { format } from 'date-fns';
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -166,4 +171,43 @@ export const Services: CollectionConfig = {
       }
     },
   ],
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        const payload = await getPayload({ config });
+        
+        // Find all pastoral announcement pages that include this service's time, by definition there should be only one such page
+        const pages = await payload.find({
+          collection: 'pages',
+          where: {
+            and: [
+              {
+                type: {
+                  equals: 'pastoral-announcements'
+                }
+              },
+              {
+                'period.start': {
+                  less_than_equal: doc.time
+                }
+              },
+              {
+                'period.end': {
+                  greater_than_equal: doc.time
+                }
+              }
+            ]
+          },
+          depth: 2,
+          limit: 1,
+        });
+
+        const [ page ] = pages.docs;
+        if (!page) return;
+        const domain = (page.tenant as Tenant).domain;
+        const date = format(doc.time, 'dd-MM-yyyy');
+        revalidateTag(`page-${domain}-${date}`);
+      }
+    ]
+  },
 };

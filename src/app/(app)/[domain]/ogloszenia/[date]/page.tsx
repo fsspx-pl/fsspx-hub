@@ -1,5 +1,5 @@
 import { fetchSettings } from "@/_api/fetchGlobals";
-import { fetchLatestPage } from "@/_api/fetchPage";
+import { fetchLatestPage, fetchTenantPageByDate } from "@/_api/fetchPage";
 import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
 import { BreadcrumbItem, Breadcrumbs } from "@/_components/Breadcrumbs";
 import { Calendar, FeastWithMasses } from "@/_components/Calendar";
@@ -7,7 +7,7 @@ import { FeastDataProvider } from "@/_components/Calendar/context/FeastDataConte
 import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
 import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
-import { format, parseISO } from "date-fns";
+import { format, parse, parseISO } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
@@ -67,7 +67,8 @@ export default async function AnnouncementPage({
   params: Promise<{ domain: string; date: string }>;
 }) {
   const { domain, date } = await params;
-  const latestPost = await fetchLatestPage(domain);
+  const isoDate = parse(date, 'dd-MM-yyyy', new Date()).toISOString();
+  const latestPost = await fetchTenantPageByDate(domain, isoDate);
 
   if (!latestPost?.content_html) return null;
 
