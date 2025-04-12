@@ -11,7 +11,7 @@ import { useFeastData } from './context/FeastDataContext'
 import { romanize } from './utils/romanize'
 import { garamond } from '@/fonts'
 import { vestmentColorToTailwind } from './utils/vestmentColorToHex'
-import { getMassLabel } from './utils/getMassLabel'
+import { massTypeMap } from './utils/getMassLabel'
 
 export type FeastWithMasses = Feast & {masses: ServiceType[] }
 
@@ -89,10 +89,17 @@ export const Calendar: React.FC = () => {
                 )}
               </div>
             )}
-            <div className="flex-col text-sm justify-start items-start flex text-[#4a4b4f]">
+            <div className="flex-col text-sm justify-start items-start flex text-[#4a4b4f] gap-2">
               {selectedDay.masses.length > 0 ? (
                 selectedDay.masses.map((mass, idx) => (
-                  <span key={idx}>{getMassLabel(mass.type, mass.time)}</span>
+                  <div key={idx} className="grid grid-cols-[auto_1fr] gap-x-4">
+                    <span className='font-semibold'>{format(mass.time, 'HH:mm')}</span>
+                    <div>{ massTypeMap[mass.type] }</div>
+                    {mass.notes && <div></div>}
+                    {mass.notes && (
+                      <div className="text-xs text-[#6b7280]">{mass.notes}</div>
+                    )}
+                  </div>
                 ))
               ) : (
                 <div className='self-center text-[#a8a9ab]'>Brak nabożeństw tego dnia.</div>

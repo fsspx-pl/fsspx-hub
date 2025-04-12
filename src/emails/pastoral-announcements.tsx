@@ -33,8 +33,8 @@ const testFeasts: FeastWithMasses[] = [
     commemorations: ["Świętych Apostołów Piotra i Pawła"],
     masses: [
       { time: getMassTime("10:00"), type: 'read'} as ServiceType,
-      { time: getMassTime("11:00"), type: 'silent'} as ServiceType,
-      { time: getMassTime("12:00"), type: 'silent'} as ServiceType,
+      { time: getMassTime("11:00"), type: 'silent', notes: 'Msza w intencji zmarłych ofiarodawców'} as ServiceType,
+      { time: getMassTime("12:00"), type: 'silent', notes: 'Po Mszy Św. odbędzie się nabożeństwo do świętego Józefa'} as ServiceType,
     ],
   },
   {
@@ -92,16 +92,28 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
               <span className={`${vestmentColor}`}>{feast.color}</span>
             </Text>
             
-            <Section className="rounded-md bg-[#f8f9fa] py-0 px-4">
+            <Section className="rounded-md bg-[#f8f9fa] px-4 py-2">
               {feast.masses.length === 0 ? (
                 <Text className="text-[#4B5563]">
                   Brak nabożeństw tego dnia.
                 </Text>
               ) : (
                 <>
-                  {feast.masses.map((service, idx) => (
-                    <Text className="text-[#4B5563] m-0" key={idx}>{getMassLabel(service.type, service.time)}</Text>
-                  ))}
+                  <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 1em" }}>
+                    <tbody>
+                      {feast.masses.map((service, idx) => (
+                        <tr key={idx}>
+                          <td style={{ padding: "4px 0", whiteSpace: "nowrap", verticalAlign: "top", width: "50px" }}>
+                            <Text className="my-0 font-semibold">{format(service.time, 'HH:mm')}</Text>
+                          </td>
+                          <td style={{ padding: "4px 0" }}>
+                            <Text className="my-0">Msza Św. {service.type === 'sung' ? 'śpiewana' : service.type === 'read' ? 'czytana' : 'cicha'}</Text>
+                            <Text className="text-[#6B7280] my-0 text-sm mt-1 leading-tight">{service.notes ?? 'text'}</Text>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </>
               )}
             </Section>
@@ -172,15 +184,11 @@ export default function Email({
           <div dangerouslySetInnerHTML={{ __html: content_html }} />
         </Section>
 
-        <Section style={{ paddingLeft: "24px", paddingRight: "24px" }}>
+        <Section className="px-4">
           <Heading as="h2" style={{ fontSize: "24px", color: "#333", marginBottom: "0", borderBottom: "1px solid #eee", fontWeight: 400 }}>
             Plan nabożeństw
           </Heading>
-            { feastsWithMasses.length > 0 ? (
-                <MassesList feastsWithMasses={feastsWithMasses} />
-            ) : (
-                <div>Brak nabożeństw tego dnia.</div>
-            )}
+          <MassesList feastsWithMasses={feastsWithMasses} />
         </Section>
 
         <Section style={{ marginTop: "40px" }}>

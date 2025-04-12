@@ -68,5 +68,19 @@ export const Services: CollectionConfig = {
       type: 'relationship',
       relationTo: 'users',
     },
+    {
+      name: 'notes',
+      type: 'text',
+      label: {
+        pl: 'Dodatkowe informacje',
+        en: 'Notes'
+      },
+      admin: {
+        description: {
+          pl: 'Dodatkowe informacje o nabożeństwie',
+          en: 'Additional information about the service'
+        }
+      }
+    },
   ],
 };

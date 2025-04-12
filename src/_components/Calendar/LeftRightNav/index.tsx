@@ -11,7 +11,7 @@ type Props = {
 
 export const LeftRightNav: React.FC<Props> = ({ onPrevious, onNext, className, prevDisabled, nextDisabled }) => {
   return (
-    <div className={`flex justify-between items-center gap-4 ${className}`}>
+    <div className={`flex justify-between items-center gap-2 ${className}`}>
       <button onClick={onPrevious} disabled={prevDisabled}>
         <ArrowButton className="rotate-180" disabled={prevDisabled}/>
       </button>

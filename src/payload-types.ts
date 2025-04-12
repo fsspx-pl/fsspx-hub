@@ -261,6 +261,10 @@ export interface Service {
   type: 'sung' | 'read' | 'silent';
   tenant: string | Tenant;
   priest?: (string | null) | User;
+  /**
+   * Additional information about the service
+   */
+  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -435,6 +439,7 @@ export interface ServicesSelect<T extends boolean = true> {
   type?: T;
   tenant?: T;
   priest?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
