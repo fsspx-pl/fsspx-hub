@@ -6,8 +6,3 @@ export const massTypeMap = {
   ['read' as ServiceType['type']]: 'Msza Św. czytana',
   ['silent' as ServiceType['type']]: 'Msza Św. cicha',
 }
-
-export const getMassLabel = (type: ServiceType['type'], time: string): string => {
-  console.log(type, time)
-  return format(new Date(time), 'HH:mm') + ' - ' + (massTypeMap[type] ?? '')
-};
