@@ -2,10 +2,11 @@
 import { PayloadRequest } from 'payload'
 import { isSuperAdmin } from '../../../utilities/isSuperAdmin'
 import { Tenant } from '@/payload-types'
-
+import { getSubdomain } from '@/utilities/getSubdomain'
 const logs = false
 
 export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promise<boolean> => {
+  const domain = getSubdomain(args.req)
   const {
     req,
     req: { user, payload },
@@ -21,16 +22,15 @@ export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promi
   }
 
   if (logs) {
-    const msg = `Finding tenant with host: '${req.headers.get('host')}'`
+    const msg = `Finding tenant with domain: '${domain}'`
     payload.logger.info({ msg })
   }
 
-  // read `req.headers.host`, lookup the tenant by `domain` to ensure it exists, and check if the user is an admin of that tenant
   const foundTenants = await payload.find({
     collection: 'tenants',
     where: {
       'domain': {
-        in: [req.headers.get('host')],
+        in: [domain],
       },
     },
     depth: 0,
@@ -41,7 +41,7 @@ export const isSuperOrTenantAdmin = async (args: { req: PayloadRequest }): Promi
   // if this tenant does not exist, deny access
   if (foundTenants.totalDocs === 0) {
     if (logs) {
-      const msg = `No tenant found for ${req.headers.get('host')}`
+      const msg = `No tenant found for ${domain}`
       payload.logger.info({ msg })
     }
 

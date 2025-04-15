@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getSubdomain } from "./utilities/getSubdomain";
 
 export const config = {
   matcher: [
@@ -14,8 +15,7 @@ export const config = {
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
-  const hostname = req.headers.get("host") || "";
-  const subdomain = hostname.split(".")[0];
+  const subdomain = getSubdomain(req)
 
   if (!subdomain) {
     return NextResponse.next();
