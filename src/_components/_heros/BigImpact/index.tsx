@@ -16,6 +16,7 @@ type Props = {
   excerpt: string
   readingTimeMinutes: number
   className?: string
+  now: string
 }
 
 export const BigImpact: React.FC<Props> = ({
@@ -27,6 +28,7 @@ export const BigImpact: React.FC<Props> = ({
   title,
   excerpt,
   readingTimeMinutes,
+  now,
 }) => {
   return (
     <Gutter className="flex w-full gap-8 md:gap-16 flex-col md:flex-row">
@@ -42,6 +44,7 @@ export const BigImpact: React.FC<Props> = ({
             avatar={authorAvatar}
             createdAt={createdAt}
             updatedAt={updatedAt}
+            now={now}
           />
           <div className='prose'>
             <h1 className={`${garamond.className}`}>

@@ -45,6 +45,7 @@ const defaultArgs = {
     alt: 'Background image',
   },
   timestamp: '14 grudnia 2024',
+  now: new Date().toISOString(),
 }
 
 export const Default: Story = {

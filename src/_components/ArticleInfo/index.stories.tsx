@@ -25,6 +25,7 @@ const defaultAvatar = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   alt: 'Avatar image',
+  now: new Date().toISOString(),
 }
 
 export const Default: Story = {
@@ -33,6 +34,7 @@ export const Default: Story = {
     avatar: defaultAvatar,
     createdAt: subDays(new Date(), 3).toISOString(),
     updatedAt: subDays(new Date(), 1).toISOString(),
+    now: new Date().toISOString(),
   },
 }
 

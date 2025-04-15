@@ -18,17 +18,20 @@ type FeastDataContextType = {
 
 const FeastDataContext = createContext<FeastDataContextType | undefined>(undefined)
 
-const selectTodayOrFirstFeast = (feasts: FeastWithMasses[]) => {
-  const now = new Date()
+const selectTodayOrFirstFeast = (feasts: FeastWithMasses[], initialDate: string) => {
+  const now = new Date(initialDate)
   const todayFeast = feasts.find((feast) => isSameDay(now, feast.date))
   return todayFeast ?? feasts[0]
 }
 
-export const FeastDataProvider: React.FC<{ children: React.ReactNode, initialFeasts: FeastWithMasses[] }> = ({ children, initialFeasts }) => {
-  const now = new Date()
-  const [currentDate, setCurrentDate] = useState(now)
+export const FeastDataProvider: React.FC<{
+  children: React.ReactNode;
+  initialFeasts: FeastWithMasses[];
+  initialDate: string;
+}> = ({ children, initialFeasts, initialDate }) => {
+  const [currentDate, setCurrentDate] = useState(new Date(initialDate))
   const [feasts] = useState<FeastWithMasses[]>(initialFeasts)
-  const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(selectTodayOrFirstFeast(initialFeasts))
+  const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(selectTodayOrFirstFeast(initialFeasts, initialDate))
 
   const handlePrevious = () => {
     setCurrentDate((prev) => subDays(prev, 1))

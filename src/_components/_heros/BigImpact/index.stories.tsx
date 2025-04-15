@@ -45,6 +45,7 @@ const defaultArgs = {
   title: 'The Sources of the New Synodal Doctrine',
   excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi...',
   readingTimeMinutes: 4,
+  now: new Date().toISOString(),
 }
 
 export const Default: Story = {

@@ -4,6 +4,7 @@ import { formatDistance, parseISO } from "date-fns";
 import { pl } from "date-fns/locale";
 import React from "react";
 import { Tooltip } from "react-tooltip";
+import { format } from "date-fns";
 
 export enum DateLabel {
   CREATED = "utworzono: ",
@@ -17,17 +18,15 @@ export const DateWithTooltip: React.FC<{
   icon: React.ElementType;
   label: DateLabel;
   date: string;
-}> = ({ icon: Icon, label, date }) => {
-  const now = new Date();
+  now: string;
+}> = ({ icon: Icon, label, date, now }) => {
   const inputDate = parseISO(date);
-  const formattedDate = formatDistance(inputDate, now, {
+  const nowDate = parseISO(now);
+  const formattedDate = formatDistance(inputDate, nowDate, {
     locale: pl,
     addSuffix: true,
   });
-  const tooltip = inputDate.toLocaleString("pl-PL", {
-    dateStyle: "full",
-    timeStyle: "short",
-  });
+  const tooltip = format(inputDate, 'EEEE, d MMMM yyyy, HH:mm', { locale: pl });
   const { id } = dateConfig[label];
 
   return (

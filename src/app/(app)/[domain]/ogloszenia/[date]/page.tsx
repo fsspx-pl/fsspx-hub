@@ -69,6 +69,7 @@ export default async function AnnouncementPage({
   const { domain, date } = await params;
   const isoDate = parse(date, 'dd-MM-yyyy', new Date()).toISOString();
   const latestPost = await fetchTenantPageByDate(domain, isoDate);
+  const serverNow = new Date().toISOString();
 
   if (!latestPost?.content_html) return null;
 
@@ -95,11 +96,13 @@ export default async function AnnouncementPage({
         authorAvatar={authorAvatar}
         createdAt={latestPost.createdAt}
         updatedAt={latestPost.updatedAt}
+        now={serverNow}
       />
       <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 md:flex-row">
         <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
+            initialDate={serverNow}
           >
             <Calendar />
           </FeastDataProvider>
