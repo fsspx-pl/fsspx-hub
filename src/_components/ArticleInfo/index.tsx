@@ -12,6 +12,7 @@ type Props = {
   avatar?: MediaType | null;
   createdAt: string;
   updatedAt: string;
+  now: string;
 };
 
 export const ArticleInfo: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const ArticleInfo: React.FC<Props> = ({
   avatar,
   createdAt,
   updatedAt,
+  now,
 }) => {
   return (
     <div
@@ -41,6 +43,7 @@ export const ArticleInfo: React.FC<Props> = ({
             icon={Clock}
             label={DateLabel.CREATED}
             date={createdAt}
+            now={now}
           />
         </div>
         {updatedAt ? (
@@ -51,6 +54,7 @@ export const ArticleInfo: React.FC<Props> = ({
                 icon={Pencil}
                 label={DateLabel.UPDATED}
                 date={updatedAt}
+                now={now}
               />
             )}
           </div>

@@ -1,13 +1,14 @@
 import { CollectionAfterLoginHook } from "payload"
-
+import { getSubdomain } from "@/utilities/getSubdomain"
 export const recordLastLoggedInTenant: CollectionAfterLoginHook = async ({ req, user }) => {
+  const domain = getSubdomain(req)
   try {
     const relatedOrg = await req.payload
       .find({
         collection: 'tenants',
         where: {
           'domain': {
-            in: [req.headers.get('host')],
+            in: [domain],
           },
         },
         depth: 0,

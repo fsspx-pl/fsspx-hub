@@ -50,7 +50,7 @@ const mockFeasts: FeastWithMasses[]  = Array.from({ length: 8 }, (_, i) => {
 
 export const Default: Story = {
   render: () => ( // Use render instead of args to wrap Calendar
-    <FeastDataProvider initialFeasts={mockFeasts}>
+    <FeastDataProvider initialFeasts={mockFeasts} initialDate={baseDate.toISOString()}>
       <Calendar />
     </FeastDataProvider>
   ),
