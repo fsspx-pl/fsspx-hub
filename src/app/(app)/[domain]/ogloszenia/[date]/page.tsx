@@ -102,7 +102,7 @@ export default async function AnnouncementPage({
         <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
-            initialDate={serverNow}
+            initialDate={feastsWithMasses.length > 0 ? new Date().toISOString() : serverNow}
           >
             <Calendar />
           </FeastDataProvider>

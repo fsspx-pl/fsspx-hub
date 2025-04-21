@@ -63,15 +63,12 @@ const createMockFeasts = (length: number, startDate: Date): FeastWithMasses[] =>
     })
   })
 
-const today = new Date() // April 20th, 2024
-// Start 4 days before today to show today in position 5
-const startDateForDefault = subDays(today, 4)
-const mockFeasts = createMockFeasts(12, startDateForDefault) // 4 past days + today + 7 future days
+const today = new Date()
+const start = subDays(today, 4)
+const mockFeasts = createMockFeasts(12, start)
 
-// For long range, show more past and future days
 export const Default: Story = {
   render: () => {
-    // Find the feast that corresponds to today and its index
     const todayIndex = mockFeasts.findIndex(feast => 
       feast.date.getDate() === today.getDate() && 
       feast.date.getMonth() === today.getMonth()

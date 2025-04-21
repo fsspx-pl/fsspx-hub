@@ -32,11 +32,27 @@ export const Calendar: React.FC = () => {
   const firstFeastDate = feasts[0]?.date;
   const month = selectedDay ? selectedDay.date : firstFeastDate;
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
-  const [windowStart, setWindowStart] = React.useState(0);
+
+  // Initialize window start to center the selected day
+  const [windowStart, setWindowStart] = React.useState(() => {
+    if (!selectedDay) return 0;
+    // Find index of selected day
+    const selectedIndex = feasts.findIndex(
+      feast => isEqual(feast.date, selectedDay.date)
+    );
+    if (selectedIndex === -1) return 0;
+    
+    // Calculate window start to center the selected day (or as close as possible)
+    // Try to put selected day at position 3-4 in the window
+    const idealPosition = 3; // 0-indexed, so this is the 4th position
+    const calculatedStart = Math.max(0, selectedIndex - idealPosition);
+    // Ensure we don't start beyond what would push the last few days off screen
+    return Math.min(calculatedStart, Math.max(0, feasts.length - WINDOW_SIZE));
+  });
 
   const referenceDate = React.useMemo(() => 
     startOfDay(selectedDay?.date ?? firstFeastDate), 
-    []
+    [firstFeastDate, selectedDay]
   );
 
   const visibleDays = React.useMemo(() => {
@@ -103,7 +119,7 @@ export const Calendar: React.FC = () => {
           <div className={`self-stretch text-center text-sm ${garamond.className} font-normal`}>
             {monthFormatted}
           </div>
-          <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[480px]">
+          <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[420px]">
             {visibleDays.map((day, index) => {
               const isPastDay = isBefore(day.date, referenceDate);
               const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
