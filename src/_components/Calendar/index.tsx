@@ -50,10 +50,7 @@ export const Calendar: React.FC = () => {
     return Math.min(calculatedStart, Math.max(0, feasts.length - WINDOW_SIZE));
   });
 
-  const referenceDate = React.useMemo(() => 
-    startOfDay(selectedDay?.date ?? firstFeastDate), 
-    [firstFeastDate, selectedDay]
-  );
+  const todayReference = React.useMemo(() => startOfDay(new Date()), []);
 
   const visibleDays = React.useMemo(() => {
     return feasts.slice(windowStart, windowStart + WINDOW_SIZE);
@@ -121,7 +118,8 @@ export const Calendar: React.FC = () => {
           </div>
           <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[420px]">
             {visibleDays.map((day, index) => {
-              const isPastDay = isBefore(day.date, referenceDate);
+              // Use today's actual date for past day detection
+              const isPastDay = isBefore(day.date, todayReference);
               const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
               
               // Only apply opacity to past days that aren't selected
