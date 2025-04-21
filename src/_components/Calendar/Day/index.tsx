@@ -52,8 +52,9 @@ export const Day: React.FC<Props> = ({
         {(hasMoreLeft || hasMoreRight) && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ? 'bg-gradient-to-r from-white via-white to-transparent' : ''}
-            ${hasMoreRight ? 'bg-gradient-to-l from-white via-white to-transparent' : ''}
+            ${hasMoreLeft ?
+              isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-r to-transparent' : ''}
+            ${hasMoreRight ? isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-l to-transparent' : ''}
             opacity-70
           `} />
         )}
@@ -70,8 +71,8 @@ export const Day: React.FC<Props> = ({
         {(hasMoreLeft || hasMoreRight) && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ? 'bg-gradient-to-r from-white via-white to-transparent' : ''}
-            ${hasMoreRight ? 'bg-gradient-to-l from-white via-white to-transparent' : ''}
+            ${hasMoreLeft ? isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-r to-transparent' : ''}
+            ${hasMoreRight ? isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-l to-transparent' : ''}
             opacity-70
           `} />
         )}
