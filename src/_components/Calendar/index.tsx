@@ -24,8 +24,8 @@ const getServiceTitle = (service: ServiceType) => {
 };
 
 const WINDOW_SIZE = 8;
-const SHIFT_THRESHOLD = 6; // When selected day reaches this position, window shifts
-const BACKWARD_SHIFT_THRESHOLD = 1; // When selected day reaches this position (3rd day), window shifts backward
+const SHIFT_THRESHOLD = 6;
+const BACKWARD_SHIFT_THRESHOLD = 1;
 
 export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
@@ -34,10 +34,9 @@ export const Calendar: React.FC = () => {
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
   const [windowStart, setWindowStart] = React.useState(0);
 
-  // Use the initial selected day as a fixed reference point
   const referenceDate = React.useMemo(() => 
     startOfDay(selectedDay?.date ?? firstFeastDate), 
-    [] // Empty deps array to keep it constant
+    []
   );
 
   const visibleDays = React.useMemo(() => {

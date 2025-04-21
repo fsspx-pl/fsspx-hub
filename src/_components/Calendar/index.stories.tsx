@@ -69,9 +69,6 @@ const startDateForDefault = subDays(today, 4)
 const mockFeasts = createMockFeasts(12, startDateForDefault) // 4 past days + today + 7 future days
 
 // For long range, show more past and future days
-const startDateForLongRange = subDays(today, 4)
-const mockFeastsLongRange = createMockFeasts(25, startDateForLongRange) // 10 past days + today + 14 future days
-
 export const Default: Story = {
   render: () => {
     // Find the feast that corresponds to today and its index
@@ -84,24 +81,6 @@ export const Default: Story = {
     return (
       <FeastDataProvider 
         initialFeasts={mockFeasts} 
-        initialDate={todayFeast?.date.toISOString() ?? today.toISOString()}
-      >
-        <Calendar />
-      </FeastDataProvider>
-    );
-  },
-}
-
-export const LongRange: Story = {
-  render: () => {
-    // Find the feast that corresponds to today
-    const todayFeast = mockFeastsLongRange.find(feast => 
-      feast.date.getDate() === today.getDate() && 
-      feast.date.getMonth() === today.getMonth()
-    );
-    return (
-      <FeastDataProvider 
-        initialFeasts={mockFeastsLongRange} 
         initialDate={todayFeast?.date.toISOString() ?? today.toISOString()}
       >
         <Calendar />
