@@ -106,15 +106,28 @@ export const Calendar: React.FC = () => {
           <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[480px]">
             {visibleDays.map((day, index) => {
               const isPastDay = isBefore(day.date, referenceDate);
+              const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
+              
+              // Only apply opacity to past days that aren't selected
+              const showWithOpacity = isPastDay && !isCurrentDaySelected;
+              
+              // Check if this is an edge day (first or last in visible window)
+              const isFirstInWindow = index === 0;
+              const isLastInWindow = index === visibleDays.length - 1;
+              
+              // Only show edge gradients if there are more days to scroll
+              const hasMoreLeft = isFirstInWindow && windowStart > 0;
+              const hasMoreRight = isLastInWindow && windowStart + WINDOW_SIZE < feasts.length;
+              
               return (
                 <Day
-                  className={`flex-1 ${isPastDay ? 'opacity-50' : ''}`}
+                  className={`flex-1 ${showWithOpacity ? 'opacity-50' : ''}`}
                   key={day.id + index}
                   date={day.date}
-                  isSelected={isEqual(day.date, selectedDay?.date ?? '')}
+                  isSelected={isCurrentDaySelected}
                   onClick={() => handleDateSelect(day.date)}
-                  hasMoreLeft={index === 0 && windowStart > 0}
-                  hasMoreRight={index === visibleDays.length - 1 && windowStart + WINDOW_SIZE < feasts.length}
+                  hasMoreLeft={hasMoreLeft}
+                  hasMoreRight={hasMoreRight}
                 />
               );
             })}

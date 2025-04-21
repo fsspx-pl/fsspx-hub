@@ -49,12 +49,11 @@ export const Day: React.FC<Props> = ({
         `}
       >
         {dayNumber}
-        {(hasMoreLeft || hasMoreRight) && (
+        {(hasMoreLeft || hasMoreRight) && !isSelected && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ?
-              isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-r to-transparent' : ''}
-            ${hasMoreRight ? isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-l to-transparent' : ''}
+            ${hasMoreLeft ? 'bg-gradient-to-r from-white via-white to-transparent' : ''}
+            ${hasMoreRight ? 'bg-gradient-to-l from-white via-white to-transparent' : ''}
             opacity-70
           `} />
         )}
@@ -68,11 +67,11 @@ export const Day: React.FC<Props> = ({
         `}
       >
         {dayName}
-        {(hasMoreLeft || hasMoreRight) && (
+        {(hasMoreLeft || hasMoreRight) && !isSelected && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ? isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-r to-transparent' : ''}
-            ${hasMoreRight ? isSelected ? 'bg-[#f8f7f7]' : 'bg-gradient-to-l to-transparent' : ''}
+            ${hasMoreLeft ? 'bg-gradient-to-r from-white via-white to-transparent' : ''}
+            ${hasMoreRight ? 'bg-gradient-to-l from-white via-white to-transparent' : ''}
             opacity-70
           `} />
         )}
