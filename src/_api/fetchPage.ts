@@ -76,7 +76,7 @@ export const fetchTenantPageByDate = (domain: string, isoDate: string): Promise<
     },
     [cacheKey],
     {
-      tags: [`tenant:${domain}:date:${date}`],
+      tags: [`tenant:${domain}:date:${date}`, `tenant:${domain}:pages`],
       revalidate: 60 * 60 * 24,
     }
   )();
