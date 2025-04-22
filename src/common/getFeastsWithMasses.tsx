@@ -1,17 +1,16 @@
-import { Feast } from "@/feast";
-import { Service, Tenant } from "@/payload-types";
-import { addDays, isSameDay, parseISO, startOfWeek } from "date-fns";
 import { getFeasts } from "@/common/getFeasts";
 import { getServices } from "@/common/getMasses";
-import { Page as PageType } from "@/payload-types";
+import { Feast } from "@/feast";
+import { Page as PageType, Service, Tenant } from "@/payload-types";
+import { addDays, isSameDay, parseISO } from "date-fns";
 
 export type FeastWithMasses = Feast & {
   masses: Service[];
 };
 
 export async function getFeastsWithMasses(period: PageType['period'], tenant: Tenant) {
-  const start = period?.start ? startOfWeek(parseISO(period.start as string), { weekStartsOn: 0 }) : new Date();
-  const end = period?.end ? parseISO(period.end) : addDays(start, 7);
+  const start = period?.start ? parseISO(period.start as string) : new Date();
+  const end = period?.end ? parseISO(period.end as string) : addDays(start, 7);
   const feasts = await getFeasts(start, end);
   const masses = tenant?.id ? await getServices(
     tenant?.id,

@@ -11,6 +11,8 @@ import { format, parse, parseISO } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
+import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
+import { garamond } from "@/fonts";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -68,17 +70,20 @@ export default async function AnnouncementPage({
 }) {
   const { domain, date } = await params;
   const isoDate = parse(date, 'dd-MM-yyyy', new Date()).toISOString();
-  const latestPost = await fetchTenantPageByDate(domain, isoDate);
+  const page = await fetchTenantPageByDate(domain, isoDate);
   const serverNow = new Date().toISOString();
 
-  if (!latestPost?.content_html) return null;
+  if (!page?.content_html) return null;
 
-  const tenant = latestPost.tenant ? latestPost.tenant as Tenant : null;
-  const period = latestPost?.period ? latestPost.period as PageType['period'] : null;
+  // Transform the content HTML to enhance the first letter
+  const enhancedContentHtml = enhanceFirstLetterInContent(page.content_html, garamond);
+
+  const tenant = page.tenant ? page.tenant as Tenant : null;
+  const period = page?.period ? page.period as PageType['period'] : null;
   const feastsWithMasses: FeastWithMasses[] = period && tenant ? await getFeastsWithMasses(period, tenant) : [];
   const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant, period?.start as string) : [];
 
-  const user = latestPost.author ? latestPost.author as User : null;
+  const user = page.author ? page.author as User : null;
   const author = formatAuthorName(user);
   const authorAvatar = user?.avatar 
     ? user.avatar as Media 
@@ -91,25 +96,25 @@ export default async function AnnouncementPage({
       </Gutter>
       <NewMediumImpact
         image={tenant?.coverBackground as Media}
-        title={latestPost.title}
+        title={page.title}
         author={author}
         authorAvatar={authorAvatar}
-        createdAt={latestPost.createdAt}
-        updatedAt={latestPost.updatedAt}
+        createdAt={page.createdAt}
+        updatedAt={page.updatedAt}
         now={serverNow}
       />
       <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 md:flex-row">
         <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
-            initialDate={serverNow}
+            initialDate={feastsWithMasses.length > 0 ? new Date().toISOString() : serverNow}
           >
             <Calendar />
           </FeastDataProvider>
         </div>
         <div
           className="overflow-auto flex-1 prose max-w-none text-justify md:text-left"
-          dangerouslySetInnerHTML={{ __html: latestPost.content_html }}
+          dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
         ></div>
       </Gutter>
     </div>

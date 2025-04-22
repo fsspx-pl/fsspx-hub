@@ -1,9 +1,9 @@
 'use client'
 
 import { Feast, VestmentColor } from '@/feast'
-import { garamond } from '@/fonts'
+import { garamond, gothic } from '@/fonts'
 import { Service as ServiceType } from '@/payload-types'
-import { addDays, format, isEqual, subDays } from 'date-fns'
+import { format, isBefore, isEqual, startOfDay } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import React from 'react'
 import { Day } from './Day'
@@ -23,20 +23,74 @@ const getServiceTitle = (service: ServiceType) => {
   return service.customTitle ?? '';
 };
 
+const WINDOW_SIZE = 8;
+const SHIFT_THRESHOLD = 6;
+const BACKWARD_SHIFT_THRESHOLD = 1;
+
 export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
-  const firstFeastDate = feasts[0]?.date
-  const month = selectedDay ? selectedDay.date : firstFeastDate
+  const firstFeastDate = feasts[0]?.date;
+  const month = selectedDay ? selectedDay.date : firstFeastDate;
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
-  const [firstDaySelected, setFirstDaySelected] = React.useState(false);
-  const [lastDaySelected, setLastDaySelected] = React.useState(false);
-  const [selectedDayColor, setSelectedDayColor] = React.useState(vestmentColorToTailwind(VestmentColor.BLACK));
 
-  React.useEffect(() => {
-    const [ firstFeast, _ ] = feasts;
-    setFirstDaySelected(selectedDay?.id === firstFeast.id);
-    setLastDaySelected(selectedDay?.id === feasts[feasts.length - 1].id);
+  // Initialize window start to center the selected day
+  const [windowStart, setWindowStart] = React.useState(() => {
+    if (!selectedDay) return 0;
+    // Find index of selected day
+    const selectedIndex = feasts.findIndex(
+      feast => isEqual(feast.date, selectedDay.date)
+    );
+    if (selectedIndex === -1) return 0;
+    
+    // Calculate window start to center the selected day (or as close as possible)
+    // Try to put selected day at position 3-4 in the window
+    const idealPosition = 3; // 0-indexed, so this is the 4th position
+    const calculatedStart = Math.max(0, selectedIndex - idealPosition);
+    // Ensure we don't start beyond what would push the last few days off screen
+    return Math.min(calculatedStart, Math.max(0, feasts.length - WINDOW_SIZE));
+  });
+
+  const todayReference = React.useMemo(() => startOfDay(new Date()), []);
+
+  const visibleDays = React.useMemo(() => {
+    return feasts.slice(windowStart, windowStart + WINDOW_SIZE);
+  }, [feasts, windowStart]);
+
+  const selectedDayIndex = React.useMemo(() => {
+    if (!selectedDay) return -1;
+    return feasts.findIndex(feast => isEqual(feast.date, selectedDay.date));
   }, [selectedDay, feasts]);
+
+  const canGoNext = selectedDayIndex < feasts.length - 1;
+  const canGoPrev = selectedDayIndex > 0;
+
+  const handleNext = React.useCallback(() => {
+    if (!canGoNext) return;
+    
+    const nextDayIndex = selectedDayIndex + 1;
+    const nextDayPosition = nextDayIndex - windowStart;
+
+    if (nextDayPosition >= SHIFT_THRESHOLD) {
+      setWindowStart(prev => Math.min(prev + 1, feasts.length - WINDOW_SIZE));
+    }
+
+    handleDateSelect(feasts[nextDayIndex].date);
+  }, [canGoNext, selectedDayIndex, feasts, handleDateSelect, windowStart]);
+
+  const handlePrev = React.useCallback(() => {
+    if (!canGoPrev) return;
+    
+    const prevDayIndex = selectedDayIndex - 1;
+    const prevDayPosition = prevDayIndex - windowStart;
+
+    if (prevDayPosition <= BACKWARD_SHIFT_THRESHOLD) {
+      setWindowStart(prev => Math.max(prev - 1, 0));
+    }
+
+    handleDateSelect(feasts[prevDayIndex].date);
+  }, [canGoPrev, selectedDayIndex, feasts, handleDateSelect, windowStart]);
+
+  const [selectedDayColor, setSelectedDayColor] = React.useState(vestmentColorToTailwind(VestmentColor.BLACK));
 
   React.useEffect(() => {
     if (selectedDay) {
@@ -51,9 +105,10 @@ export const Calendar: React.FC = () => {
           Porządek nabożeństw
         </h2>
         <Nav
-          onNext={() => handleDateSelect(addDays(selectedDay?.date ?? firstFeastDate, 1))} onPrevious={() => handleDateSelect(subDays(selectedDay?.date ?? firstFeastDate, 1)) } 
-          nextDisabled={lastDaySelected}
-          prevDisabled={firstDaySelected}
+          onNext={handleNext}
+          onPrevious={handlePrev}
+          nextDisabled={!canGoNext}
+          prevDisabled={!canGoPrev}
         />
       </div>
       <div className="self-stretch flex-col justify-start items-start flex">
@@ -61,29 +116,48 @@ export const Calendar: React.FC = () => {
           <div className={`self-stretch text-center text-sm ${garamond.className} font-normal`}>
             {monthFormatted}
           </div>
-          <div className="self-stretch justify-between items-center inline-flex">
-            {feasts.map((day, index) => (
-              <Day
-                className="flex-1"
-                key={day.id + index}
-                date={day.date}
-                isSelected={isEqual(day.date, selectedDay?.date ?? '')}
-                onClick={() => handleDateSelect(day.date)}
-              />
-            ))}
+          <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[368px]">
+            {visibleDays.map((day, index) => {
+              // Use today's actual date for past day detection
+              const isPastDay = isBefore(day.date, todayReference);
+              const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
+              
+              // Only apply opacity to past days that aren't selected
+              const showWithOpacity = isPastDay && !isCurrentDaySelected;
+              
+              // Check if this is an edge day (first or last in visible window)
+              const isFirstInWindow = index === 0;
+              const isLastInWindow = index === visibleDays.length - 1;
+              
+              // Only show edge gradients if there are more days to scroll
+              const hasMoreLeft = isFirstInWindow && windowStart > 0;
+              const hasMoreRight = isLastInWindow && windowStart + WINDOW_SIZE < feasts.length;
+              
+              return (
+                <Day
+                  className={`flex-1 ${showWithOpacity ? 'opacity-50' : ''}`}
+                  key={day.id + index}
+                  date={day.date}
+                  isSelected={isCurrentDaySelected}
+                  onClick={() => handleDateSelect(day.date)}
+                  hasMoreLeft={hasMoreLeft}
+                  hasMoreRight={hasMoreRight}
+                />
+              );
+            })}
           </div>
         </div>
         {selectedDay && (
-          <div className={`self-stretch p-4 rounded-b-lg ${ !firstDaySelected && 'rounded-tl-lg' } ${ !lastDaySelected && 'rounded-tr-lg' } flex-col justify-start items-start gap-6 flex bg-[#f8f7f7]`}>
+          <div className={`self-stretch p-4 rounded-b-lg flex-col justify-start items-start gap-6 flex bg-[#f8f7f7]`}>
             {(selectedDay.title || selectedDay.rank) && (
               <div className="self-stretch flex-col justify-start items-start gap-1.5 flex">
                 {selectedDay.title && (
-                  <div className="font-semibold leading-5">
+                  <div className={`font-semibold leading-5 ${gothic.className}`}>
                     {selectedDay.title}
                   </div>
                 )}
                 {selectedDay.rank && (
-                  <div className="self-stretch text-sm">
+                  <div className={`self-stretch text-sm ${gothic.className}`}>
                     <span className="leading-[14px]">
                       święto { romanize(selectedDay.rank)} klasy
                     </span>
@@ -97,7 +171,7 @@ export const Calendar: React.FC = () => {
                 )}
               </div>
             )}
-            <div className="flex-col text-sm justify-start items-start flex text-[#4a4b4f] gap-2">
+            <div className={`flex-col text-sm justify-start items-start flex text-[#4a4b4f] gap-2 ${gothic.className}`}>
               {selectedDay.masses.length > 0 ? (
                 selectedDay.masses.map((mass, idx) => (
                   <div key={idx} className="grid grid-cols-[auto_1fr] gap-x-4">
@@ -117,5 +191,5 @@ export const Calendar: React.FC = () => {
         )}
       </div>
     </div>
-  )
+  );
 }
