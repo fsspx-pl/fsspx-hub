@@ -69,10 +69,8 @@ export default async function AnnouncementPage({
   params: Promise<{ domain: string; date: string }>;
 }) {
   const { domain, date } = await params;
-  console.log(domain, date);
   const isoDate = parse(date, 'dd-MM-yyyy', new Date()).toISOString();
   const page = await fetchTenantPageByDate(domain, isoDate);
-  console.log(page?.id);
   const serverNow = new Date().toISOString();
 
   if (!page?.content_html) return null;
