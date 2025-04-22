@@ -31,7 +31,7 @@ export const Day: React.FC<Props> = ({
     <button 
       onClick={onClick}
       className={`
-        min-w-[38px] sm:min-w-[60px]
+        min-w-[38px] sm:min-w-[46px]
         p-1 sm:p-3 
         flex-col justify-start items-center inline-flex 
         transition-all duration-300 ease-in-out

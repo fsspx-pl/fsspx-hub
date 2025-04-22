@@ -116,7 +116,7 @@ export const Calendar: React.FC = () => {
           <div className={`self-stretch text-center text-sm ${garamond.className} font-normal`}>
             {monthFormatted}
           </div>
-          <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[420px]">
+          <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[368px]">
             {visibleDays.map((day, index) => {
               // Use today's actual date for past day detection
               const isPastDay = isBefore(day.date, todayReference);
