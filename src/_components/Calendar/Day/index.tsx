@@ -2,8 +2,8 @@
 
 import { garamond } from '@/fonts'
 import { format } from 'date-fns'
-import { pl } from 'date-fns/locale'
 import React from 'react'
+import { polishLocale } from '../utils/polishLocale'
 
 type Props = {
   date: Date
@@ -25,7 +25,7 @@ export const Day: React.FC<Props> = ({
   const isSunday = date.getDay() === 0;
   const textColor = isSunday ? 'text-[#c81910]' : 'text-[#4a4b4f]';
   const dayNumber = date.getDate();
-  const dayName = format(date, 'EEE', { locale: pl }).replace('.', '');
+  const dayName = format(date, 'EEE', { locale: polishLocale }).replace('.', '');
   
   return (
     <button 
