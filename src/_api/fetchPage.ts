@@ -11,6 +11,7 @@ export const fetchLatestPage = (domain: string): Promise<Page | undefined> => {
       const payload = await getPayload({
         config: configPromise,
       });
+      const now = new Date();
 
       try {
         const result = await payload.find({
@@ -18,6 +19,12 @@ export const fetchLatestPage = (domain: string): Promise<Page | undefined> => {
           where: {
             ['tenant.domain']: {
               contains: domain
+            },
+            ['period.start']: {
+              less_than_equal: now,
+            },
+            ['period.end']: {
+              greater_than_equal: now,
             }
           },
           sort: '-createdAt',
@@ -32,7 +39,7 @@ export const fetchLatestPage = (domain: string): Promise<Page | undefined> => {
     },
     [cacheKey],
     {
-      tags: [ `tenant:${domain}`,'pages'],
+      tags: [ `tenant:${domain}:latest`],
       revalidate: 60 * 60 * 24,
     }
   )();
@@ -69,7 +76,7 @@ export const fetchTenantPageByDate = (domain: string, isoDate: string): Promise<
     },
     [cacheKey],
     {
-      tags: [`page-${domain}-${date}`, 'pages'],
+      tags: [`tenant:${domain}:date:${date}`],
       revalidate: 60 * 60 * 24,
     }
   )();
