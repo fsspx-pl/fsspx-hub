@@ -1,11 +1,12 @@
 import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
-import { CollectionConfig } from 'payload';
-import { revalidateTag } from 'next/cache';
-import { getPayload } from 'payload';
-import config from '@payload-config';
+import serviceFields from '@/fields/service';
 import { Tenant } from '@/payload-types';
+import config from '@payload-config';
 import { format } from 'date-fns';
+import { revalidateTag } from 'next/cache';
+import { CollectionConfig, getPayload } from 'payload';
+
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -28,23 +29,24 @@ export const Services: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'time',
-    defaultColumns: ['time', 'type', 'tenant'],
+    defaultColumns: ['date', 'time', 'category', 'massType', 'tenant'],
+    // hidden: true,
   },
   fields: [
     {
       type: 'row',
       fields: [
         {
-          name: 'time',
+          name: 'date',
           label: {
-            pl: 'Data i czas',
-            en: 'Date and time'
+            pl: 'Data',
+            en: 'Date'
           },
           type: 'date',
           admin: {
             date: {
-              pickerAppearance: 'dayAndTime',
-              displayFormat: 'd MMM yyyy, HH:mm',
+              pickerAppearance: 'dayOnly',
+              displayFormat: 'dd-MM-yyyy',
             },
             width: '50%',
           },
@@ -62,114 +64,7 @@ export const Services: CollectionConfig = {
         },
       ]
     },
-    {
-      name: 'category',
-      type: 'select',
-      required: true,
-      options: [
-        { 
-          label: {
-            pl: 'Msza Święta',
-            en: 'Holy Mass',
-          }, 
-          value: 'mass' 
-        },
-        { 
-          label: {
-            pl: 'Różaniec',
-            en: 'Rosary',
-          }, 
-          value: 'rosary' 
-        },
-        { 
-          label: {
-            pl: 'Gorzkie Żale',
-            en: 'Lamentations',
-          }, 
-          value: 'lamentations' 
-        },
-        { 
-          label: {
-            pl: 'Inne',
-            en: 'Other',
-          }, 
-          value: 'other' 
-        },
-      ],
-    },
-    {
-      name: 'massType',
-      type: 'select',
-      required: true,
-      options: [
-        { 
-          label: {
-            pl: 'Śpiewana',
-            en: 'Sung',
-          }, 
-          value: 'sung' 
-        },
-        { 
-          label: {
-            pl: 'Czytana',
-            en: 'Read',
-          }, 
-          value: 'read' 
-        },
-        { 
-          label: {
-            pl: 'Cicha',
-            en: 'Silent',
-          }, 
-          value: 'silent' 
-        },
-        { 
-          label: {
-            pl: 'Solenna',
-            en: 'Solemn',
-          }, 
-          value: 'solemn' 
-        },
-      ],
-      admin: {
-        condition: (data) => data?.category === 'mass',
-        description: {
-          pl: 'Typ Mszy Świętej, który będzie widoczny w kalendarzu oraz w newsletterze',
-          en: 'Holy Mass type, visible in the calendar and newsletter'
-        }
-      },
-    },
-    {
-      name: 'customTitle',
-      type: 'text',
-      required: true,
-      
-      label: {
-        pl: 'Nazwa nabożeństwa',
-        en: 'Service title'
-      },
-      admin: {
-        condition: (data) => data?.category === 'other',
-        description: {
-          pl: 'Nazwa nabożeństwa, która będzie widoczna w kalendarzu oraz w newsletterze',
-          en: 'Service title, visible in the calendar and newsletter'
-        }
-      },
-    },
-    {
-      name: 'notes',
-      type: 'text',
-      label: {
-        pl: 'Dodatkowe informacje',
-        en: 'Notes'
-      },
-      admin: {
-        description: {
-          pl: 'Dodatkowe informacje o nabożeństwie, które będą widoczne w kalendarzu poniej tytułu nabożeństwa oraz w newsletterze',
-          en: 'Additional information about the service, visible below the service title in the calendar and newsletter'
-        }
-      }
-    },
+    ...serviceFields,
   ],
   hooks: {
     afterChange: [

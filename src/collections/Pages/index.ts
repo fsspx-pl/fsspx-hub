@@ -11,6 +11,7 @@ import { addPeriodStartDate } from './hooks/addPeriodStartDate'
 import formatSlug from './hooks/formatSlug'
 import { endOfDay } from 'date-fns'
 import { startOfDay } from 'date-fns'
+// import { linkServiceWeeks } from './hooks/linkServiceWeeks'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -131,5 +132,7 @@ export const Pages: CollectionConfig = {
       },
     ],
     afterChange: [revalidateTenantPages],
+    // TODO: Add this hook after type generation:
+    // afterChange: [revalidateTenantPages, linkServiceWeeks],
   },
 }

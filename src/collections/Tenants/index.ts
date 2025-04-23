@@ -4,6 +4,7 @@ import { superAdmins } from '../../access/superAdmins'
 import { anyone } from '@/access/anyone'
 import { tenantAdmins } from '@/access/tenantAdmins'
 import { location } from '@/fields/location'
+import serviceFields from '@/fields/service'
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -39,5 +40,62 @@ export const Tenants: CollectionConfig = {
         }
       }
     },
+    {
+      name: 'feastTemplates',
+      type: 'group',
+      fields: [
+				{
+					type: 'tabs',
+					tabs: [
+						{
+							name: 'rankOne',
+							label: {
+								pl: 'I klasy',
+								en: 'Rank 1'
+							},
+							fields: [
+                {
+                  type: 'json',
+                  name: 'applicableRanks',
+                  defaultValue: [1],
+                  hidden: true,
+                },
+                {
+                type: 'array',
+                name: 'services',
+                fields: [
+                  ...serviceFields,
+                ]}
+							],
+						},
+						{
+							name: 'otherRanks',
+							label: {
+								pl: 'Pozostałe klasy',
+								en: 'Other ranks'
+							},
+							fields: [
+                {
+                  type: 'json',
+                  name: 'applicableRanks',
+                  defaultValue: [2, 3, 4],
+                  hidden: true,
+                },
+								{
+                type: 'array',
+                name: 'services',
+                fields: [
+                  ...serviceFields,
+                ]
+              }
+							],
+							admin: {
+								width: '50%',
+							}
+						}
+					]
+				}
+      ]
+    }
   ],
 }
