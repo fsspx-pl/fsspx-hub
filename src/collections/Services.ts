@@ -30,7 +30,7 @@ export const Services: CollectionConfig = {
   admin: {
     useAsTitle: 'time',
     defaultColumns: ['date', 'time', 'category', 'massType', 'tenant'],
-    // hidden: true,
+    hidden: true,
   },
   fields: [
     {
