@@ -3,7 +3,7 @@ import { tenantAdmins } from '@/access/tenantAdmins';
 import { getFeasts } from '@/common/getFeasts';
 import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
-import { endOfWeek, getDay, getISOWeek, getWeekYear, isSunday, parseISO, startOfWeek } from 'date-fns';
+import { addWeeks, endOfWeek, getDay, getISOWeek, getWeekYear, isSunday, parseISO, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
 
 // Define type for feast days grouped by day of week
@@ -247,19 +247,7 @@ export const ServiceWeeks: CollectionConfig = {
           return startOfWeek(new Date(), { weekStartsOn: 0 });
         }
 
-        const nextYearWeek = lastServiceWeek.yearWeek! + 1;
-        
-        // Convert yearWeek back to date
-        const nextWeekDate = new Date();
-        nextWeekDate.setFullYear(Math.floor(nextYearWeek / 100));
-        nextWeekDate.setDate(1); // Reset to start of year
-        nextWeekDate.setHours(0,0,0,0);
-        
-        // Add weeks
-        const weekNum = nextYearWeek % 100;
-        nextWeekDate.setDate(nextWeekDate.getDate() + (weekNum * 7));
-        
-        // Ensure we start on Sunday
+        const nextWeekDate = addWeeks(parseISO(lastServiceWeek.start), 1);
         return startOfWeek(nextWeekDate, { weekStartsOn: 0 });
       }
     },
