@@ -1,6 +1,8 @@
 import { setHours } from 'date-fns';
 import { Field } from 'payload';
 
+const now = new Date();
+
 const time: Field = {
   name: 'time',
   label: {
@@ -10,8 +12,8 @@ const time: Field = {
   type: 'date',
   admin: {
     date: {
-      minTime: setHours(new Date(), 6),
-      maxTime: setHours(new Date(), 20),
+      minTime: setHours(now, 6),
+      maxTime: setHours(now, 20),
       pickerAppearance: 'timeOnly',
       displayFormat: 'HH:mm',
       timeIntervals: 60,

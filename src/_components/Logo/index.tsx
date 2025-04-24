@@ -1,10 +1,5 @@
-import { Gothic_A1 } from 'next/font/google'
 import TextLogo from './fsspx.svg'
 import TwoHeartsLogo from './two-hearts-logo.svg'
-
-
-const gothicExtraLight = Gothic_A1({ weight: '200', subsets: ['latin'] })
-const gothicMedium = Gothic_A1({ weight: '500', subsets: ['latin'] })
 
 export const Logo = ({
   skipMainText,
@@ -23,8 +18,8 @@ export const Logo = ({
         </div>
       )}
       <div id="title" className="flex flex-col text-sm leading-none relative top-[-15px] text-left">
-        <span className={gothicExtraLight.className}>Bractwo</span>
-        <span className={gothicMedium.className}>św. Piusa X</span>
+        <span className={`font-light`}>Bractwo</span>
+        <span className={`font-medium`}>św. Piusa X</span>
       </div>
     </div>
   )
