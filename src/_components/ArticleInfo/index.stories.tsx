@@ -14,6 +14,8 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+const now = new Date();
+
 const defaultAvatar = {
   id: '1',
   url: 'https://placehold.co/30x30.jpg',
@@ -22,19 +24,19 @@ const defaultAvatar = {
   filesize: 1024,
   width: 30,
   height: 30,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: now.toISOString(),
+  updatedAt: now.toISOString(),
   alt: 'Avatar image',
-  now: new Date().toISOString(),
+  now: now.toISOString(),
 }
 
 export const Default: Story = {
   args: {
     author: 'Jerzy Brzęczyszczykiewicz',
     avatar: defaultAvatar,
-    createdAt: subDays(new Date(), 3).toISOString(),
-    updatedAt: subDays(new Date(), 1).toISOString(),
-    now: new Date().toISOString(),
+    createdAt: subDays(now, 3).toISOString(),
+    updatedAt: subDays(now, 1).toISOString(),
+    now: now.toISOString(),
   },
 }
 

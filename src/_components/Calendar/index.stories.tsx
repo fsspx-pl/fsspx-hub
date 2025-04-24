@@ -43,6 +43,7 @@ const createMockFeasts = (length: number, startDate: Date): FeastWithMasses[] =>
           id: `${i}-1`,
           category: 'mass',
           massType: 'sung' as ServiceType['massType'],
+          date: date.toISOString(),
           time: setHours(date, 7).toISOString(),
           type: 'sung' as ServiceType['massType'],
           createdAt: '',
@@ -52,6 +53,7 @@ const createMockFeasts = (length: number, startDate: Date): FeastWithMasses[] =>
         {
           id: `${i}-2`,
           category: 'mass',
+          date: date.toISOString(),
           massType: 'read' as ServiceType['massType'],
           time: setHours(date, 18).toISOString(),
           type: 'read' as ServiceType['massType'],

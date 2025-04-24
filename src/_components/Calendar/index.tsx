@@ -3,7 +3,7 @@
 import { Feast, VestmentColor } from '@/feast'
 import { garamond, gothic } from '@/fonts'
 import { Service as ServiceType } from '@/payload-types'
-import { format, isBefore, isEqual, startOfDay } from 'date-fns'
+import { format, isBefore, isEqual } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import React from 'react'
 import { Day } from './Day'
@@ -27,7 +27,7 @@ const WINDOW_SIZE = 8;
 const SHIFT_THRESHOLD = 6;
 const BACKWARD_SHIFT_THRESHOLD = 1;
 
-export const Calendar: React.FC = () => {
+export const Calendar: React.FC<{ referenceDate: Date }> = ({ referenceDate }) => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
   const firstFeastDate = feasts[0]?.date;
   const month = selectedDay ? selectedDay.date : firstFeastDate;
@@ -49,8 +49,6 @@ export const Calendar: React.FC = () => {
     // Ensure we don't start beyond what would push the last few days off screen
     return Math.min(calculatedStart, Math.max(0, feasts.length - WINDOW_SIZE));
   });
-
-  const todayReference = React.useMemo(() => startOfDay(new Date()), []);
 
   const visibleDays = React.useMemo(() => {
     return feasts.slice(windowStart, windowStart + WINDOW_SIZE);
@@ -119,7 +117,7 @@ export const Calendar: React.FC = () => {
           <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[368px]">
             {visibleDays.map((day, index) => {
               // Use today's actual date for past day detection
-              const isPastDay = isBefore(day.date, todayReference);
+              const isPastDay = isBefore(day.date, referenceDate);
               const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
               
               // Only apply opacity to past days that aren't selected
@@ -152,12 +150,12 @@ export const Calendar: React.FC = () => {
             {(selectedDay.title || selectedDay.rank) && (
               <div className="self-stretch flex-col justify-start items-start gap-1.5 flex">
                 {selectedDay.title && (
-                  <div className={`font-semibold leading-5 ${gothic.className}`}>
+                  <div className={`font-semibold leading-5`}>
                     {selectedDay.title}
                   </div>
                 )}
                 {selectedDay.rank && (
-                  <div className={`self-stretch text-sm ${gothic.className}`}>
+                  <div className={`self-stretch text-sm`}>
                     <span className="leading-[14px]">
                       święto { romanize(selectedDay.rank)} klasy
                     </span>

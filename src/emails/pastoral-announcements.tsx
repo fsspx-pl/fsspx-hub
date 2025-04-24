@@ -19,12 +19,12 @@ import { pl } from 'date-fns/locale';
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
 
+const now = new Date();
 const getMassTime = (time: string) => {
-  const now = new Date();
   return parse(time, "HH:mm", now).toISOString();
 }
 
-const referenceDate = parse("2025-03-30", "yyyy-MM-dd", new Date()); // sunday
+const referenceDate = parse("2025-03-30", "yyyy-MM-dd", now); // sunday
 const feastBase = { title: "Test Feast", color: VestmentColor.VIOLET, date: referenceDate, rank: 1 } as Feast;
 const testFeasts: FeastWithMasses[] = [
   {
@@ -36,8 +36,8 @@ const testFeasts: FeastWithMasses[] = [
         category: 'mass',
         massType: 'read',
         tenant: 'test-tenant',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
       } as ServiceType,
       { 
         time: getMassTime("11:00"), 
@@ -45,8 +45,8 @@ const testFeasts: FeastWithMasses[] = [
         massType: 'silent', 
         notes: 'Msza w intencji zmarłych ofiarodawców',
         tenant: 'test-tenant',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
       } as ServiceType,
       { 
         time: getMassTime("12:00"), 
@@ -54,8 +54,8 @@ const testFeasts: FeastWithMasses[] = [
         customTitle: 'Nabożeństwo do świętego Józefa',
         notes: 'Po Mszy Św. odbędzie się nabożeństwo do świętego Józefa',
         tenant: 'test-tenant',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
       } as ServiceType,
     ],
   },
@@ -81,8 +81,8 @@ const testFeasts: FeastWithMasses[] = [
         category: 'mass',
         massType: 'solemn',
         tenant: 'test-tenant',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
       } as ServiceType,
     ],
   },
@@ -179,7 +179,7 @@ export default function Email({
   slogan: string;
   feastsWithMasses: FeastWithMasses[];
 }) {
-  const currentYear = new Date().getFullYear();
+  const currentYear = now.getFullYear();
 
   return (
     <Html>
