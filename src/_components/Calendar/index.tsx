@@ -1,7 +1,7 @@
 'use client'
 
 import { Feast, VestmentColor } from '@/feast'
-import { garamond, gothic } from '@/fonts'
+import { garamond } from '@/fonts'
 import { Service as ServiceType } from '@/payload-types'
 import { format, isBefore, isEqual, startOfDay } from 'date-fns'
 import { pl } from 'date-fns/locale'
@@ -152,12 +152,12 @@ export const Calendar: React.FC = () => {
             {(selectedDay.title || selectedDay.rank) && (
               <div className="self-stretch flex-col justify-start items-start gap-1.5 flex">
                 {selectedDay.title && (
-                  <div className={`font-semibold leading-5 ${gothic.className}`}>
+                  <div className={`font-semibold leading-5`}>
                     {selectedDay.title}
                   </div>
                 )}
                 {selectedDay.rank && (
-                  <div className={`self-stretch text-sm ${gothic.className}`}>
+                  <div className={`self-stretch text-sm`}>
                     <span className="leading-[14px]">
                       święto { romanize(selectedDay.rank)} klasy
                     </span>
@@ -171,7 +171,7 @@ export const Calendar: React.FC = () => {
                 )}
               </div>
             )}
-            <div className={`flex-col text-sm justify-start items-start flex text-[#4a4b4f] gap-2 ${gothic.className}`}>
+            <div className={`flex-col text-sm justify-start items-start flex text-[#4a4b4f] gap-2`}>
               {selectedDay.masses.length > 0 ? (
                 selectedDay.masses.map((mass, idx) => (
                   <div key={idx} className="grid grid-cols-[auto_1fr] gap-x-4">
