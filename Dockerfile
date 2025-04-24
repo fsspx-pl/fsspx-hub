@@ -23,6 +23,7 @@ RUN pnpm rebuild sharp
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/fonts ./fonts
 COPY . .
 
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
