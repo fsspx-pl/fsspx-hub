@@ -1,3 +1,8 @@
+ARG NEXT_PUBLIC_API_URL
+ARG DATABASE_URI
+ARG PAYLOAD_SECRET
+ARG NEXT_PUBLIC_ROOT_DOMAIN
+
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed
@@ -7,6 +12,8 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY pnpm-lock.yaml* package.json ./
+COPY fonts.json ./
+COPY scripts/download-fonts.cjs ./scripts/download-fonts.cjs
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
 RUN corepack enable pnpm
 RUN pnpm i --frozen-lockfile
@@ -17,11 +24,6 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
 RUN corepack enable pnpm && pnpm run build
