@@ -20,8 +20,20 @@ const FeastDataContext = createContext<FeastDataContextType | undefined>(undefin
 
 const selectTodayOrFirstFeast = (feasts: FeastWithMasses[], initialDate: string) => {
   const now = new Date(initialDate)
+  // Try to find the current day in the feasts
   const todayFeast = feasts.find((feast) => isSameDay(now, feast.date))
-  return todayFeast ?? feasts[0]
+  
+  // If we found it, return it
+  if (todayFeast) return todayFeast
+  
+  // If we didn't find today, try to find the closest future date
+  const futureDates = feasts.filter(feast => feast.date >= now)
+  if (futureDates.length > 0) {
+    return futureDates[0] // Return the closest future date
+  }
+  
+  // If no future dates, return the last feast (most recent past date)
+  return feasts[feasts.length - 1] ?? feasts[0]
 }
 
 export const FeastDataProvider: React.FC<{
@@ -31,7 +43,9 @@ export const FeastDataProvider: React.FC<{
 }> = ({ children, initialFeasts, initialDate }) => {
   const [currentDate, setCurrentDate] = useState(new Date(initialDate))
   const [feasts] = useState<FeastWithMasses[]>(initialFeasts)
-  const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(selectTodayOrFirstFeast(initialFeasts, initialDate))
+  const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(
+    selectTodayOrFirstFeast(initialFeasts, initialDate)
+  )
 
   const handlePrevious = () => {
     setCurrentDate((prev) => subDays(prev, 1))

@@ -68,40 +68,43 @@ export const Services: CollectionConfig = {
   ],
   hooks: {
     afterChange: [
-      async ({ doc }) => {
-        const payload = await getPayload({ config });
-        
-        // Find all pastoral announcement pages that include this service's time, by definition there should be only one such page
-        const pages = await payload.find({
-          collection: 'pages',
-          where: {
-            and: [
-              {
-                type: {
-                  equals: 'pastoral-announcements'
+      async ({ doc, req: { payload } }) => {
+        // Find all pastoral announcement pages that include this service's time
+        try {
+          const pages = await payload.find({
+            collection: 'pages',
+            where: {
+              and: [
+                {
+                  type: {
+                    equals: 'pastoral-announcements'
+                  }
+                },
+                {
+                  'period.start': {
+                    less_than_equal: doc.time
+                  }
+                },
+                {
+                  'period.end': {
+                    greater_than_equal: doc.time
+                  }
                 }
-              },
-              {
-                'period.start': {
-                  less_than_equal: doc.time
-                }
-              },
-              {
-                'period.end': {
-                  greater_than_equal: doc.time
-                }
-              }
-            ]
-          },
-          depth: 2,
-          limit: 1,
-        });
+              ]
+            },
+            depth: 1,
+          });
 
-        const [ page ] = pages.docs;
-        if (!page) return;
-        const domain = (page.tenant as Tenant).domain;
-        const date = format(page.period.start, 'dd-MM-yyyy');
-        revalidateTag(`page-${domain}-${date}`);
+          if (!pages.docs.length) return;
+          pages.docs.forEach(async (page) => {
+            const domain = (page.tenant as Tenant).domain;
+            const date = format(page.period.start, 'dd-MM-yyyy');
+            revalidateTag(`tenant:${domain}:date:${date}`);
+            payload.logger.info(`Revalidated date tag: tenant:${domain}:date:${date} due to service change`);
+          });
+        } catch (error) {
+          payload.logger.error(`Error in Services afterChange hook: ${error}`);
+        }
       }
     ]
   },

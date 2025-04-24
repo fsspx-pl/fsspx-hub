@@ -119,7 +119,8 @@ async function createCampaign(page: Page) {
  * Sends a created campaign
  */
 async function sendCampaign(campaignId: string) {
-  console.log(`Sending campaign with ID: ${campaignId}`);
+  const payload = await getPayload({ config });
+  payload.logger.info(`Sending campaign with ID: ${campaignId}`);
 
   const sendResponse = await fetch(
     `${process.env.SENDER_API_URL}/campaigns/${campaignId}/send`,
