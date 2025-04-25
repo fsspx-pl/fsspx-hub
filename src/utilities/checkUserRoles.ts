@@ -1,16 +1,9 @@
 import type { User } from '../payload-types'
 
 export const checkUserRoles = (allRoles: ('super-admin' | 'user')[] = [], user: User | null): boolean => {
-  if (user) {
-    if (
-      allRoles.some(role => {
-        return user?.roles?.some(individualRole => {
-          return individualRole === role
-        })
-      })
-    )
-      return true
-  }
-
-  return false
+  if (!user) return false
+  
+  return allRoles.some(role => 
+    user.roles?.some(individualRole => individualRole === role)
+  )
 }

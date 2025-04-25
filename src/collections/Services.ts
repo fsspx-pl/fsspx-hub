@@ -1,11 +1,12 @@
 import { anyone } from '@/access/anyone';
+import { isSuperAdmin, superAdmins } from '@/access/superAdmins';
 import { tenantAdmins } from '@/access/tenantAdmins';
 import serviceFields from '@/fields/service';
-import { Tenant } from '@/payload-types';
-import config from '@payload-config';
+import { Tenant, User } from '@/payload-types';
+import { checkUserRoles } from '@/utilities/checkUserRoles';
 import { format } from 'date-fns';
 import { revalidateTag } from 'next/cache';
-import { CollectionConfig, getPayload } from 'payload';
+import { CollectionConfig } from 'payload';
 
 
 export const Services: CollectionConfig = {
@@ -22,7 +23,7 @@ export const Services: CollectionConfig = {
   }, 
   access: {
     // TODO make this more secure, only a member of a given tenant should be able to do this
-    read: anyone,
+    read: tenantAdmins,
     create: tenantAdmins,
     update: tenantAdmins,
     delete: tenantAdmins,
@@ -30,7 +31,6 @@ export const Services: CollectionConfig = {
   admin: {
     useAsTitle: 'time',
     defaultColumns: ['date', 'time', 'category', 'massType', 'tenant'],
-    hidden: true,
   },
   fields: [
     {
