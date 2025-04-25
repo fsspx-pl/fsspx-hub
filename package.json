@@ -22,10 +22,9 @@
     "standalone-script": "node ./src/scripts/standalone-script.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepare": "pnpm download-fonts"
+    "postinstall": "pnpm download-fonts"
   },
   "dependencies": {
-    "@payload-enchants/cached-local-api": "^1.2.2",
     "@payloadcms/db-mongodb": "3.28.1",
     "@payloadcms/next": "3.28.1",
     "@payloadcms/richtext-lexical": "3.28.1",
