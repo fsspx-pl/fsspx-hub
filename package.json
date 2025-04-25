@@ -11,6 +11,7 @@
     "dev:email": "email dev --dir src/emails",
     "devturbo": "cross-env NODE_OPTIONS=--no-deprecation next dev --turbo",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "download-fonts": "node ./scripts/download-fonts.cjs",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
@@ -20,10 +21,10 @@
     "generate:schema": "payload-graphql generate:schema",
     "standalone-script": "node ./src/scripts/standalone-script.js",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "postinstall": "pnpm download-fonts"
   },
   "dependencies": {
-    "@payload-enchants/cached-local-api": "^1.2.2",
     "@payloadcms/db-mongodb": "3.28.1",
     "@payloadcms/next": "3.28.1",
     "@payloadcms/richtext-lexical": "3.28.1",

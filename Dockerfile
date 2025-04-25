@@ -7,6 +7,8 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY pnpm-lock.yaml* package.json ./
+COPY fonts.json ./
+COPY scripts/download-fonts.cjs ./scripts/download-fonts.cjs
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
 RUN corepack enable pnpm
 RUN pnpm i --frozen-lockfile
@@ -16,12 +18,8 @@ RUN pnpm rebuild sharp
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/fonts ./fonts
 COPY . .
-
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
 RUN corepack enable pnpm && pnpm run build

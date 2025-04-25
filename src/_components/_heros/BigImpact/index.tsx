@@ -1,6 +1,6 @@
 import { Gutter } from '@/_components/Gutter'
 import { Media } from '@/_components/Media'
-import { garamond, gothic } from '@/fonts'
+import { garamond } from '@/fonts'
 import { Media as MediaType } from '@/payload-types'
 import React from 'react'
 import { ArticleInfo } from '../../ArticleInfo'
@@ -50,7 +50,7 @@ export const BigImpact: React.FC<Props> = ({
             <h1 className={`${garamond.className}`}>
               {title}
             </h1>
-            <span className={`text-[#6A6C72] text-justify leading-relaxed ${gothic.className}`}>
+            <span className={`text-[#6A6C72] text-justify leading-relaxed`}>
               {excerpt}
             </span>
           </div>
