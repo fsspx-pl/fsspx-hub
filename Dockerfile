@@ -26,6 +26,11 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/fonts ./fonts
 COPY . .
 
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV DATABASE_URI=${DATABASE_URI}
+ENV PAYLOAD_SECRET=${PAYLOAD_SECRET}
+ENV NEXT_PUBLIC_ROOT_DOMAIN=${NEXT_PUBLIC_ROOT_DOMAIN}
+
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
 RUN corepack enable pnpm && pnpm run build
 
