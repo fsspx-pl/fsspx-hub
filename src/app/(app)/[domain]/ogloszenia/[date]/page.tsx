@@ -68,10 +68,11 @@ export default async function AnnouncementPage({
 }: {
   params: Promise<{ domain: string; date: string }>;
 }) {
+  const now = new Date(); 
   const { domain, date } = await params;
-  const isoDate = parse(date, 'dd-MM-yyyy', new Date()).toISOString();
+  const isoDate = parse(date, 'dd-MM-yyyy', now).toISOString();
   const page = await fetchTenantPageByDate(domain, isoDate);
-  const serverNow = new Date().toISOString();
+  const serverNow = now.toISOString();
 
   if (!page?.content_html) return null;
 
@@ -107,9 +108,9 @@ export default async function AnnouncementPage({
         <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
-            initialDate={feastsWithMasses.length > 0 ? new Date().toISOString() : serverNow}
+            initialDate={feastsWithMasses.length > 0 ? now.toISOString() : serverNow}
           >
-            <Calendar />
+            <Calendar referenceDate={now} />
           </FeastDataProvider>
         </div>
         <div

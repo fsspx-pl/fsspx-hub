@@ -4,10 +4,10 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
-
-import { Services } from './collections/Services'
 import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
+import { ServiceWeeks } from './collections/ServiceWeeks'
+import { Services } from './collections/Services'
 import { Tenants } from './collections/Tenants'
 import { Users } from './collections/Users'
 import { Footer } from './globals/Footer'
@@ -22,7 +22,7 @@ export default buildConfig({
     user: Users.slug,
   },
   globals: [ Settings, Header, Footer ],
-  collections: [Users, Tenants, Pages, Media, Services],
+  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,

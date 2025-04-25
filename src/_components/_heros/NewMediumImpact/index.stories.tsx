@@ -15,6 +15,8 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+const now = new Date();
+
 const defaultArgs = {
   title: 'Ogłoszenia duszpasterskie',
   author: 'ks. Bartosz Tokarski',
@@ -26,12 +28,12 @@ const defaultArgs = {
     filesize: 1024,
     width: 30,
     height: 30,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
     alt: 'Author avatar',
   },
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: now.toISOString(),
+  updatedAt: now.toISOString(),
   image: {
     id: '2',
     url: 'https://placehold.co/1200x800/234/fff',
@@ -40,12 +42,12 @@ const defaultArgs = {
     filesize: 1024,
     width: 1200,
     height: 800,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
     alt: 'Background image',
   },
   timestamp: '14 grudnia 2024',
-  now: new Date().toISOString(),
+  now: now.toISOString(),
 }
 
 export const Default: Story = {

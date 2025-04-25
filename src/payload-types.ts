@@ -71,6 +71,7 @@ export interface Config {
     pages: Page;
     media: Media;
     services: Service;
+    serviceWeeks: ServiceWeek;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -82,6 +83,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
+    serviceWeeks: ServiceWeeksSelect<false> | ServiceWeeksSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -212,6 +214,68 @@ export interface Tenant {
    * The ID of the mailing list in Sender.net. NOTE: changing the mailing list ID will affect the newsletter recipients for this location.
    */
   senderListId?: string | null;
+  feastTemplates?: {
+    rankOne?: {
+      applicableRanks?:
+        | {
+            [k: string]: unknown;
+          }
+        | unknown[]
+        | string
+        | number
+        | boolean
+        | null;
+      services?:
+        | {
+            time: string;
+            category: 'mass' | 'rosary' | 'lamentations' | 'other';
+            /**
+             * Holy Mass type, visible in the calendar and newsletter
+             */
+            massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+            /**
+             * Service title, visible in the calendar and newsletter
+             */
+            customTitle?: string | null;
+            /**
+             * Additional information about the service, visible below the service title in the calendar and newsletter
+             */
+            notes?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    otherRanks?: {
+      applicableRanks?:
+        | {
+            [k: string]: unknown;
+          }
+        | unknown[]
+        | string
+        | number
+        | boolean
+        | null;
+      services?:
+        | {
+            time: string;
+            category: 'mass' | 'rosary' | 'lamentations' | 'other';
+            /**
+             * Holy Mass type, visible in the calendar and newsletter
+             */
+            massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+            /**
+             * Service title, visible in the calendar and newsletter
+             */
+            customTitle?: string | null;
+            /**
+             * Additional information about the service, visible below the service title in the calendar and newsletter
+             */
+            notes?: string | null;
+            id?: string | null;
+          }[]
+        | null;
+    };
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -257,8 +321,9 @@ export interface Page {
  */
 export interface Service {
   id: string;
-  time: string;
+  date: string;
   tenant: string | Tenant;
+  time: string;
   category: 'mass' | 'rosary' | 'lamentations' | 'other';
   /**
    * Holy Mass type, visible in the calendar and newsletter
@@ -272,6 +337,81 @@ export interface Service {
    * Additional information about the service, visible below the service title in the calendar and newsletter
    */
   notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "serviceWeeks".
+ */
+export interface ServiceWeek {
+  id: string;
+  /**
+   * Chapel/Mission to which this service week order is assigned
+   */
+  tenant: string | Tenant;
+  /**
+   * First day of the week (must be Sunday)
+   */
+  start: string;
+  end?: string | null;
+  yearWeek?: number | null;
+  monday?: {
+    services?:
+      | {
+          service?: (string | null) | Service;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  tuesday?: {
+    services?:
+      | {
+          service?: (string | null) | Service;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  wednesday?: {
+    services?:
+      | {
+          service?: (string | null) | Service;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  thursday?: {
+    services?:
+      | {
+          service?: (string | null) | Service;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  friday?: {
+    services?:
+      | {
+          service?: (string | null) | Service;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  saturday?: {
+    services?:
+      | {
+          service?: (string | null) | Service;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  sunday?: {
+    services?:
+      | {
+          service?: (string | null) | Service;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -301,6 +441,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'services';
         value: string | Service;
+      } | null)
+    | ({
+        relationTo: 'serviceWeeks';
+        value: string | ServiceWeek;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -392,6 +536,40 @@ export interface TenantsSelect<T extends boolean = true> {
         phone?: T;
       };
   senderListId?: T;
+  feastTemplates?:
+    | T
+    | {
+        rankOne?:
+          | T
+          | {
+              applicableRanks?: T;
+              services?:
+                | T
+                | {
+                    time?: T;
+                    category?: T;
+                    massType?: T;
+                    customTitle?: T;
+                    notes?: T;
+                    id?: T;
+                  };
+            };
+        otherRanks?:
+          | T
+          | {
+              applicableRanks?: T;
+              services?:
+                | T
+                | {
+                    time?: T;
+                    category?: T;
+                    massType?: T;
+                    customTitle?: T;
+                    notes?: T;
+                    id?: T;
+                  };
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -442,12 +620,95 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "services_select".
  */
 export interface ServicesSelect<T extends boolean = true> {
-  time?: T;
+  date?: T;
   tenant?: T;
+  time?: T;
   category?: T;
   massType?: T;
   customTitle?: T;
   notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "serviceWeeks_select".
+ */
+export interface ServiceWeeksSelect<T extends boolean = true> {
+  tenant?: T;
+  start?: T;
+  end?: T;
+  yearWeek?: T;
+  monday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              service?: T;
+              id?: T;
+            };
+      };
+  tuesday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              service?: T;
+              id?: T;
+            };
+      };
+  wednesday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              service?: T;
+              id?: T;
+            };
+      };
+  thursday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              service?: T;
+              id?: T;
+            };
+      };
+  friday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              service?: T;
+              id?: T;
+            };
+      };
+  saturday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              service?: T;
+              id?: T;
+            };
+      };
+  sunday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              service?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }

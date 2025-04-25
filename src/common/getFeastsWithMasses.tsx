@@ -20,7 +20,7 @@ export async function getFeastsWithMasses(period: PageType['period'], tenant: Te
 
   return feasts.map((feast: Feast) => {
     const feastMasses = masses.filter((mass) => {
-      const massDate = parseISO(mass.time);
+      const massDate = parseISO(mass.date);
       return isSameDay(massDate, feast.date);
     });
     return {

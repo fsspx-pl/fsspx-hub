@@ -13,6 +13,8 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+const now = new Date()
+
 const defaultArgs = {
   image: {
     id: '1',
@@ -22,8 +24,8 @@ const defaultArgs = {
     filesize: 1024,
     width: 1200,
     height: 800,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
     alt: 'Article hero image',
   },
   author: 'ks. Bartosz Tokarski',
@@ -36,16 +38,16 @@ const defaultArgs = {
     width: 400,
     height: 400,
     alt: 'Author avatar',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now.toISOString(),
+    updatedAt: now.toISOString(),
   },
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: now.toISOString(),
+  updatedAt: now.toISOString(),
   timestamp: '12 minut temu',
   title: 'The Sources of the New Synodal Doctrine',
   excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi...',
   readingTimeMinutes: 4,
-  now: new Date().toISOString(),
+  now: now.toISOString(),
 }
 
 export const Default: Story = {
