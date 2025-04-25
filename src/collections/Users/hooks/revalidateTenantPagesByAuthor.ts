@@ -1,16 +1,22 @@
 import { revalidateTag } from "next/cache";
 import { CollectionAfterChangeHook } from "payload";
 import { format } from "date-fns";
-import { Tenant } from "@/payload-types";
+import { Tenant, User } from "@/payload-types";
 
-export const revalidateTenantPagesByAuthor: CollectionAfterChangeHook = async ({
+const revalidationProps: (keyof User)[] = ['firstName', 'lastName', 'avatar', 'salutation']
+
+export const revalidatePagesByAuthor: CollectionAfterChangeHook = async ({
   doc,
   req: { payload },
   operation,
+  previousDoc,
 }) => {
   try {
     if (operation !== "update") return;
     if (!doc.tenants?.length) return;
+
+    const shouldRevalidate = revalidationProps.filter(prop => previousDoc?.[prop] !== doc?.[prop])
+    if (!shouldRevalidate.length) return;
 
     const pages = await payload.find({
       collection: 'pages',
