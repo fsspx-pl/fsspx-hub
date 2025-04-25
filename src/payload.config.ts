@@ -41,6 +41,7 @@ export default buildConfig({
       directConnection: process.env.DATABASE_DIRECT_CONNECTION === 'true',
       tls: process.env.DATABASE_TLS === 'true',
       tlsAllowInvalidCertificates: process.env.DATABASE_TLS_ALLOW_INVALID_CERTIFICATES === 'true',
+      tlsCAFile: process.env.DATABASE_TLS_CA_FILE,
     },
   }),
   sharp,
