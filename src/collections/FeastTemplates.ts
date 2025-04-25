@@ -1,6 +1,6 @@
 import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
-import { service } from '@/fields/service';
+import serviceFields from '@/fields/service';
 import { CollectionConfig } from 'payload';
 
 export const FeastTemplates: CollectionConfig = {
@@ -90,7 +90,7 @@ export const FeastTemplates: CollectionConfig = {
       },
       minRows: 1,
       fields: [
-        service,
+        ...serviceFields,
       ],
     },
   ],

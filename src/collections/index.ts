@@ -4,8 +4,6 @@ import { Pages } from './Pages';
 import { Media } from './Media';
 import { Users } from './Users';
 import { Tenants } from './Tenants';
-import { Posts } from './Posts';
-import { HomePage } from './HomePage';
 import { Services } from './Services';
 import { FeastTemplates } from './FeastTemplates';
 import { ServiceWeeks } from './ServiceWeeks';
@@ -15,8 +13,6 @@ export const collections: CollectionConfig[] = [
   Media,
   Users,
   Tenants,
-  HomePage,
-  Posts,
   Services,
   FeastTemplates,
   ServiceWeeks,
