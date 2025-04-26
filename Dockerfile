@@ -1,5 +1,3 @@
-ARG DATABASE_TLS_CA_FILE
-
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed
@@ -10,7 +8,6 @@ WORKDIR /app
 
 COPY pnpm-lock.yaml* package.json ./
 COPY fonts.json ./
-COPY ${DATABASE_TLS_CA_FILE} ./db_cert.pem
 COPY scripts/download-fonts.cjs ./scripts/download-fonts.cjs
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
 RUN corepack enable pnpm
@@ -22,7 +19,6 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/fonts ./fonts
-COPY --from=deps /app/db_cert.pem ./db_cert.pem
 COPY . .
 
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
