@@ -1,6 +1,6 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { HTMLConverterFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import path from 'path'
+import path, { join } from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
@@ -40,8 +40,8 @@ export default buildConfig({
     connectOptions: {
       directConnection: process.env.DATABASE_DIRECT_CONNECTION === 'true',
       tls: process.env.DATABASE_TLS === 'true',
-      tlsAllowInvalidCertificates: process.env.DATABASE_TLS_ALLOW_INVALID_CERTIFICATES === 'true',
-      tlsCAFile: process.env.DATABASE_TLS_CA_FILE,
+      tlsCAFile: join(process.cwd(), process.env.DATABASE_TLS_CA_FILE ?? ''),
+      tlsAllowInvalidCertificates: !!process.env.DATABASE_TLS_CA_FILE,
     },
   }),
   sharp,
