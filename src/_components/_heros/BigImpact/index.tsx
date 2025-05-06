@@ -44,7 +44,6 @@ export const BigImpact: React.FC<Props> = ({
             avatar={authorAvatar}
             createdAt={createdAt}
             updatedAt={updatedAt}
-            now={now}
           />
           <div className='prose'>
             <h1 className={`${garamond.className}`}>

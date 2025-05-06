@@ -13,7 +13,6 @@ type Props = {
   updatedAt: string,
   image: MediaType
   className?: string
-  now: string
 }
 
 export const NewMediumImpact: React.FC<Props> = ({
@@ -24,7 +23,6 @@ export const NewMediumImpact: React.FC<Props> = ({
   updatedAt,
   image,
   className,
-  now,
 }) => {
   return (
     <Gutter className={`${className} flex flex-col gap-4`}>
@@ -48,7 +46,6 @@ export const NewMediumImpact: React.FC<Props> = ({
         avatar={authorAvatar}
         createdAt={createdAt}
         updatedAt={updatedAt}
-        now={now}
       />
     </Gutter>
   )
