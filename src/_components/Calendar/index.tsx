@@ -27,11 +27,14 @@ const WINDOW_SIZE = 8;
 const SHIFT_THRESHOLD = 6;
 const BACKWARD_SHIFT_THRESHOLD = 1;
 
-export const Calendar: React.FC<{ referenceDate: Date }> = ({ referenceDate }) => {
+const now = new Date();
+
+export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
   const firstFeastDate = feasts[0]?.date;
   const month = selectedDay ? selectedDay.date : firstFeastDate;
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
+
 
   // Initialize window start to center the selected day
   const [windowStart, setWindowStart] = React.useState(() => {
@@ -117,7 +120,7 @@ export const Calendar: React.FC<{ referenceDate: Date }> = ({ referenceDate }) =
           <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[368px]">
             {visibleDays.map((day, index) => {
               // Use today's actual date for past day detection
-              const isPastDay = isBefore(day.date, referenceDate);
+              const isPastDay = isBefore(day.date, now);
               const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
               
               // Only apply opacity to past days that aren't selected

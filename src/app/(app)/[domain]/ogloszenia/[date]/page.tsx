@@ -102,7 +102,6 @@ export default async function AnnouncementPage({
         authorAvatar={authorAvatar}
         createdAt={page.createdAt}
         updatedAt={page.updatedAt}
-        now={serverNow}
       />
       <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 md:flex-row">
         <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
@@ -110,7 +109,7 @@ export default async function AnnouncementPage({
             initialFeasts={feastsWithMasses}
             initialDate={feastsWithMasses.length > 0 ? now.toISOString() : serverNow}
           >
-            <Calendar referenceDate={now} />
+            <Calendar />
           </FeastDataProvider>
         </div>
         <div

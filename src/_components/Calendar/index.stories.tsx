@@ -82,7 +82,7 @@ export const Default: Story = {
         initialFeasts={mockFeasts} 
         initialDate={todayFeast?.date.toISOString() ?? today.toISOString()}
       >
-        <Calendar referenceDate={today} />
+        <Calendar />
       </FeastDataProvider>
     );
   },
