@@ -97,8 +97,8 @@ export const ServiceWeeks: CollectionConfig = {
             // Find matching template for the feast rank
             const templatesArray = Object.values(feastTemplates);
             const template = templatesArray.find(template => {
-              const applicableRanks = template.applicableRanks as number[];
-              return applicableRanks?.includes(feast.rank);
+              const applicableDays = template.applicableDays as number[];
+              return applicableDays?.includes(feast.rank);
             });
             
             if (!template?.services?.length) continue;

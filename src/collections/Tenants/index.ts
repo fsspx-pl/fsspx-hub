@@ -1,4 +1,3 @@
-
 import { CollectionConfig } from 'payload'
 import { superAdmins } from '../../access/superAdmins'
 import { anyone } from '@/access/anyone'
@@ -48,16 +47,16 @@ export const Tenants: CollectionConfig = {
 					type: 'tabs',
 					tabs: [
 						{
-							name: 'rankOne',
+							name: 'sunday',
 							label: {
-								pl: 'I klasy',
-								en: 'Rank 1'
+								pl: 'Niedziela',
+								en: 'Sunday'
 							},
 							fields: [
                 {
                   type: 'json',
-                  name: 'applicableRanks',
-                  defaultValue: [1],
+                  name: 'applicableDays',
+                  defaultValue: [0],
                   hidden: true,
                 },
                 {
@@ -67,18 +66,24 @@ export const Tenants: CollectionConfig = {
                   ...serviceFields,
                 ]}
 							],
+              admin: {
+                description: {
+                  pl: 'Szablon nabożeństw na niedzielę. Ponisze nabożeństwa bedą tworzone automatycznie podczas tworzenia nowych tygodni.',
+                  en: 'Template for Sunday services. These services will be automatically created for new service weeks.'
+                }
+              }
 						},
 						{
-							name: 'otherRanks',
+							name: 'otherDays',
 							label: {
-								pl: 'Pozostałe klasy',
-								en: 'Other ranks'
+								pl: 'Dni powszednie',
+								en: 'Other days'
 							},
 							fields: [
                 {
                   type: 'json',
-                  name: 'applicableRanks',
-                  defaultValue: [2, 3, 4],
+                  name: 'applicableDays',
+                  defaultValue: [1, 2, 3, 4, 5, 6],
                   hidden: true,
                 },
 								{
@@ -91,6 +96,10 @@ export const Tenants: CollectionConfig = {
 							],
 							admin: {
 								width: '50%',
+                description: {
+                  pl: 'Szablon nabożeństw na dni powszednie (poniedziałek-sobota). Ponisze nabożeństwa bedą tworzone automatycznie podczas tworzenia nowych tygodni.',
+                  en: 'Template for weekday services (Monday-Saturday). These services will be automatically created for new service weeks.'
+                }
 							}
 						}
 					]

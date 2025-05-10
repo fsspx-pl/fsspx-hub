@@ -1,7 +1,35 @@
 import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
+import { getFeasts } from '@/common/getFeasts';
+import { Feast } from '@/feast';
+import { Service, ServiceWeek, Tenant } from '@/payload-types';
+import { addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
-import { format, getISOWeek, getYear } from 'date-fns';
+import { getFeastTemplate } from './fields/feastTemplate';
+import { getApplyTemplateField } from './fields/applyTemplateField';
+
+// Define type for feast days grouped by day of week
+interface FeastsByDay {
+  [key: number]: Feast[];
+}
+
+// Type for the day object in ServiceWeek
+interface ServiceWeekDay {
+  services?: Array<{
+    service: string | Service;
+    id?: string | null;
+  }> | null;
+}
+
+const dayMap: Record<number, string> = {
+  0: 'sunday',
+  1: 'monday',
+  2: 'tuesday',
+  3: 'wednesday',
+  4: 'thursday',
+  5: 'friday',
+  6: 'saturday'
+};
 
 export const ServiceWeeks: CollectionConfig = {
   slug: 'serviceWeeks',
@@ -22,32 +50,145 @@ export const ServiceWeeks: CollectionConfig = {
     delete: tenantAdmins,
   },
   admin: {
-    useAsTitle: 'title',
-    defaultColumns: ['title', 'startDate', 'endDate', 'tenant'],
+    useAsTitle: 'yearWeek',
+    defaultColumns: ['yearWeek', 'start', 'tenant'],
     group: 'Services',
   },
-  fields: [
-    {
-      name: 'title',
-      type: 'text',
-      required: true,
-      admin: {
-        readOnly: true,
-        hidden: true,
-      },
-      hooks: {
-        beforeValidate: [
-          ({ data }) => {
-            if (data?.startDate && data?.tenant) {
-              const startDate = new Date(data.startDate);
-              const tenantName = typeof data.tenant === 'object' ? data.tenant.name : 'Unknown';
-              return `${tenantName} - Week of ${format(startDate, 'yyyy-MM-dd')}`;
+  hooks: {
+    beforeChange: [
+      async ({ data, req, operation }) => {
+        if (operation !== 'create') return data;
+
+        const { start, end, tenant: tenantId } = data;
+        if (!start || !end || !tenantId) return data;
+        
+        const startDate = typeof start === 'string' ? parseISO(start) : start;
+        const endDate = typeof end === 'string' ? parseISO(end) : end;
+
+        const tenant = await req.payload.findByID({
+          collection: 'tenants',
+          id: tenantId,
+          depth: 2
+        }) as Tenant;
+
+        if (!tenant) return data;
+        
+        const feasts = await getFeasts(startDate, endDate);
+        const feastsByDay = feasts.reduce((acc: FeastsByDay, feast) => {
+          const dayOfWeek = getDay(feast.date);
+          if (!acc[dayOfWeek]) acc[dayOfWeek] = [];
+          acc[dayOfWeek].push(feast);
+          return acc;
+        }, {});
+        
+        const updatedData: any = { ...data };
+        
+        for (const [dayNumber, dayFeasts] of Object.entries(feastsByDay)) {
+          const dayNum = Number(dayNumber);
+          const tabName = dayMap[dayNum];
+          const services = [];
+          
+          for (const feast of dayFeasts) {
+            const feastTemplates = tenant?.feastTemplates;
+            
+            if (!feastTemplates) continue;
+            
+            const templateKey = dayNum === 0 ? 'sunday' : 'otherDays';
+            const template = feastTemplates[templateKey];
+            
+            if (!template?.services?.length) continue;
+
+            for (const templateService of template.services) {
+              const serviceData = {
+                tenant: data.tenant,
+                date: feast.date.toISOString(),
+                time: templateService.time,
+                category: templateService.category,
+                massType: templateService.massType,
+                notes: templateService.notes,
+              };
+              
+              try {
+                const newService = await req.payload.create({
+                  collection: 'services',
+                  data: serviceData
+                });
+                
+                services.push({
+                  service: newService.id
+                });
+              } catch (error) {
+                req.payload.logger.error(`Failed to create service: ${error}`);
+              }
             }
-            return 'New Service Week';
           }
-        ]
+          
+          if (services.length > 0) {
+            updatedData[tabName] = {
+              ...(updatedData[tabName] || {}),
+              services
+            };
+          }
+        }
+        
+        return updatedData;
       }
-    },
+    ],
+    afterDelete: [
+      // Delete all associated services when a ServiceWeek is deleted
+      async ({ req, id }) => {
+        try {
+          // First, fetch the ServiceWeek to get all service IDs
+          const serviceWeek = await req.payload.findByID({
+            collection: 'serviceWeeks',
+            id
+          }) as ServiceWeek;
+          
+          if (!serviceWeek) return;
+          
+          // Collect all service IDs from all days
+          const serviceIds: string[] = [];
+          
+          // Extract service IDs from each day that has services
+          ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].forEach(day => {
+            const dayKey = day as keyof ServiceWeek;
+            const dayData = serviceWeek[dayKey];
+            
+            // Check if dayData exists and has services property
+            if (dayData && typeof dayData === 'object' && 'services' in dayData) {
+              const dayServices = (dayData as ServiceWeekDay).services;
+              
+              if (Array.isArray(dayServices)) {
+                dayServices.forEach(serviceRef => {
+                  if (typeof serviceRef.service === 'string') {
+                    serviceIds.push(serviceRef.service);
+                  } else if (serviceRef.service?.id) {
+                    serviceIds.push(serviceRef.service.id);
+                  }
+                });
+              }
+            }
+          });
+          
+          // Delete all collected services
+          if (serviceIds.length > 0) {
+            req.payload.logger.info(`Deleting ${serviceIds.length} services associated with ServiceWeek ${id}`);
+            
+            // Delete each service
+            for (const serviceId of serviceIds) {
+              await req.payload.delete({
+                collection: 'services',
+                id: serviceId
+              });
+            }
+          }
+        } catch (error) {
+          req.payload.logger.error(`Error deleting associated services for ServiceWeek ${id}: ${error}`);
+        }
+      }
+    ]
+  },
+  fields: [
     {
       name: 'tenant',
       type: 'relationship',
@@ -55,164 +196,213 @@ export const ServiceWeeks: CollectionConfig = {
       required: true,
       admin: {
         description: {
-          pl: 'Kaplica/misja, do której należy ten tygodniowy porządek nabożeństw',
-          en: 'Chapel/Mission to which this service week order belongs'
-        }
+          pl: 'Kaplica/misja, do której przypisany jest tygodniowy porządek nabożeństw',
+          en: 'Chapel/Mission to which this service week order is assigned'
+        },
+        position: 'sidebar',
       },
     },
     {
-      name: 'yearWeek',
-      type: 'text',
+      name: 'start',
+      type: 'date',
       required: true,
+      label: {
+        pl: 'Rozpoczęcie tygodnia',
+        en: 'Start of the week'
+      },
+      admin: {
+        date: {
+          pickerAppearance: 'dayOnly',
+          displayFormat: 'd MMM yyyy',
+        },
+        description: {
+          pl: 'Pierwszy dzień tygodnia (musi być to niedziela)',
+          en: 'First day of the week (must be Sunday)'
+        },
+      },
+      validate: (value: Date | null | undefined) => {
+        if (!isSunday(value as Date)) {
+          return 'First day of the week must be Sunday'
+        }
+        return true
+      },
+      defaultValue: async ({ req }) => {
+        const payload = req.payload;
+        
+        const result = await payload.find({
+          collection: 'serviceWeeks',
+          sort: '-yearWeek',
+          limit: 1
+        });
+
+        const lastServiceWeek = result?.docs?.[0];
+
+        if (!lastServiceWeek) {
+          return startOfWeek(new Date(), { weekStartsOn: 0 });
+        }
+
+        const nextWeekDate = addWeeks(parseISO(lastServiceWeek.start), 1);
+        return startOfWeek(nextWeekDate, { weekStartsOn: 0 });
+      }
+    },
+    {
+      name: 'end',
+      type: 'date',
+      admin: {
+        hidden: true,
+      },
+      hooks: {
+        beforeValidate: [
+          ({ data }) => {
+            if (!data?.start) return;
+            const start = new Date(data.start);
+            return endOfWeek(start, { weekStartsOn: 0 });
+          }
+        ]
+      }
+    },
+    {
+      name: 'yearWeek',
+      type: 'number',
       label: {
         pl: 'Numer tygodnia',
         en: 'Week Number'
       },
       admin: {
-        description: {
-          pl: 'Format: YYYY-WW (np. 2024-13)',
-          en: 'Format: YYYY-WW (e.g. 2024-13)'
-        },
+        hidden: true,
         readOnly: true,
       },
       hooks: {
         beforeValidate: [
-          ({ data }) => {
-            if (!data?.startDate) return '';
-            
-            const date = new Date(data.startDate);
-            const year = getYear(date);
-            const weekNumber = getISOWeek(date);
-            
-            return `${year}-${weekNumber.toString().padStart(2, '0')}`;
+          ({ siblingData }) => {
+            return getISOWeek(siblingData?.start);
           }
         ]
       }
     },
+    getApplyTemplateField('monday'),
     {
-      name: 'startDate',
-      type: 'date',
-      required: true,
-      label: {
-        pl: 'Data rozpoczęcia',
-        en: 'Start Date'
-      },
-      admin: {
-        date: {
-          pickerAppearance: 'dayOnly',
-          displayFormat: 'd MMM yyyy',
+      type: 'tabs',
+      tabs: [
+        {
+          name: 'monday',
+          label: {
+            pl: 'Poniedziałek',
+            en: 'Monday'
+          },
+          fields: [
+            getFeastTemplate('otherDays'),
+            {
+              name: 'services',
+              type: 'array',
+              fields: [
+                { name: 'service', type: 'relationship', relationTo: 'services' }
+              ]
+            }
+          ]
         },
-        description: {
-          pl: 'Pierwszy dzień tygodnia (zwykle niedziela)',
-          en: 'First day of the week (usually Sunday)'
+        {
+          name: 'tuesday',
+          label: {
+            pl: 'Wtorek',
+            en: 'Tuesday'
+          },
+          fields: [
+            getFeastTemplate('otherDays'),
+            {
+              name: 'services',
+              type: 'array',
+              fields: [
+                { name: 'service', type: 'relationship', relationTo: 'services' }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'wednesday',
+          label: {
+            pl: 'Środa',
+            en: 'Wednesday'
+          },
+          fields: [
+            getFeastTemplate('otherDays'),
+            {
+              name: 'services',
+              type: 'array',
+              fields: [
+                { name: 'service', type: 'relationship', relationTo: 'services' }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'thursday',
+          label: {
+            pl: 'Czwartek',
+            en: 'Thursday'
+          },
+          fields: [
+            getFeastTemplate('otherDays'),
+            {
+              name: 'services',
+              type: 'array',
+              fields: [
+                { name: 'service', type: 'relationship', relationTo: 'services' }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'friday',
+          label: {
+            pl: 'Piątek',
+            en: 'Friday'
+          },
+          fields: [
+            getFeastTemplate('otherDays'),
+            {
+              name: 'services',
+              type: 'array',
+              fields: [
+                { name: 'service', type: 'relationship', relationTo: 'services' }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'saturday',
+          label: {
+            pl: 'Sobota',
+            en: 'Saturday'
+          },
+          fields: [
+            getFeastTemplate('otherDays'),
+            {
+              name: 'services',
+              type: 'array',
+              fields: [
+                { name: 'service', type: 'relationship', relationTo: 'services' }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'sunday',
+          label: {
+            pl: 'Niedziela',
+            en: 'Sunday'
+          },
+          fields: [
+            getFeastTemplate('sunday'),
+            {
+              name: 'services',
+              type: 'array',
+              fields: [
+                { name: 'service', type: 'relationship', relationTo: 'services' }
+              ]
+            }
+          ]
         }
-      },
-    },
-    {
-      name: 'endDate',
-      type: 'date',
-      required: true,
-      label: {
-        pl: 'Data zakończenia',
-        en: 'End Date'
-      },
-      admin: {
-        date: {
-          pickerAppearance: 'dayOnly',
-          displayFormat: 'd MMM yyyy',
-        },
-        description: {
-          pl: 'Ostatni dzień tygodnia (zwykle sobota)',
-          en: 'Last day of the week (usually Saturday)'
-        }
-      },
-      hooks: {
-        beforeValidate: [
-          ({ data }) => {
-            if (!data?.startDate) return '';
-            
-            const startDate = new Date(data.startDate);
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 6);
-            return endDate.toISOString();
-          }
-        ]
-      }
-    },
-    {
-      name: 'days',
-      type: 'array',
-      label: {
-        pl: 'Dni',
-        en: 'Days'
-      },
-      admin: {
-        description: {
-          pl: 'Porządek nabożeństw na dany dzień tygodnia',
-          en: 'Service order for a given day of the week'
-        }
-      },
-      fields: [
-        {
-          name: 'date',
-          type: 'date',
-          required: true,
-          label: {
-            pl: 'Data',
-            en: 'Date'
-          },
-          admin: {
-            date: {
-              pickerAppearance: 'dayOnly',
-              displayFormat: 'd MMM yyyy',
-            },
-          },
-        },
-        {
-          name: 'feastRank',
-          type: 'select',
-          required: true,
-          label: {
-            pl: 'Ranga święta',
-            en: 'Feast Rank'
-          },
-          options: [
-            { 
-              label: { pl: 'I klasa', en: 'I class' }, 
-              value: '1' 
-            },
-            { 
-              label: { pl: 'II klasa', en: 'II class' }, 
-              value: '2' 
-            },
-            { 
-              label: { pl: 'III klasa', en: 'III class' }, 
-              value: '3' 
-            },
-            { 
-              label: { pl: 'IV klasa', en: 'IV class' }, 
-              value: '4' 
-            },
-          ],
-        },
-        {
-          name: 'feastName',
-          type: 'text',
-          label: {
-            pl: 'Nazwa święta',
-            en: 'Feast Name'
-          },
-        },
-        {
-          name: 'services',
-          type: 'relationship',
-          relationTo: 'services',
-          hasMany: true,
-          label: {
-            pl: 'Nabożeństwa',
-            en: 'Services'
-          },
-        },
       ],
     },
   ],
