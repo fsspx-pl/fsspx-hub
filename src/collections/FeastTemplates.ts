@@ -90,7 +90,7 @@ export const FeastTemplates: CollectionConfig = {
       },
       minRows: 1,
       fields: [
-        ...serviceFields,
+        ...Object.values(serviceFields),
       ],
     },
   ],

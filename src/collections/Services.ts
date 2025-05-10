@@ -74,6 +74,7 @@ export const Services: CollectionConfig = {
       fields: [
         serviceFields.category,
         serviceFields.massType,
+        serviceFields.customTitle,
       ]
     },
     serviceFields.notes,

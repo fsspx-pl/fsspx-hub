@@ -336,6 +336,10 @@ export interface Service {
    */
   massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
   /**
+   * Service title, visible in the calendar and newsletter
+   */
+  customTitle?: string | null;
+  /**
    * Additional information about the service, visible below the service title in the calendar and newsletter
    */
   notes?: string | null;
@@ -627,6 +631,7 @@ export interface ServicesSelect<T extends boolean = true> {
   tenant?: T;
   category?: T;
   massType?: T;
+  customTitle?: T;
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
