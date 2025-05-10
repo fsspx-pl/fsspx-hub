@@ -34,11 +34,11 @@ export const ServiceWeeks: CollectionConfig = {
   labels: {
     singular: {
       pl: 'Tygodniowy porządek nabożeństw',
-      en: 'Service Week Order'
+      en: 'Week Order'
     },
     plural: {
       pl: 'Tygodniowe porządki nabożeństw',
-      en: 'Service Week Orders'
+      en: 'Week Orders'
     }
   },
   access: {

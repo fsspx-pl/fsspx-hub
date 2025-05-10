@@ -63,7 +63,7 @@ export const Tenants: CollectionConfig = {
                 type: 'array',
                 name: 'services',
                 fields: [
-                  ...serviceFields,
+                  ...Object.values(serviceFields),
                 ]}
 							],
               admin: {
@@ -90,7 +90,7 @@ export const Tenants: CollectionConfig = {
                 type: 'array',
                 name: 'services',
                 fields: [
-                  ...serviceFields,
+                  ...Object.values(serviceFields),
                 ]
               }
 							],

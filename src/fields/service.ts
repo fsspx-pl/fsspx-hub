@@ -134,13 +134,13 @@ const notes: Field = {
   }
 };
 
-const serviceFields = [
+const serviceFields = {
   time,
   category,
   massType,
   customTitle,
   notes,
-];
+};
 
 
 export default serviceFields;
