@@ -5,8 +5,6 @@ import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
 import { addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
-import { getFeastTemplate } from './fields/feastTemplate';
-import { getApplyTemplateField } from './fields/applyTemplateField';
 
 // Define type for feast days grouped by day of week
 interface FeastsByDay {
@@ -280,7 +278,6 @@ export const ServiceWeeks: CollectionConfig = {
         ]
       }
     },
-    getApplyTemplateField('monday'),
     {
       type: 'tabs',
       tabs: [
@@ -291,7 +288,6 @@ export const ServiceWeeks: CollectionConfig = {
             en: 'Monday'
           },
           fields: [
-            getFeastTemplate('otherDays'),
             {
               name: 'services',
               type: 'array',
@@ -308,7 +304,6 @@ export const ServiceWeeks: CollectionConfig = {
             en: 'Tuesday'
           },
           fields: [
-            getFeastTemplate('otherDays'),
             {
               name: 'services',
               type: 'array',
@@ -325,7 +320,6 @@ export const ServiceWeeks: CollectionConfig = {
             en: 'Wednesday'
           },
           fields: [
-            getFeastTemplate('otherDays'),
             {
               name: 'services',
               type: 'array',
@@ -342,7 +336,6 @@ export const ServiceWeeks: CollectionConfig = {
             en: 'Thursday'
           },
           fields: [
-            getFeastTemplate('otherDays'),
             {
               name: 'services',
               type: 'array',
@@ -359,7 +352,6 @@ export const ServiceWeeks: CollectionConfig = {
             en: 'Friday'
           },
           fields: [
-            getFeastTemplate('otherDays'),
             {
               name: 'services',
               type: 'array',
@@ -376,7 +368,6 @@ export const ServiceWeeks: CollectionConfig = {
             en: 'Saturday'
           },
           fields: [
-            getFeastTemplate('otherDays'),
             {
               name: 'services',
               type: 'array',
@@ -393,7 +384,6 @@ export const ServiceWeeks: CollectionConfig = {
             en: 'Sunday'
           },
           fields: [
-            getFeastTemplate('sunday'),
             {
               name: 'services',
               type: 'array',
