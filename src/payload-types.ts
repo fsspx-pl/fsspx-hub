@@ -215,8 +215,11 @@ export interface Tenant {
    */
   senderListId?: string | null;
   feastTemplates?: {
-    rankOne?: {
-      applicableRanks?:
+    /**
+     * Template for Sunday services. These services will be automatically created for new service weeks.
+     */
+    sunday?: {
+      applicableDays?:
         | {
             [k: string]: unknown;
           }
@@ -245,8 +248,11 @@ export interface Tenant {
           }[]
         | null;
     };
-    otherRanks?: {
-      applicableRanks?:
+    /**
+     * Template for weekday services (Monday-Saturday). These services will be automatically created for new service weeks.
+     */
+    otherDays?: {
+      applicableDays?:
         | {
             [k: string]: unknown;
           }
@@ -322,8 +328,8 @@ export interface Page {
 export interface Service {
   id: string;
   date: string;
-  tenant: string | Tenant;
   time: string;
+  tenant: string | Tenant;
   category: 'mass' | 'rosary' | 'lamentations' | 'other';
   /**
    * Holy Mass type, visible in the calendar and newsletter
@@ -539,10 +545,10 @@ export interface TenantsSelect<T extends boolean = true> {
   feastTemplates?:
     | T
     | {
-        rankOne?:
+        sunday?:
           | T
           | {
-              applicableRanks?: T;
+              applicableDays?: T;
               services?:
                 | T
                 | {
@@ -554,10 +560,10 @@ export interface TenantsSelect<T extends boolean = true> {
                     id?: T;
                   };
             };
-        otherRanks?:
+        otherDays?:
           | T
           | {
-              applicableRanks?: T;
+              applicableDays?: T;
               services?:
                 | T
                 | {
@@ -621,8 +627,8 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ServicesSelect<T extends boolean = true> {
   date?: T;
-  tenant?: T;
   time?: T;
+  tenant?: T;
   category?: T;
   massType?: T;
   customTitle?: T;

@@ -28,6 +28,7 @@ export const Services: CollectionConfig = {
   admin: {
     useAsTitle: 'time',
     defaultColumns: ['date', 'time', 'category', 'massType', 'tenant'],
+    group: 'Services',
   },
   fields: [
     {
@@ -43,11 +44,18 @@ export const Services: CollectionConfig = {
           admin: {
             date: {
               pickerAppearance: 'dayOnly',
-              displayFormat: 'dd-MM-yyyy',
+              displayFormat: 'dd.MM.yyyy',
             },
-            width: '50%',
+            width: '30%',
           },
           required: true,
+        },
+        {
+          ...serviceFields.time,
+          admin: {
+            ...serviceFields.time.admin,
+            width: '30%',
+          },
         },
         // TODO assign tenant of a currently logged in user, if has only one. Don't even show the field if only one
         {
@@ -56,12 +64,20 @@ export const Services: CollectionConfig = {
           relationTo: 'tenants',
           required: true,
           admin: {
-            width: '50%',
+            width: '40%',
           },
         },
       ]
     },
-    ...serviceFields,
+    {
+      type: 'row',
+      fields: [
+        serviceFields.category,
+        serviceFields.massType,
+        serviceFields.customTitle,
+      ]
+    },
+    serviceFields.notes,
   ],
   hooks: {
     afterChange: [
