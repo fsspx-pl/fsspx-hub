@@ -1,9 +1,11 @@
 import React from 'react'
 import ChevronIcon from './chevron.svg'
+import { CMSLink } from '../Link'
 
 export type BreadcrumbItem = {
   label: string
-  href: string
+  href?: string
+  disabled?: boolean
 }
 
 type Props = {
@@ -18,11 +20,12 @@ export const Breadcrumbs: React.FC<Props> = ({ items }) => {
         return (
           <React.Fragment key={index}>
             {index > 0 && <ChevronIcon />}
-            <span
-              className={`${isLast ? 'text-[#EB6265]' : 'text-[#7F8186]'}`}
-            >
-              {item.label}
-            </span>
+            <CMSLink
+              url={item.href}
+              label={item.label}
+              className={`${isLast ? 'text-[#C81910]' : 'text-[#7F8186]'}`}
+              disabled={item.disabled}
+            />
           </React.Fragment>
         )
       })}

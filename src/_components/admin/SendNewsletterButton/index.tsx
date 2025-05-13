@@ -1,4 +1,4 @@
-import { Page } from '@/payload-types'
+import { Page, Tenant } from '@/payload-types'
 import { FieldLabel } from '@payloadcms/ui'
 import React from 'react'
 import { SendButton } from './SendButton'
@@ -8,10 +8,18 @@ export const SendNewsletterButton: React.FC<{ data: Page }> = ({
   data 
 }) => {
 
+  const id = data.id;
+  const campaignId = data.campaignId;
+  const tenant = data.tenant as Tenant;
+  const isDraft = data._status === 'draft';
+
+  if (!id) return null;
+  if (!tenant) return null;
+
   return (
     <div className={classes.fieldType}>
       <FieldLabel label="Send Newsletter" />
-      <SendButton page={data}/>
+      <SendButton id={id} campaignId={campaignId} isDraft={isDraft} tenant={tenant}/>
     </div>
   )
 }
