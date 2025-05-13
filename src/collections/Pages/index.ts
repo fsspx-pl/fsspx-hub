@@ -33,7 +33,9 @@ export const Pages: CollectionConfig = {
     delete: tenantAdmins,
   },
   versions: {
-    drafts: true,
+    drafts: {
+      schedulePublish: true,
+    },
   },
   fields: [
     {

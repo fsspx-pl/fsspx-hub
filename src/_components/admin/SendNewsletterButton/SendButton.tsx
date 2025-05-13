@@ -3,13 +3,16 @@
 import React, { useState } from 'react'
 import { Button, toast } from '@payloadcms/ui'
 import classes from './index.module.scss'
-import { Page } from '@/payload-types'
+import { Tenant } from '@/payload-types'
 
-export const SendButton: React.FC<{ page: Page }> = ({
-  page
+export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDraft: boolean, tenant: Tenant }> = ({
+  id,
+  campaignId,
+  isDraft,
+  tenant
 }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [isNewsletterSent, setIsNewsletterSent] = useState(Boolean(page?.campaignId) ?? false)
+  const [isNewsletterSent, setIsNewsletterSent] = useState(Boolean(campaignId) ?? false)
 
   const handleSendNewsletter = async () => {
     if (isLoading) return
@@ -17,7 +20,7 @@ export const SendButton: React.FC<{ page: Page }> = ({
     setIsLoading(true)
     const toastId = toast.loading('Sending newsletter...')
     try {
-      const response = await fetch(`/api/pages/${page.id}/send-newsletter`, {
+      const response = await fetch(`/api/pages/${id}/send-newsletter`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -42,7 +45,7 @@ export const SendButton: React.FC<{ page: Page }> = ({
     }
   }
 
-  const disabled = isLoading || isNewsletterSent || page?._status === 'draft' || !page.tenant
+  const disabled = isLoading || isNewsletterSent || isDraft || !tenant
 
   return (
     <Button 
@@ -55,7 +58,7 @@ export const SendButton: React.FC<{ page: Page }> = ({
         ? 'Sending...' 
         : isNewsletterSent 
           ? 'Newsletter already sent' 
-          : page?._status === 'draft'
+          : isDraft
             ? 'Publish page to send newsletter'
             : 'Send Newsletter'}
     </Button>

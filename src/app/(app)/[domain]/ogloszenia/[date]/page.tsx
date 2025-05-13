@@ -76,13 +76,12 @@ export default async function AnnouncementPage({
 
   if (!page?.content_html) return null;
 
-  // Transform the content HTML to enhance the first letter
   const enhancedContentHtml = enhanceFirstLetterInContent(page.content_html, garamond);
 
   const tenant = page.tenant ? page.tenant as Tenant : null;
   const period = page?.period ? page.period as PageType['period'] : null;
   const feastsWithMasses: FeastWithMasses[] = period && tenant ? await getFeastsWithMasses(period, tenant) : [];
-  const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant, period?.start as string) : [];
+  const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant, page.title, period?.start as string) : [];
 
   const user = page.author ? page.author as User : null;
   const author = formatAuthorName(user);
@@ -91,7 +90,7 @@ export default async function AnnouncementPage({
     : null;
 
   return (
-    <div>
+    <>
       <Gutter className="mb-4">
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
@@ -118,26 +117,26 @@ export default async function AnnouncementPage({
           dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
         ></div>
       </Gutter>
-    </div>
+    </>
   );
 }
 
-function getBreadcrumbs(tenant: Tenant, date: string): BreadcrumbItem[] {
+function getBreadcrumbs(tenant: Tenant, title: string, date: string): BreadcrumbItem[] {
   return [
     {
       label: "Kaplice",
-      href: "",
+      disabled: true,
     },
     {
       label: tenant.city,
-      href: "",
+      href: "..",
     },
     {
       label: "Ogłoszenia",
-      href: "",
+      href: "..",
     },
     {
-      label: format(parseISO(date), 'dd.MM.yyyy'),
+      label: `${title} (${format(parseISO(date), 'dd.MM.yyyy')})`,
       href: "",
     },
   ];
