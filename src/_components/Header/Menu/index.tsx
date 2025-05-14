@@ -17,7 +17,7 @@ export const Menu: React.FC<
     <>
       <button
         onClick={() => setMobileMenuActive(true)}
-        className="md:hidden navbar-burger flex items-center p-3 relative top-2"
+        className="md:hidden navbar-burger flex items-center p-3 relative"
       >
         <svg
           className="block h-4 w-4 fill-current"

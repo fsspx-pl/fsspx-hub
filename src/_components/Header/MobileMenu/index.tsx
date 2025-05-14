@@ -3,7 +3,7 @@ import { Header as HeaderType } from '@/payload-types'
 
 const CloseIcon: React.FC = () => {
   return (
-    <button className="navbar-close relative top-2">
+    <button className="navbar-close relative">
       <svg
         className="h-6 w-6 text-black cursor-pointer"
         xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +36,7 @@ export const MobileMenu: React.FC<
       <nav className="fixed top-0 left-0 bottom-0 flex flex-col w-full max-w-sm py-4 px-[24px] bg-white border-r overflow-y-auto">
         <div className="flex items-center justify-between mb-8">
           <a href="#">{children}</a>
-          <div onClick={() => onClose()}>
+          <div className="relative top-1 right-2" onClick={() => onClose()}>
             <CloseIcon />
           </div>
         </div>

@@ -38,4 +38,14 @@ export const TwoItems: Story = {
       { label: 'Poznań', href: '/kaplice/poznan' },
     ],
   },
+}
+
+export const LongLastItem: Story = {
+  args: {
+    items: [
+      { label: 'Kaplice', href: '/kaplice' },
+      { label: 'Poznań', href: '/kaplice/poznan' },
+      { label: 'Ogłoszenia parafialne (24.03.2024)', href: '/kaplice/poznan/ogloszenia/24-03-2024' },
+    ],
+  },
 } 
