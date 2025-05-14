@@ -27,22 +27,30 @@ const WINDOW_SIZE = 8;
 const SHIFT_THRESHOLD = 6;
 const BACKWARD_SHIFT_THRESHOLD = 1;
 
-const now = new Date();
-
 export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts } = useFeastData();
+  const now = new Date();
+  
+  // Select current day by default if no day is selected
+  React.useEffect(() => {
+    if (selectedDay) return;
+    
+    const today = new Date();
+    const todayFeast = feasts.find(feast => isEqual(feast.date, today));
+    if (!todayFeast) return;
+    
+    handleDateSelect(todayFeast.date);
+  }, [selectedDay, feasts, handleDateSelect]);
+
   const firstFeastDate = feasts[0]?.date;
   const month = selectedDay ? selectedDay.date : firstFeastDate;
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
 
-
   // Initialize window start to center the selected day
   const [windowStart, setWindowStart] = React.useState(() => {
     if (!selectedDay) return 0;
-    // Find index of selected day
-    const selectedIndex = feasts.findIndex(
-      feast => isEqual(feast.date, selectedDay.date)
-    );
+    
+    const selectedIndex = feasts.findIndex(feast => isEqual(feast.date, selectedDay.date));
     if (selectedIndex === -1) return 0;
     
     // Calculate window start to center the selected day (or as close as possible)
@@ -94,9 +102,8 @@ export const Calendar: React.FC = () => {
   const [selectedDayColor, setSelectedDayColor] = React.useState(vestmentColorToTailwind(VestmentColor.BLACK));
 
   React.useEffect(() => {
-    if (selectedDay) {
-      setSelectedDayColor(vestmentColorToTailwind(selectedDay.color));
-    }
+    if (!selectedDay) return;
+    setSelectedDayColor(vestmentColorToTailwind(selectedDay.color));
   }, [selectedDay]);
 
   return (
