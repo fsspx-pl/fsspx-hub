@@ -14,7 +14,7 @@ type Props = {
 
 export const Breadcrumbs: React.FC<Props> = ({ items }) => {
   return (
-    <nav className="flex items-center gap-2">
+    <nav className="flex items-center gap-x-2 gap-y-0 flex-wrap">
       {items.map((item, index) => {
         const isLast = index === items.length - 1
         return (
