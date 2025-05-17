@@ -37,7 +37,7 @@ export const revalidatePagesByAuthor: CollectionAfterChangeHook = async ({
     for (const page of pages.docs) {
       const tenant = page.tenant as Tenant;
       if (!tenant?.domain) continue;
-      
+      if (!page.period) continue;
       // Revalidate the specific date page
       const date = format(new Date(page.period.start), 'dd-MM-yyyy');
       const dateTag = `tenant:${tenant.domain}:date:${date}`;

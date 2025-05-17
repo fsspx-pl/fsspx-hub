@@ -14,7 +14,7 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { addDays, format, isSunday, parse } from "date-fns";
+import { addDays, format, isSunday, parse, setHours } from "date-fns";
 import { pl } from 'date-fns/locale';
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
@@ -32,7 +32,7 @@ const testFeasts: FeastWithMasses[] = [
     commemorations: ["Świętych Apostołów Piotra i Pawła"],
     masses: [
       { 
-        time: getMassTime("10:00"), 
+        date: setHours(referenceDate, 10).toISOString(),
         category: 'mass',
         massType: 'read',
         tenant: 'test-tenant',
@@ -40,7 +40,7 @@ const testFeasts: FeastWithMasses[] = [
         updatedAt: now.toISOString(),
       } as ServiceType,
       { 
-        time: getMassTime("11:00"), 
+        date: setHours(referenceDate, 11).toISOString(),
         category: 'mass',
         massType: 'silent', 
         notes: 'Msza w intencji zmarłych ofiarodawców',
@@ -49,7 +49,7 @@ const testFeasts: FeastWithMasses[] = [
         updatedAt: now.toISOString(),
       } as ServiceType,
       { 
-        time: getMassTime("12:00"), 
+        date: setHours(referenceDate, 12).toISOString(),
         category: 'other',
         customTitle: 'Nabożeństwo do świętego Józefa',
         notes: 'Po Mszy Św. odbędzie się nabożeństwo do świętego Józefa',
@@ -77,7 +77,7 @@ const testFeasts: FeastWithMasses[] = [
     },
     masses: [
       { 
-        time: getMassTime("12:00"), 
+        date: setHours(referenceDate, 12).toISOString(),
         category: 'mass',
         massType: 'solemn',
         tenant: 'test-tenant',
@@ -146,7 +146,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                       {feast.masses.map((service, idx) => (
                         <tr key={idx}>
                           <td style={{ padding: "4px 0", whiteSpace: "nowrap", verticalAlign: "top", width: "50px" }}>
-                            <Text className="my-0 font-semibold">{format(service.time, 'HH:mm')}</Text>
+                            <Text className="my-0 font-semibold">{format(service.date, 'HH:mm')}</Text>
                           </td>
                           <td style={{ padding: "4px 0" }}>
                             <Text className="my-0">{getServiceTitle(service)}</Text>

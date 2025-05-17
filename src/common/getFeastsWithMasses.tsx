@@ -13,7 +13,7 @@ export async function getFeastsWithMasses(period: PageType['period'], tenant: Te
   const end = period?.end ? parseISO(period.end as string) : addDays(start, 7);
   const feasts = await getFeasts(start, end);
   const masses = tenant?.id ? await getServices(
-    tenant?.id,
+    tenant,
     start,
     end
   ) : [];

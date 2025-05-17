@@ -1,10 +1,8 @@
 import { tenantAdmins } from '@/access/tenantAdmins';
 import serviceFields from '@/fields/service';
 import { Tenant } from '@/payload-types';
-import { format } from 'date-fns';
 import { revalidateTag } from 'next/cache';
 import { CollectionConfig } from 'payload';
-
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -26,8 +24,8 @@ export const Services: CollectionConfig = {
     delete: tenantAdmins,
   },
   admin: {
-    useAsTitle: 'time',
-    defaultColumns: ['date', 'time', 'category', 'massType', 'tenant'],
+    useAsTitle: 'date',
+    defaultColumns: ['date', 'category', 'massType', 'tenant'],
     group: 'Services',
   },
   fields: [
@@ -43,19 +41,12 @@ export const Services: CollectionConfig = {
           type: 'date',
           admin: {
             date: {
-              pickerAppearance: 'dayOnly',
-              displayFormat: 'dd.MM.yyyy',
+              pickerAppearance: 'dayAndTime',
+              displayFormat: 'dd.MM.yyyy HH:mm',
             },
-            width: '30%',
+            width: '50%',
           },
           required: true,
-        },
-        {
-          ...serviceFields.time,
-          admin: {
-            ...serviceFields.time.admin,
-            width: '30%',
-          },
         },
         // TODO assign tenant of a currently logged in user, if has only one. Don't even show the field if only one
         {
@@ -64,7 +55,7 @@ export const Services: CollectionConfig = {
           relationTo: 'tenants',
           required: true,
           admin: {
-            width: '40%',
+            width: '50%',
           },
         },
       ]
@@ -82,43 +73,20 @@ export const Services: CollectionConfig = {
   hooks: {
     afterChange: [
       async ({ doc, req: { payload } }) => {
-        // Find all pastoral announcement pages that include this service's time
         try {
-          const pages = await payload.find({
-            collection: 'pages',
-            where: {
-              and: [
-                {
-                  type: {
-                    equals: 'pastoral-announcements'
-                  }
-                },
-                {
-                  'period.start': {
-                    less_than_equal: doc.time
-                  }
-                },
-                {
-                  'period.end': {
-                    greater_than_equal: doc.time
-                  }
-                }
-              ]
-            },
-            depth: 1,
-          });
-
-          if (!pages.docs.length) return;
-          pages.docs.forEach(async (page) => {
-            const domain = (page.tenant as Tenant).domain;
-            const date = format(page.period.start, 'dd-MM-yyyy');
-            revalidateTag(`tenant:${domain}:date:${date}`);
-            payload.logger.info(`Revalidated date tag: tenant:${domain}:date:${date} due to service change`);
-          });
+          const tenant = await payload.findByID({
+            collection: 'tenants',
+            id: typeof doc.tenant === 'string' ? doc.tenant : doc.tenant.id,
+          }) as Tenant;
+          
+          if (!tenant?.domain) return;
+          const tag = `tenant:${tenant.domain}:services`;
+          await revalidateTag(tag);
+          payload.logger.info(`Revalidated services tag: ${tag}`);
         } catch (error) {
           payload.logger.error(`Error in Services afterChange hook: ${error}`);
         }
       }
     ]
-  },
+  }
 };
