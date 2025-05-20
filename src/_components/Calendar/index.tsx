@@ -183,7 +183,7 @@ export const Calendar: React.FC = () => {
               {selectedDay.masses.length > 0 ? (
                 selectedDay.masses.map((mass, idx) => (
                   <div key={idx} className="grid grid-cols-[auto_1fr] gap-x-4">
-                    <span className='font-semibold'>{format(mass.time, 'HH:mm')}</span>
+                    <span className='font-semibold'>{format(mass.date, 'HH:mm')}</span>
                     <div>{getServiceTitle(mass)}</div>
                     {mass.notes && <div></div>}
                     {mass.notes && (

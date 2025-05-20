@@ -5,6 +5,7 @@ import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
 import { addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
+import { revalidateTag } from 'next/cache';
 
 // Define type for feast days grouped by day of week
 interface FeastsByDay {
@@ -131,6 +132,9 @@ export const ServiceWeeks: CollectionConfig = {
         
         return updatedData;
       }
+    ],
+    afterChange: [
+      ({ doc }) => revalidateTag(`tenant:${doc.tenant}:services`)
     ],
     afterDelete: [
       // Delete all associated services when a ServiceWeek is deleted

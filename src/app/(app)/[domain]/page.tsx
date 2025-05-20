@@ -24,6 +24,7 @@ export default async function RedirectToNewestPage({
   if (!latestPost?.createdAt) {
     return <div>No announcements found</div>;
   }
+  if(!latestPost.period) return;
   const date = format(parseISO(latestPost.period.start), 'dd-MM-yyyy');
   redirect(`/ogloszenia/${date}`);
 }

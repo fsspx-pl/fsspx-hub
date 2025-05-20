@@ -28,6 +28,10 @@ async function getPage(id: string) {
 }
 
 async function createCampaign(page: Page) {
+  if (!page.period) {
+    throw new Error("Page has no period");
+  }
+
   const unsubscribeText = `
     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
       <p>Nie chcesz otrzymywać ogłoszeń? <a href="{$unsubscribe_link}">

@@ -14,6 +14,7 @@ export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
     if (doc._status === "draft") return;
     if (operation === 'update' && previousDoc?.campaignId !== doc.campaignId) return;
     if (!doc.tenant) return;
+    if (!doc.period) return;
 
     const tenant = await payload.findByID({
       collection: "tenants",
@@ -22,7 +23,10 @@ export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
 
     if (!tenant) return;
 
-    // Find the newest page for this tenant, including this one
+    const dateTag = `tenant:${tenant.domain}:date:${format(parseISO(doc.period.start), 'dd-MM-yyyy')}`;
+    await revalidateTag(dateTag);
+    payload.logger.info(`Revalidated date tag: ${dateTag}`);
+
     const newestPage = await payload.find({
       collection: "pages",
       where: {
@@ -32,20 +36,15 @@ export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
       sort: "-createdAt",
       limit: 1
     });
-
-    if (newestPage.docs[0]?.id !== doc.id) return;
-
-    const dateTag = `tenant:${tenant.domain}:date:${format(parseISO(doc.period.start), 'dd-MM-yyyy')}`;
-    await revalidateTag(dateTag);
-    payload.logger.info(`Revalidated date tag: ${dateTag}`);
-
+    const isNewestPage = newestPage.docs[0]?.id === doc.id;
+    if (!isNewestPage) return;
     await revalidateTag(`tenant:${tenant.domain}:latest`);
     payload.logger.info(`Revalidated latest tag: tenant:${tenant.domain}:latest`);
   } catch (error: unknown) {
     if (error instanceof Error) {
       payload.logger.error(`Error in revalidateTenantPages: ${error.message}`);
-    } else {
-      payload.logger.error(`Error in revalidateTenantPages: ${String(error)}`);
+      return;
     }
+    payload.logger.error(`Error in revalidateTenantPages: ${String(error)}`);
   }
 };

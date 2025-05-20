@@ -302,7 +302,7 @@ export interface Page {
   id: string;
   type: 'pastoral-announcements';
   title: string;
-  period: {
+  period?: {
     start: string;
     end: string;
   };
@@ -337,7 +337,6 @@ export interface Page {
 export interface Service {
   id: string;
   date: string;
-  time: string;
   tenant: string | Tenant;
   category: 'mass' | 'rosary' | 'lamentations' | 'other';
   /**
@@ -732,7 +731,6 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface ServicesSelect<T extends boolean = true> {
   date?: T;
-  time?: T;
   tenant?: T;
   category?: T;
   massType?: T;
