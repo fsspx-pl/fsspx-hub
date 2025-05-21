@@ -3,7 +3,8 @@ import { tenantAdmins } from '@/access/tenantAdmins';
 import { getFeasts } from '@/common/getFeasts';
 import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
-import { addWeeks, endOfWeek, getDay, getISOWeek, getWeekYear, isSunday, parseISO, startOfWeek } from 'date-fns';
+import { toast } from '@payloadcms/ui';
+import { addDays, addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, setHours, setMinutes, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
 
 // Define type for feast days grouped by day of week
@@ -71,7 +72,8 @@ export const ServiceWeeks: CollectionConfig = {
 
         if (!tenant) return data;
         
-        const feasts = await getFeasts(startDate, endDate);
+        // skip first Sunday and span across the next one
+        const feasts = await getFeasts(addDays(startDate, 1), addDays(endDate, 1));
         const feastsByDay = feasts.reduce((acc: FeastsByDay, feast) => {
           const dayOfWeek = getDay(feast.date);
           if (!acc[dayOfWeek]) acc[dayOfWeek] = [];
@@ -79,35 +81,31 @@ export const ServiceWeeks: CollectionConfig = {
           return acc;
         }, {});
         
-        // Prepare updated data with services for each day
         const updatedData: any = { ...data };
         
-        // For each day with feasts
         for (const [dayNumber, dayFeasts] of Object.entries(feastsByDay)) {
           const tabName = dayMap[Number(dayNumber)];
           const services = [];
           
-          // For each feast on this day
           for (const feast of dayFeasts) {
-            // Find template for this feast rank
             const feastTemplates = tenant?.feastTemplates;
             
             if (!feastTemplates) continue;
-            
-            // Find matching template for the feast rank
+
             const templatesArray = Object.values(feastTemplates);
             const template = templatesArray.find(template => {
               const applicableDays = template.applicableDays as number[];
-              return applicableDays?.includes(feast.rank);
+              return applicableDays?.includes(getDay(feast.date));
             });
             
             if (!template?.services?.length) continue;
 
             for (const templateService of template.services) {
+              const hours = parseISO(templateService.time).getHours();
+              const minutes = parseISO(templateService.time).getMinutes();
               const serviceData = {
                 tenant: data.tenant,
-                date: feast.date.toISOString(),
-                time: templateService.time,
+                date: setHours(setMinutes(feast.date, minutes), hours).toISOString(),
                 category: templateService.category,
                 massType: templateService.massType,
                 notes: templateService.notes,
@@ -142,23 +140,15 @@ export const ServiceWeeks: CollectionConfig = {
     ],
     afterDelete: [
       // Delete all associated services when a ServiceWeek is deleted
-      async ({ req, id }) => {
+      async ({ doc, req }) => {
         try {
-          // First, fetch the ServiceWeek to get all service IDs
-          const serviceWeek = await req.payload.findByID({
-            collection: 'serviceWeeks',
-            id
-          }) as ServiceWeek;
-          
-          if (!serviceWeek) return;
-          
-          // Collect all service IDs from all days
           const serviceIds: string[] = [];
+          const DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
           
           // Extract service IDs from each day that has services
-          ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'].forEach(day => {
+          DAYS.forEach(day => {
             const dayKey = day as keyof ServiceWeek;
-            const dayData = serviceWeek[dayKey];
+            const dayData = doc[dayKey];
             
             // Check if dayData exists and has services property
             if (dayData && typeof dayData === 'object' && 'services' in dayData) {
@@ -176,20 +166,19 @@ export const ServiceWeeks: CollectionConfig = {
             }
           });
           
-          // Delete all collected services
-          if (serviceIds.length > 0) {
-            req.payload.logger.info(`Deleting ${serviceIds.length} services associated with ServiceWeek ${id}`);
-            
-            // Delete each service
-            for (const serviceId of serviceIds) {
-              await req.payload.delete({
-                collection: 'services',
-                id: serviceId
-              });
+          if (!serviceIds.length) return;  
+          await req.payload.delete({
+            collection: 'services',
+            where: {
+              id: {
+                in: serviceIds
+              }
             }
-          }
+          });
+          req.payload.logger.info(`Deleted ${serviceIds.length} services associated with ServiceWeek ${doc.id}`);
+          toast.success(`Deleted ${serviceIds.length} services associated with ServiceWeek ${doc.id}`);
         } catch (error) {
-          req.payload.logger.error(`Error deleting associated services for ServiceWeek ${id}: ${error}`);
+          req.payload.logger.error(`Error deleting associated services for ServiceWeek ${doc.id}: ${error}`);
         }
       }
     ]
