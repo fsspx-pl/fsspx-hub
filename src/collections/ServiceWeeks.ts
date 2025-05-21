@@ -3,7 +3,6 @@ import { tenantAdmins } from '@/access/tenantAdmins';
 import { getFeasts } from '@/common/getFeasts';
 import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
-import { toast } from '@payloadcms/ui';
 import { addDays, addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, setHours, setMinutes, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
 
@@ -176,7 +175,6 @@ export const ServiceWeeks: CollectionConfig = {
             }
           });
           req.payload.logger.info(`Deleted ${serviceIds.length} services associated with ServiceWeek ${doc.id}`);
-          toast.success(`Deleted ${serviceIds.length} services associated with ServiceWeek ${doc.id}`);
         } catch (error) {
           req.payload.logger.error(`Error deleting associated services for ServiceWeek ${doc.id}: ${error}`);
         }
