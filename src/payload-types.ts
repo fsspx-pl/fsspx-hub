@@ -338,6 +338,8 @@ export interface Service {
   id: string;
   date: string;
   tenant: string | Tenant;
+  dayName?: string | null;
+  serviceTitle?: string | null;
   category: 'mass' | 'rosary' | 'lamentations' | 'other';
   /**
    * Holy Mass type, visible in the calendar and newsletter
@@ -732,6 +734,8 @@ export interface MediaSelect<T extends boolean = true> {
 export interface ServicesSelect<T extends boolean = true> {
   date?: T;
   tenant?: T;
+  dayName?: T;
+  serviceTitle?: T;
   category?: T;
   massType?: T;
   customTitle?: T;
