@@ -1,7 +1,27 @@
 import { tenantAdmins } from '@/access/tenantAdmins';
 import serviceFields from '@/fields/service';
-import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig } from 'payload';
+import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, FieldHook } from 'payload';
 import { createRevalidateServices } from './hooks/revalidateServices';
+import { format } from 'date-fns';
+import { pl } from 'date-fns/locale';
+import { Service } from '@/payload-types';
+import capitalizeFirstLetter from '@/utilities/capitalizeFirstLetter';
+
+const dayNameHook: FieldHook<Service> = ({ data }) => {
+  if (!data?.date) return null;
+  const dayName = format(new Date(data.date), 'EEEE', { locale: pl });
+  return capitalizeFirstLetter(dayName);
+};
+
+const serviceTitleHook: FieldHook<Service> = ({ data }) => {
+  if (!data?.date) return null;
+  
+  const dateStr = format(new Date(data.date), 'dd.MM HH:mm', { locale: pl });
+  const category = capitalizeFirstLetter(data.category || '');
+  const massType = data.massType ? ` - ${capitalizeFirstLetter(data.massType)}` : '';
+  
+  return `${dateStr} - ${category}${massType}`;
+};
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -23,8 +43,8 @@ export const Services: CollectionConfig = {
     delete: tenantAdmins,
   },
   admin: {
-    useAsTitle: 'date',
-    defaultColumns: ['date', 'category', 'massType', 'tenant'],
+    useAsTitle: 'serviceTitle',
+    defaultColumns: ['date', 'dayName', 'category', 'massType', 'tenant'],
     group: 'Services',
   },
   fields: [
@@ -58,6 +78,44 @@ export const Services: CollectionConfig = {
           },
         },
       ]
+    },
+    {
+      name: 'dayName',
+      type: 'text',
+      label: {
+        pl: 'Dzień tygodnia',
+        en: 'Day of week'
+      },
+      admin: {
+        hidden: true,
+      },
+      hooks: {
+        beforeChange: [
+          ({ siblingData }) => {
+            delete siblingData.dayName;
+          }
+        ],
+        afterRead: [dayNameHook]
+      }
+    },
+    {
+      name: 'serviceTitle',
+      type: 'text',
+      label: {
+        pl: 'Tytuł nabożeństwa',
+        en: 'Service title'
+      },
+      admin: {
+        hidden: true,
+      },
+      hooks: {
+        beforeChange: [
+          ({ siblingData }) => {
+            delete siblingData.serviceTitle;
+          }
+        ],
+        afterRead: [serviceTitleHook]
+      }
     },
     {
       type: 'row',
