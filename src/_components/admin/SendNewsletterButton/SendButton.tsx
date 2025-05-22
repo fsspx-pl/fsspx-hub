@@ -1,18 +1,21 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Button, toast } from '@payloadcms/ui'
+import React, { useState, useCallback } from 'react'
+import { Button, ConfirmationModal, toast, useModal } from '@payloadcms/ui'
 import classes from './index.module.scss'
-import { Tenant } from '@/payload-types'
 
-export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDraft: boolean, tenant: Tenant }> = ({
+const sendNewsletterModalSlug = 'send-newsletter-confirmation'
+
+export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDraft: boolean, newsletterGroupId: string }> = ({
   id,
   campaignId,
   isDraft,
-  tenant
+  newsletterGroupId
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isNewsletterSent, setIsNewsletterSent] = useState(Boolean(campaignId) ?? false)
+  const { openModal } = useModal()
+  const [modalMessage, setModalMessage] = useState('Are you sure you want to send this newsletter? This action cannot be undone.')
 
   const handleSendNewsletter = async () => {
     if (isLoading) return
@@ -45,22 +48,53 @@ export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDr
     }
   }
 
-  const disabled = isLoading || isNewsletterSent || isDraft || !tenant
+  const fetchNewsletterGroup = useCallback(async (groupId: string) => {
+    const response = await fetch(`/api/newsletter-group/${groupId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch newsletter group');
+    }
+    return response.json();
+  }, []);
+
+  const openConfirmModal = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const newsletterGroup = await fetchNewsletterGroup(newsletterGroupId);
+      setModalMessage(`The newsletter will be sent to the group: "${newsletterGroup.title}" with ${newsletterGroup.subscribersCount} subscribers. This action cannot be undone.`);
+      openModal(sendNewsletterModalSlug)
+    } catch (error) {
+      toast.error('Failed to fetch newsletter group information. Please try again later.');
+    } finally {
+      setIsLoading(false)
+    }
+  }, [openModal, newsletterGroupId, fetchNewsletterGroup])
+
+  const disabled = isLoading || isNewsletterSent || isDraft
 
   return (
-    <Button 
-      className={classes.button} 
-      buttonStyle='secondary'
-      onClick={handleSendNewsletter}
-      disabled={disabled}
-    >
-      {isLoading 
-        ? 'Sending...' 
-        : isNewsletterSent 
-          ? 'Newsletter already sent' 
-          : isDraft
-            ? 'Publish page to send newsletter'
-            : 'Send Newsletter'}
-    </Button>
+    <>
+      <Button 
+        className={classes.button} 
+        buttonStyle='secondary'
+        onClick={openConfirmModal}
+        disabled={disabled}
+      >
+        {isLoading 
+          ? 'Loading...' 
+          : isNewsletterSent 
+            ? 'Newsletter already sent' 
+            : isDraft
+              ? 'Publish page to send newsletter'
+              : 'Send newsletter'
+        }
+      </Button>
+
+      <ConfirmationModal
+        onConfirm={handleSendNewsletter}
+        heading="Send Newsletter"
+        body={modalMessage}
+        modalSlug={sendNewsletterModalSlug}
+      />
+    </>
   )
 } 
