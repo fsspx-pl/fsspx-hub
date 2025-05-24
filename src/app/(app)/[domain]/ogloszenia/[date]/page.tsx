@@ -13,6 +13,8 @@ import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
 import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
 import { garamond } from "@/fonts";
+import Script from "next/script";
+import { SenderForm } from "./SenderForm";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -91,6 +93,40 @@ export default async function AnnouncementPage({
 
   return (
     <>
+      <Script id="sender-universal">
+        {`
+          (function (s, e, n, d, er) {
+            s['Sender'] = er;
+            s[er] = s[er] || function () {
+              (s[er].q = s[er].q || []).push(arguments)
+            }, s[er].l = 1 * new Date();
+            var a = e.createElement(n),
+                m = e.getElementsByTagName(n)[0];
+            a.async = 1;
+            a.src = d;
+            m.parentNode.insertBefore(a, m)
+          })(window, document, 'script', 'https://cdn.sender.net/accounts_resources/universal.js', 'sender');
+          sender('f511ddc3f98190')
+        `}
+      </Script>
+      <Script id="sender-explicit">
+        {`
+  if (!window.senderFormsLoaded) {
+    window.addEventListener("onSenderFormsLoaded", function () {
+      senderForms.render('b82BgW', {
+        onRender: (formId) => {
+          debugger
+          const formElement = document.querySelector('.sender-form-field');
+          if (!formElement) return;
+          const iframe = formElement.querySelector('iframe');
+          if (!iframe) return;
+          iframe.style.width = '100%';
+        }
+      })
+    });
+  }
+        `}
+</Script>
       <Gutter className="mb-4">
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
@@ -111,10 +147,14 @@ export default async function AnnouncementPage({
             <Calendar />
           </FeastDataProvider>
         </div>
+        <div>
         <div
-          className="overflow-auto flex-1 prose max-w-none text-justify md:text-left"
+          className="overflow-auto flex-1 prose prose-lg max-w-none text-justify md:text-left"
           dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
-        ></div>
+        >
+        </div>
+        <SenderForm />
+        </div>
       </Gutter>
     </>
   );
