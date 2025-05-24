@@ -1,9 +1,8 @@
 import { Service as ServiceType } from "@/payload-types";
-import { format } from "date-fns";
 
 export const massTypeMap: Record<NonNullable<ServiceType['massType']>, string> = {
-  sung: 'Msza Św. śpiewana',
-  read: 'Msza Św. czytana',
-  silent: 'Msza Św. cicha',
-  solemn: 'Msza Św. solenna'
+  sung: 'Msza św. śpiewana',
+  read: 'Msza św. czytana',
+  silent: 'Msza św. cicha',
+  solemn: 'Msza św. solenna'
 } as const;

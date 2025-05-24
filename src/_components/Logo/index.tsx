@@ -8,7 +8,6 @@ export const Logo = ({
 }) => {
   return (
     <div id="logo" className="flex flex-row gap-4 items-baseline">
-      <TwoHeartsLogo width={34} height={45} />
       {!skipMainText && (
         <div className="hidden sm:flex">
           <TextLogo
@@ -17,9 +16,10 @@ export const Logo = ({
           />
         </div>
       )}
+      <TwoHeartsLogo width={34} height={45} />
       <div id="title" className="flex flex-col text-sm leading-none relative top-[-15px] text-left">
-        <span className={`font-light`}>Bractwo</span>
-        <span className={`font-medium`}>św. Piusa X</span>
+        <span className={`font-light`}>Bractwo Kapłańskie</span>
+        <span className={`font-medium`}>Świętego Piusa X</span>
       </div>
     </div>
   )

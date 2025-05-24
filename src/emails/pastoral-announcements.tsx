@@ -94,7 +94,7 @@ const getServiceTitle = (service: ServiceType) => {
       'silent': 'cicha',
       'solemn': 'solenna'
     } as const;
-    return `Msza Św. ${massTypeMap[service.massType]}`;
+    return `Msza św. ${massTypeMap[service.massType]}`;
   }
   return service.customTitle || '';
 };
