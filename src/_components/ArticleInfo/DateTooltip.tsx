@@ -5,6 +5,7 @@ import { pl } from "date-fns/locale";
 import React, { useEffect, useState, useRef } from "react";
 import { Tooltip } from "react-tooltip";
 import { format } from "date-fns";
+import { CMSLink } from "../Link";
 
 export enum DateLabel {
   CREATED = "utworzono: ",
@@ -117,9 +118,11 @@ export const DateWithTooltip: React.FC<{
     <>
       <Icon className="w-4 h-4" />
       <span className="hidden lg:flex">{label}</span>
-      <span id={id} className="underline">
-        {formattedDate}
-      </span>
+      <div id={id}>
+        <CMSLink isStatic>
+          {formattedDate}
+        </CMSLink>
+      </div>
       <Tooltip anchorSelect={`#${id}`} content={tooltip} />
     </>
   );

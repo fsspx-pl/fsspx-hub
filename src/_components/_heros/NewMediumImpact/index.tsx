@@ -35,7 +35,7 @@ export const NewMediumImpact: React.FC<Props> = ({
         </div>
         <div className="relative h-full flex flex-col justify-end">
           <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-white to-70% pt-24">
-            <h1 className={garamond.className}>
+            <h1 className={`${garamond.className} text-gray-700`}>
               {title}
             </h1>
           </div>

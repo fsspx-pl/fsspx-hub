@@ -15,6 +15,7 @@ type CMSLinkType = {
   children?: React.ReactNode
   className?: string
   disabled?: boolean
+  isStatic?: boolean
 }
 
 const ExternalLinkIcon = ({ className }: { className?: string }) => (
@@ -43,6 +44,7 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   children,
   className,
   disabled,
+  isStatic = false,
 }) => {
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
@@ -52,10 +54,12 @@ export const CMSLink: React.FC<CMSLinkType> = ({
       : url
 
   const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+  const linkClasses = !isStatic ?
+    'after:bg-[#C81910] after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left' : 'after:bg-gray-400 after:scale-x-100'
   return (
     <>
       { disabled && <span className={`no-underline ${className}`}>{label && label}</span> }
-      { !disabled && <div className="items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:bg-[#C81910] after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left">
+      { !disabled && <div className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
         <Link {...newTabProps} href={href ?? ''} className={`no-underline ${className}`}>
         {label && label}
         {children && children}

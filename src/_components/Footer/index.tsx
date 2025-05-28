@@ -31,7 +31,7 @@ export async function Footer() {
             <Logo skipMainText />
           </a>
           <span className="text-sm">{slogan}</span>
-          {/* <p className="mt-2 text-sm text-gray-500">{footer.slogan}</p> */}
+          {/* <p className="mt-2 text-sm text-gray-400">{footer.slogan}</p> */}
         </div>
         <div className="flex-grow flex flex-wrap md:pl-20 -mb-10 md:mt-0 mt-10 md:text-left text-center justify-end">
           {/* <div className="lg:w-1/4 md:w-1/2 w-full px-4">
@@ -58,7 +58,7 @@ export async function Footer() {
       <div className="bg-gray-200">
         <Gutter className="py-6 flex flex-wrap flex-col sm:flex-row">
           <div className="w-full flex items-center gap-1 flex-col">
-            <p className="text-gray-500 text-sm text-center sm:text-left">© 2024 - {copyright}</p>
+            <p className="text-gray-400 text-sm text-center sm:text-left">© 2024 - {copyright}</p>
             <HeartWithCross className="w-[16px] h-[25px]" />
           </div>
         </Gutter>

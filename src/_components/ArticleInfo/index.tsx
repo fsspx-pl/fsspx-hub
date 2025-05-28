@@ -22,7 +22,7 @@ export const ArticleInfo: React.FC<Props> = ({
 }) => {
   return (
     <div
-      className="flex items-center gap-2 whitespace-nowrap text-gray-500"
+      className="flex items-center gap-2 whitespace-nowrap text-gray-700"
     >
       {author && avatar?.url && (
         <Image
@@ -34,9 +34,8 @@ export const ArticleInfo: React.FC<Props> = ({
         />
       )}
       <span>{author}</span>
-      <div className="flex flex-row text-gray-400 gap-2">
+      <div className="flex flex-row text-gray-400 gap-4 ml-2">
         <div className="hidden sm:flex items-center gap-2">
-          <span>·</span>
           <DateWithTooltip
             icon={Clock}
             label={DateLabel.CREATED}
@@ -45,7 +44,6 @@ export const ArticleInfo: React.FC<Props> = ({
         </div>
         {updatedAt ? (
           <div className="hidden sm:flex items-center gap-2">
-            <span>·</span>
             {updatedAt && (
               <DateWithTooltip
                 icon={Pencil}

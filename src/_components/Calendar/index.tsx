@@ -107,9 +107,9 @@ export const Calendar: React.FC = () => {
   }, [selectedDay]);
 
   return (
-    <div className="w-full flex-col justify-start items-start gap-6 inline-flex">
+    <div className="w-full flex-col justify-start items-start gap-6 inline-flex text-gray-700">
       <div className="prose max-w-none self-stretch flex flex-row justify-between items-center gap-4">
-        <h2 className={`mb-0 ${garamond.className} text-xl sm:text-2xl`}>
+        <h2 className={`mb-0 ${garamond.className} text-xl sm:text-3xl text-gray-700`}>
           Porządek nabożeństw
         </h2>
         <Nav
@@ -160,9 +160,9 @@ export const Calendar: React.FC = () => {
             {(selectedDay.title || selectedDay.rank) && (
               <div className="self-stretch flex-col justify-start items-start gap-1.5 flex">
                 {selectedDay.title && (
-                  <div className={`font-semibold leading-5`}>
+                  <span className={`font-semibold leading-5`}>
                     {selectedDay.title}
-                  </div>
+                  </span>
                 )}
                 {selectedDay.rank && (
                   <div className={`self-stretch text-sm`}>
@@ -179,7 +179,7 @@ export const Calendar: React.FC = () => {
                 )}
               </div>
             )}
-            <div className={`flex-col text-sm justify-start items-start flex text-[#4a4b4f] gap-2`}>
+            <div className={`flex-col text-sm justify-start items-start flex gap-2`}>
               {selectedDay.masses.length > 0 ? (
                 selectedDay.masses.map((mass, idx) => (
                   <div key={idx} className="grid grid-cols-[auto_1fr] gap-x-4">
@@ -187,12 +187,12 @@ export const Calendar: React.FC = () => {
                     <div>{getServiceTitle(mass)}</div>
                     {mass.notes && <div></div>}
                     {mass.notes && (
-                      <div className="text-xs text-[#6b7280]">{mass.notes}</div>
+                      <div className="text-xs text-gray-400">{mass.notes}</div>
                     )}
                   </div>
                 ))
               ) : (
-                <div className='self-center text-[#a8a9ab]'>Brak nabożeństw tego dnia.</div>
+                <div className='self-center text-gray-400'>Brak nabożeństw tego dnia.</div>
               )}
             </div>
           </div>

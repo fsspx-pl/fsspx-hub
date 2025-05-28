@@ -306,6 +306,8 @@ export interface Page {
     start: string;
     end: string;
   };
+  startLocal?: string | null;
+  endLocal?: string | null;
   slug?: string | null;
   campaignId?: string | null;
   author?: (string | null) | User;
@@ -698,6 +700,8 @@ export interface PagesSelect<T extends boolean = true> {
         start?: T;
         end?: T;
       };
+  startLocal?: T;
+  endLocal?: T;
   slug?: T;
   campaignId?: T;
   author?: T;

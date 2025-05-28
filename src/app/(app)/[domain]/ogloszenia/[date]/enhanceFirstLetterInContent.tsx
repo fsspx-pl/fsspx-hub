@@ -59,7 +59,7 @@ export function enhanceFirstLetterInContent(htmlContent: string, font: NextFont)
 
   // Style the first letter with dramatically enhanced styling
   const styledFirstLetter = `<span class="${font.className}" style="
-    font-size: 3.8rem; 
+    font-size: 4.3rem; 
     float: left; 
     line-height: 0.8;
     margin-right: 0.1rem;

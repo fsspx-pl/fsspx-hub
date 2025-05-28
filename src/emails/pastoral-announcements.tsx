@@ -14,15 +14,13 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { addDays, format, isSunday, parse, setHours } from "date-fns";
+import { addDays, isSunday, parse, setHours } from "date-fns";
+import { format } from "date-fns-tz";
 import { pl } from 'date-fns/locale';
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
 
 const now = new Date();
-const getMassTime = (time: string) => {
-  return parse(time, "HH:mm", now).toISOString();
-}
 
 const referenceDate = parse("2025-03-30", "yyyy-MM-dd", now); // sunday
 const feastBase = { title: "Test Feast", color: VestmentColor.VIOLET, date: referenceDate, rank: 1 } as Feast;
@@ -96,7 +94,7 @@ const getServiceTitle = (service: ServiceType) => {
       'silent': 'cicha',
       'solemn': 'solenna'
     } as const;
-    return `Msza Św. ${massTypeMap[service.massType]}`;
+    return `Msza św. ${massTypeMap[service.massType]}`;
   }
   return service.customTitle || '';
 };
@@ -105,21 +103,19 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
   return (
     <Section style={{ margin: "0", padding: 0 }}>
       {feastsWithMasses.map((feast, feastIndex) => {
-        const dayNum = format(feast.date, 'd', { locale: pl });
-        const dayName = format(feast.date, 'EEEE', { locale: pl });
-        const monthName = format(feast.date, 'MMMM', { locale: pl });
+        const dayNum = format(feast.date, 'd', { locale: pl, timeZone: 'Europe/Warsaw' });
+        const dayName = format(feast.date, 'EEEE', { locale: pl, timeZone: 'Europe/Warsaw' });
+        const monthName = format(feast.date, 'MMMM', { locale: pl, timeZone: 'Europe/Warsaw' });
         const commemoration = feast.commemorations?.[0];
         const vestmentColor = vestmentColorToTailwind(feast.color as VestmentColor);
 
         return (
-          <Section key={`${feastIndex}-${dayNum}-${monthName}`}>
-            <Heading as="h3" style={{ fontSize: "18px", color: "#333", marginTop: "24px", marginBottom: "24px", fontWeight: 500 }}>
-              <Text className={`${isSunday(feast.date) ? 'text-[#C62828]' : 'text-[#333]'} font-bold text-base p-0`}>
+          <Section key={`${feastIndex}-${dayNum}-${monthName}`} className="rounded-md bg-[#f8f9fa] px-4 pb-2 mt-4">
+            <Heading as="h3" style={{ fontSize: "18px", color: isSunday(feast.date) ? '#C62828' : "#333", marginBottom: "6px", fontWeight: 700 }}>
                 {dayNum} {monthName}, {dayName}
-              </Text>
             </Heading>
             
-            <Text className="text-[#333] font-medium text-base mb-0">
+            <Text className="text-[#333] font-medium text-base mb-0 mt-0">
               {feast.title}
             </Text>
             
@@ -129,34 +125,32 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
               </Text>
             )}
             
-            <Text style={{ fontSize: "14px", color: "#555", margin: "0 0 15px 0" }}>
-              święto {romanize(feast.rank)} klasy · kolor szat:&nbsp;
+            <Text style={{ fontSize: "14px", color: "#555", margin: "0" }}>
+              {romanize(feast.rank)} klasy · kolor szat:&nbsp;
               <span className={`${vestmentColor}`}>{feast.color}</span>
             </Text>
             
-            <Section className="rounded-md bg-[#f8f9fa] px-4 py-2">
+            <Section>
               {feast.masses.length === 0 ? (
                 <Text className="text-[#4B5563]">
                   Brak nabożeństw tego dnia.
                 </Text>
               ) : (
-                <>
-                  <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 1em" }}>
-                    <tbody>
-                      {feast.masses.map((service, idx) => (
-                        <tr key={idx}>
-                          <td style={{ padding: "4px 0", whiteSpace: "nowrap", verticalAlign: "top", width: "50px" }}>
-                            <Text className="my-0 font-semibold">{format(service.date, 'HH:mm')}</Text>
-                          </td>
-                          <td style={{ padding: "4px 0" }}>
-                            <Text className="my-0">{getServiceTitle(service)}</Text>
-                            <Text className="text-[#6B7280] my-0 text-sm mt-1 leading-tight">{service.notes ?? ''}</Text>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </>
+                <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 0.5em" }}>
+                  <tbody>
+                    {feast.masses.map((service, idx) => (
+                      <tr key={idx}>
+                        <td style={{ whiteSpace: "nowrap", verticalAlign: "top", width: "50px" }}>
+                          <Text className="my-0 font-semibold">{format(service.date, 'HH:mm', { timeZone: 'Europe/Warsaw' })}</Text>
+                        </td>
+                        <td>
+                          <Text className="my-0">{getServiceTitle(service)}</Text>
+                          <Text className="text-[#6B7280] my-0 text-sm leading-tight">{service.notes ?? ''}</Text>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </Section>
           </Section>
@@ -201,10 +195,10 @@ export default function Email({
         <Section style={{ marginTop: "40px", width: "100%" }}>
           <Img
             style={{ margin: "0 auto" }}
-            src="https://poznan.fsspx.pl/api/media/file/logo_fsspx.png"
-            width="300"
-            height="40"
-            alt="FSSPX Logo"
+            src="https://poznan.fsspx.pl/api/media/file/long-1.png"
+            width="342"
+            height="50"
+            alt="Bractwo Kapłańskie św. Piusa X - logo"
           />
           <Text
             style={{
@@ -219,8 +213,8 @@ export default function Email({
         </Section>
         <Section
           style={{
-            paddingLeft: "24px",
-            paddingRight: "24px",
+            paddingLeft: "16px",
+            paddingRight: "16px",
           }}
         >
           <div dangerouslySetInnerHTML={{ __html: content_html }} />
@@ -237,9 +231,9 @@ export default function Email({
           <Section style={{ backgroundColor: "#f3f4f6", padding: "24px" }}>
             <Row>
               <Img
-                src="https://poznan.fsspx.pl/api/media/file/logo_fsspx_short.png"
-                width="108"
-                height="40"
+                src="https://poznan.fsspx.pl/api/media/file/short.png"
+                width="163"
+                height="50"
                 alt="FSSPX Logo"
               />
             </Row>

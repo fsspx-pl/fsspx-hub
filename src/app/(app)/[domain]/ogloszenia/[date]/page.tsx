@@ -13,6 +13,8 @@ import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
 import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
 import { garamond } from "@/fonts";
+import Script from "next/script";
+import { SenderForm, SenderScript } from "./SenderForm";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -91,6 +93,7 @@ export default async function AnnouncementPage({
 
   return (
     <>
+      <SenderScript accountId="f511ddc3f98190" formId="b82BgW" />
       <Gutter className="mb-4">
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
@@ -111,10 +114,14 @@ export default async function AnnouncementPage({
             <Calendar />
           </FeastDataProvider>
         </div>
+        <div>
         <div
-          className="overflow-auto flex-1 prose max-w-none text-justify md:text-left"
+          className="overflow-auto flex-1 prose prose-lg max-w-none text-justify md:text-left"
           dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
-        ></div>
+        >
+        </div>
+        <SenderForm formId="b82BgW" />
+        </div>
       </Gutter>
     </>
   );
