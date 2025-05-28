@@ -20,6 +20,13 @@ const meta: Meta<typeof Calendar> = {
             height: '568px',
           },
         },
+        desktop: {
+          name: 'Desktop (768px)',
+          styles: {
+            width: '768px',
+            height: '600px',
+          },
+        },
       },
     },
   },
@@ -32,12 +39,13 @@ const createMockFeasts = (length: number, startDate: Date): FeastWithMasses[] =>
   Array.from({ length }, (_, i) => {
     const date = addDays(startDate, i)
     const isSpecialDay = i === 3 || i === 10 || i === 17 // Special days every week
+    const isSunday = date.getDay() === 0
     return ({
       id: `feast-${i}`,
       date,
-      title: isSpecialDay ? 'Święto Objawienia Pańskiego' : 'Feria',
-      rank: isSpecialDay ? 1 : 4,
-      color: isSpecialDay ? VestmentColor.WHITE : VestmentColor.GREEN,
+      title: isSpecialDay ? 'Święto Objawienia Pańskiego' : isSunday ? 'Niedziela' : 'Feria',
+      rank: isSpecialDay ? 1 : isSunday ? 2 : 4,
+      color: isSpecialDay ? VestmentColor.WHITE : isSunday ? VestmentColor.GREEN : VestmentColor.GREEN,
       masses: [
         {
           id: `${i}-1`,
@@ -66,10 +74,10 @@ const createMockFeasts = (length: number, startDate: Date): FeastWithMasses[] =>
   })
 
 const today = new Date()
-const start = subDays(today, 4)
-const mockFeasts = createMockFeasts(12, start)
+const start = subDays(today, 10)
+const mockFeasts = createMockFeasts(60, start) // Extended range for month view
 
-export const Default: Story = {
+export const WeeklyView: Story = {
   render: () => {
     const todayIndex = mockFeasts.findIndex(feast => 
       feast.date.getDate() === today.getDate() && 
@@ -87,3 +95,42 @@ export const Default: Story = {
     );
   },
 }
+
+export const MonthlyView: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'desktop',
+    },
+  },
+  render: () => {
+    const todayIndex = mockFeasts.findIndex(feast => 
+      feast.date.getDate() === today.getDate() && 
+      feast.date.getMonth() === today.getMonth()
+    );
+    const todayFeast = mockFeasts[todayIndex];
+    
+    return (
+      <FeastDataProvider 
+        initialFeasts={mockFeasts} 
+        initialDate={todayFeast?.date.toISOString() ?? today.toISOString()}
+      >
+        <div style={{ width: '100%', maxWidth: '600px' }}>
+          <Calendar />
+          <div style={{ 
+            marginTop: '16px', 
+            padding: '12px', 
+            background: '#f3f4f6', 
+            borderRadius: '8px',
+            fontSize: '14px',
+            color: '#6b7280'
+          }}>
+            💡 Kliknij na nazwę miesiąca, aby przełączyć między widokami tygodniowym i miesięcznym
+          </div>
+        </div>
+      </FeastDataProvider>
+    );
+  },
+}
+
+// Default export maintains backward compatibility
+export const Default: Story = WeeklyView

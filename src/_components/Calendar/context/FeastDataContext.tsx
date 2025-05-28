@@ -7,13 +7,17 @@ import React, { createContext, useContext, useState } from 'react'
 
 type FeastWithMasses = Feast & { masses: ServiceType[] }
 
+type ViewMode = 'weekly' | 'monthly'
+
 type FeastDataContextType = {
   currentDate: Date
   feasts: FeastWithMasses[]
   selectedDay: FeastWithMasses | undefined
+  viewMode: ViewMode
   handlePrevious: () => void
   handleNext: () => void
   handleDateSelect: (date: Date) => void
+  setViewMode: (mode: ViewMode) => void
 }
 
 const FeastDataContext = createContext<FeastDataContextType | undefined>(undefined)
@@ -46,6 +50,7 @@ export const FeastDataProvider: React.FC<{
   const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(
     selectTodayOrFirstFeast(initialFeasts, initialDate)
   )
+  const [viewMode, setViewMode] = useState<ViewMode>('weekly')
 
   const handlePrevious = () => {
     setCurrentDate((prev) => subDays(prev, 1))
@@ -66,9 +71,11 @@ export const FeastDataProvider: React.FC<{
     currentDate,
     feasts,
     selectedDay,
+    viewMode,
     handlePrevious,
     handleNext,
     handleDateSelect,
+    setViewMode,
   }
 
   return (

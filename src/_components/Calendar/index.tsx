@@ -12,6 +12,8 @@ import { useFeastData } from './context/FeastDataContext'
 import { massTypeMap } from './utils/massTypeMap'
 import { romanize } from './utils/romanize'
 import { vestmentColorToTailwind } from './utils/vestmentColorToHex'
+import { MonthView } from './MonthView'
+
 export type FeastWithMasses = Feast & {masses: ServiceType[] }
 
 const getServiceTitle = (service: ServiceType) => {
@@ -28,7 +30,7 @@ const SHIFT_THRESHOLD = 6;
 const BACKWARD_SHIFT_THRESHOLD = 1;
 
 export const Calendar: React.FC = () => {
-  const { handleDateSelect, selectedDay, feasts } = useFeastData();
+  const { handleDateSelect, selectedDay, feasts, viewMode, setViewMode } = useFeastData();
   const now = new Date();
   
   // Select current day by default if no day is selected
@@ -46,18 +48,15 @@ export const Calendar: React.FC = () => {
   const month = selectedDay ? selectedDay.date : firstFeastDate;
   const monthFormatted = format(month, 'LLLL', { locale: pl }).toUpperCase();
 
-  // Initialize window start to center the selected day
+  // Weekly view state and handlers
   const [windowStart, setWindowStart] = React.useState(() => {
     if (!selectedDay) return 0;
     
     const selectedIndex = feasts.findIndex(feast => isEqual(feast.date, selectedDay.date));
     if (selectedIndex === -1) return 0;
     
-    // Calculate window start to center the selected day (or as close as possible)
-    // Try to put selected day at position 3-4 in the window
-    const idealPosition = 3; // 0-indexed, so this is the 4th position
+    const idealPosition = 3;
     const calculatedStart = Math.max(0, selectedIndex - idealPosition);
-    // Ensure we don't start beyond what would push the last few days off screen
     return Math.min(calculatedStart, Math.max(0, feasts.length - WINDOW_SIZE));
   });
 
@@ -106,55 +105,65 @@ export const Calendar: React.FC = () => {
     setSelectedDayColor(vestmentColorToTailwind(selectedDay.color));
   }, [selectedDay]);
 
+  const handleMonthClick = () => {
+    setViewMode(viewMode === 'monthly' ? 'weekly' : 'monthly')
+  }
+
   return (
     <div className="w-full flex-col justify-start items-start gap-6 inline-flex text-gray-700">
       <div className="prose max-w-none self-stretch flex flex-row justify-between items-center gap-4">
         <h2 className={`mb-0 ${garamond.className} text-xl sm:text-3xl text-gray-700`}>
           Porządek nabożeństw
         </h2>
-        <Nav
-          onNext={handleNext}
-          onPrevious={handlePrev}
-          nextDisabled={!canGoNext}
-          prevDisabled={!canGoPrev}
-        />
+        {viewMode === 'weekly' && (
+          <Nav
+            onNext={handleNext}
+            onPrevious={handlePrev}
+            nextDisabled={!canGoNext}
+            prevDisabled={!canGoPrev}
+          />
+        )}
       </div>
+      
       <div className="self-stretch flex-col justify-start items-start flex">
         <div className="self-stretch flex-col justify-center items-start gap-1.5 flex">
-          <div className={`self-stretch text-center text-sm ${garamond.className} font-normal`}>
+          <div 
+            className={`self-stretch text-center text-sm ${garamond.className} font-normal cursor-pointer hover:text-blue-600 transition-colors`}
+            onClick={handleMonthClick}
+            title={viewMode === 'weekly' ? 'Przełącz na widok miesięczny' : 'Przełącz na widok tygodniowy'}
+          >
             {monthFormatted}
           </div>
-          <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[368px]">
-            {visibleDays.map((day, index) => {
-              // Use today's actual date for past day detection
-              const isPastDay = isBefore(day.date, now);
-              const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
-              
-              // Only apply opacity to past days that aren't selected
-              const showWithOpacity = isPastDay && !isCurrentDaySelected;
-              
-              // Check if this is an edge day (first or last in visible window)
-              const isFirstInWindow = index === 0;
-              const isLastInWindow = index === visibleDays.length - 1;
-              
-              // Only show edge gradients if there are more days to scroll
-              const hasMoreLeft = isFirstInWindow && windowStart > 0;
-              const hasMoreRight = isLastInWindow && windowStart + WINDOW_SIZE < feasts.length;
-              
-              return (
-                <Day
-                  className={`flex-1 ${showWithOpacity ? 'opacity-50' : ''}`}
-                  key={day.id + index}
-                  date={day.date}
-                  isSelected={isCurrentDaySelected}
-                  onClick={() => handleDateSelect(day.date)}
-                  hasMoreLeft={hasMoreLeft}
-                  hasMoreRight={hasMoreRight}
-                />
-              );
-            })}
-          </div>
+          
+          {viewMode === 'weekly' ? (
+            <div className="self-stretch justify-between items-center inline-flex min-w-[304px] sm:min-w-[368px]">
+              {visibleDays.map((day, index) => {
+                const isPastDay = isBefore(day.date, now);
+                const isCurrentDaySelected = isEqual(day.date, selectedDay?.date ?? '');
+                const showWithOpacity = isPastDay && !isCurrentDaySelected;
+                const isFirstInWindow = index === 0;
+                const isLastInWindow = index === visibleDays.length - 1;
+                const hasMoreLeft = isFirstInWindow && windowStart > 0;
+                const hasMoreRight = isLastInWindow && windowStart + WINDOW_SIZE < feasts.length;
+                
+                return (
+                  <Day
+                    className={`flex-1 ${showWithOpacity ? 'opacity-50' : ''}`}
+                    key={day.id + index}
+                    date={day.date}
+                    isSelected={isCurrentDaySelected}
+                    onClick={() => handleDateSelect(day.date)}
+                    hasMoreLeft={hasMoreLeft}
+                    hasMoreRight={hasMoreRight}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <MonthView />
+          )}
         </div>
+        
         {selectedDay && (
           <div className={`self-stretch p-4 rounded-b-lg flex-col justify-start items-start gap-6 flex bg-[#f8f7f7]`}>
             {(selectedDay.title || selectedDay.rank) && (
