@@ -195,9 +195,9 @@ export default function Email({
         <Section style={{ marginTop: "40px", width: "100%" }}>
           <Img
             style={{ margin: "0 auto" }}
-            src="https://poznan.fsspx.pl/api/media/file/logo_fsspx.png"
-            width="318"
-            height="40"
+            src="https://poznan.fsspx.pl/api/media/file/long-1.png"
+            width="342"
+            height="50"
             alt="Bractwo Kapłańskie św. Piusa X - logo"
           />
           <Text
@@ -231,9 +231,9 @@ export default function Email({
           <Section style={{ backgroundColor: "#f3f4f6", padding: "24px" }}>
             <Row>
               <Img
-                src="https://poznan.fsspx.pl/api/media/file/logo_fsspx_short.png"
-                width="162"
-                height="40"
+                src="https://poznan.fsspx.pl/api/media/file/short.png"
+                width="163"
+                height="50"
                 alt="FSSPX Logo"
               />
             </Row>

@@ -10,7 +10,7 @@ export const ReadingTime: React.FC<Props> = ({ minutes }) => {
       <span style={{ color: '#EB6265' }}>
         Tradycja
       </span>
-      <span className="text-gray-500">
+      <span className="text-gray-400">
         {minutes} min czytania
       </span>
     </div>

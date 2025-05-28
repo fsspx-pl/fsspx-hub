@@ -1,4 +1,5 @@
-import { Field } from "payload"
+import { format, parseISO } from "date-fns";
+import { Field } from "payload";
 
 export const period: Field = {
   name: 'period',
@@ -45,6 +46,50 @@ export const period: Field = {
           throw new Error('Start date must be before end date')
         }
         return value
+      }
+    ]
+  }
+}
+
+export const startLocal: Field = {
+  name: 'startLocal',
+  type: 'text',
+  label: {
+    pl: 'Data początkowa',
+    en: 'Start date'
+  },
+  admin: {
+    hidden: true,
+    readOnly: true,
+  },
+  hooks: {
+    afterRead: [
+      ({ data }) => {
+        const start = data?.period?.start;
+        if (!start) return null;
+        return format(parseISO(start), 'dd.MM.yyyy');
+      }
+    ]
+  }
+}
+
+export const endLocal: Field = {
+  name: 'endLocal',
+  type: 'text',
+  label: {
+    pl: 'Data końcowa',
+    en: 'End date'
+  },
+  admin: {
+    hidden: true,
+    readOnly: true,
+  },
+  hooks: {
+    afterRead: [
+      ({ data }) => {
+        const end = data?.period?.end;
+        if (!end) return null;
+        return format(parseISO(end), 'dd.MM.yyyy');
       }
     ]
   }

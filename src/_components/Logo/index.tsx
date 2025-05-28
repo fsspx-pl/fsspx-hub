@@ -9,15 +9,15 @@ export const Logo = ({
   return (
     <div id="logo" className="flex flex-row gap-4 items-baseline">
       {!skipMainText && (
-        <div className="hidden sm:flex">
+        <div className="hidden sm:flex relative top-[-6px]">
           <TextLogo
             width={163}
             height={26}
           />
         </div>
       )}
-      <TwoHeartsLogo width={34} height={45} />
-      <div id="title" className="flex flex-col text-sm leading-none relative top-[-15px] text-left">
+      <TwoHeartsLogo width={38} height={50} />
+      <div id="title" className="flex flex-col text-sm leading-[1.1] relative top-[-21px] text-left">
         <span className={`font-light`}>Bractwo Kapłańskie</span>
         <span className={`font-medium`}>Świętego Piusa X</span>
       </div>

@@ -1,6 +1,6 @@
 import { tenantAdmins } from '@/access/tenantAdmins'
 import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenantPages'
-import { period } from '@/fields/period'
+import { endLocal, period, startLocal } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
 import { user } from '@/fields/user'
 import { lexicalHTML } from '@payloadcms/richtext-lexical'
@@ -24,7 +24,7 @@ export const Pages: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'type', 'period'],
+    defaultColumns: ['title', 'type', 'period.start', 'period.end'],
   },
   access: {
     read: anyone,
@@ -62,7 +62,9 @@ export const Pages: CollectionConfig = {
       required: true,
     },
     period,
-    {
+    startLocal,
+    endLocal,
+    { 
       name: 'slug',
       label: 'Slug',
       type: 'text',
@@ -110,7 +112,7 @@ export const Pages: CollectionConfig = {
           }
         }
       }
-    }
+    },
   ],
   hooks: {
     beforeValidate: [
