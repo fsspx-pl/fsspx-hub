@@ -13,6 +13,7 @@ import { massTypeMap } from './utils/massTypeMap'
 import { romanize } from './utils/romanize'
 import { vestmentColorToTailwind } from './utils/vestmentColorToHex'
 import { MonthView } from './MonthView'
+import { CMSLink } from '../Link'
 
 export type FeastWithMasses = Feast & {masses: ServiceType[] }
 
@@ -109,6 +110,20 @@ export const Calendar: React.FC = () => {
     setViewMode(viewMode === 'monthly' ? 'weekly' : 'monthly')
   }
 
+  // Handle day selection in monthly view - switch to weekly view with selected day
+  const handleMonthlyDaySelect = React.useCallback((date: Date) => {
+    handleDateSelect(date)
+    setViewMode('weekly')
+    
+    // Update window position to center the selected day
+    const selectedIndex = feasts.findIndex(feast => isEqual(feast.date, date));
+    if (selectedIndex !== -1) {
+      const idealPosition = 3;
+      const calculatedStart = Math.max(0, selectedIndex - idealPosition);
+      setWindowStart(Math.min(calculatedStart, Math.max(0, feasts.length - WINDOW_SIZE)));
+    }
+  }, [handleDateSelect, setViewMode, feasts])
+
   return (
     <div className="w-full flex-col justify-start items-start gap-6 inline-flex text-gray-700">
       <div className="prose max-w-none self-stretch flex flex-row justify-between items-center gap-4">
@@ -127,12 +142,17 @@ export const Calendar: React.FC = () => {
       
       <div className="self-stretch flex-col justify-start items-start flex">
         <div className="self-stretch flex-col justify-center items-start gap-1.5 flex">
-          <div 
-            className={`self-stretch text-center text-sm ${garamond.className} font-normal cursor-pointer hover:text-blue-600 transition-colors`}
-            onClick={handleMonthClick}
-            title={viewMode === 'weekly' ? 'Przełącz na widok miesięczny' : 'Przełącz na widok tygodniowy'}
-          >
-            {monthFormatted}
+          <div className="self-stretch text-center text-sm font-normal">
+            <div onClick={handleMonthClick} className="cursor-pointer">
+              <CMSLink
+                type="custom"
+                url="#"
+                disabled={false}
+                isStatic={false}
+                className={`${garamond.className} text-gray-700 hover:text-gray-700`}
+                label={monthFormatted}
+              />
+            </div>
           </div>
           
           {viewMode === 'weekly' ? (
@@ -160,11 +180,11 @@ export const Calendar: React.FC = () => {
               })}
             </div>
           ) : (
-            <MonthView />
+            <MonthView onDaySelect={handleMonthlyDaySelect} />
           )}
         </div>
         
-        {selectedDay && (
+        {selectedDay && viewMode === 'weekly' && (
           <div className={`self-stretch p-4 rounded-b-lg flex-col justify-start items-start gap-6 flex bg-[#f8f7f7]`}>
             {(selectedDay.title || selectedDay.rank) && (
               <div className="self-stretch flex-col justify-start items-start gap-1.5 flex">

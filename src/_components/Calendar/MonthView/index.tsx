@@ -11,8 +11,12 @@ import { garamond } from '@/fonts'
 import 'react-calendar/dist/Calendar.css'
 import styles from './MonthView.module.css'
 
-export const MonthView: React.FC = () => {
-  const { feasts, selectedDay, handleDateSelect, currentDate } = useFeastData()
+interface MonthViewProps {
+  onDaySelect: (date: Date) => void
+}
+
+export const MonthView: React.FC<MonthViewProps> = ({ onDaySelect }) => {
+  const { feasts, selectedDay, currentDate } = useFeastData()
 
   const getFeastForDate = (date: Date) => {
     return feasts.find(feast => isSameDay(feast.date, date))
@@ -60,7 +64,7 @@ export const MonthView: React.FC = () => {
   }
 
   const onClickDay = (value: Date) => {
-    handleDateSelect(value)
+    onDaySelect(value)
   }
 
   return (

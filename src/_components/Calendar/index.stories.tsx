@@ -124,7 +124,10 @@ export const MonthlyView: Story = {
             fontSize: '14px',
             color: '#6b7280'
           }}>
-            💡 Kliknij na nazwę miesiąca, aby przełączyć między widokami tygodniowym i miesięcznym
+            💡 <strong>Instrukcje:</strong><br/>
+            • Kliknij na nazwę miesiąca, aby przełączyć między widokami<br/>
+            • W widoku miesięcznym kliknij na dzień, aby przejść do widoku tygodniowego<br/>
+            • Szczegóły nabożeństw widoczne są tylko w widoku tygodniowym
           </div>
         </div>
       </FeastDataProvider>
