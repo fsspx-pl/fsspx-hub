@@ -19,6 +19,7 @@ import { format } from "date-fns-tz";
 import { pl } from 'date-fns/locale';
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
+import { formatInPolishTime } from "@/common/timezone";
 
 const now = new Date();
 
@@ -103,9 +104,9 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
   return (
     <Section style={{ margin: "0", padding: 0 }}>
       {feastsWithMasses.map((feast, feastIndex) => {
-        const dayNum = format(feast.date, 'd', { locale: pl, timeZone: 'Europe/Warsaw' });
-        const dayName = format(feast.date, 'EEEE', { locale: pl, timeZone: 'Europe/Warsaw' });
-        const monthName = format(feast.date, 'MMMM', { locale: pl, timeZone: 'Europe/Warsaw' });
+        const dayNum = formatInPolishTime(feast.date, 'd');
+        const dayName = formatInPolishTime(feast.date, 'EEEE');
+        const monthName = formatInPolishTime(feast.date, 'MMMM');
         const commemoration = feast.commemorations?.[0];
         const vestmentColor = vestmentColorToTailwind(feast.color as VestmentColor);
 
