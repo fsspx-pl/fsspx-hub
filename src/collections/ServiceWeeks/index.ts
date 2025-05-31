@@ -1,6 +1,7 @@
 import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
 import { getFeasts } from '@/common/getFeasts';
+import { polishTimeToUtc } from '@/common/timezone';
 import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
 import { addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
@@ -98,9 +99,12 @@ export const ServiceWeeks: CollectionConfig = {
             if (!template?.services?.length) continue;
 
             for (const templateService of template.services) {
+              // Convert the feast date from Polish timezone to UTC for proper storage
+              const utcDate = polishTimeToUtc(feast.date);
+              
               const serviceData = {
                 tenant: data.tenant,
-                date: feast.date.toISOString(),
+                date: utcDate.toISOString(),
                 time: templateService.time,
                 category: templateService.category,
                 massType: templateService.massType,
