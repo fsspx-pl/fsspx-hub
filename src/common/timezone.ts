@@ -34,23 +34,3 @@ export const formatInPolishTime = (date: Date | string, formatString: string): s
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   return formatInTimeZone(dateObj, POLISH_TIMEZONE, formatString, { locale: pl });
 };
-
-/**
- * Creates a date with Polish timezone context for proper storage
- * @param year - Year
- * @param month - Month (0-11)
- * @param day - Day of month
- * @param hour - Hour (0-23)
- * @param minute - Minute (0-59)
- * @returns UTC Date object that represents the Polish local time
- */
-export const createPolishDate = (
-  year: number,
-  month: number,
-  day: number,
-  hour: number = 0,
-  minute: number = 0
-): Date => {
-  const localDate = new Date(year, month, day, hour, minute);
-  return polishTimeToUtc(localDate);
-}; 
