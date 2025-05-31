@@ -36,13 +36,13 @@ export const formatInPolishTime = (date: Date | string, formatString: string): s
 };
 
 /**
- * Creates a date with Polish timezone context for proper storage
+ * Creates a timezone-aware Date object from date components, interpreted as Polish local time.
  * @param year - Year
- * @param month - Month (0-11)
+ * @param month - Month (1-12)
  * @param day - Day of month
  * @param hour - Hour (0-23)
  * @param minute - Minute (0-59)
- * @returns UTC Date object that represents the Polish local time
+ * @returns A Date object representing the specified time in UTC.
  */
 export const createPolishDate = (
   year: number,
@@ -51,6 +51,12 @@ export const createPolishDate = (
   hour: number = 0,
   minute: number = 0
 ): Date => {
-  const localDate = new Date(year, month, day, hour, minute);
-  return polishTimeToUtc(localDate);
-}; 
+  const monthStr = String(month).padStart(2, '0');
+  const dayStr = String(day).padStart(2, '0');
+  const hourStr = String(hour).padStart(2, '0');
+  const minuteStr = String(minute).padStart(2, '0');
+  
+  const polishDateStr = `${year}-${monthStr}-${dayStr}T${hourStr}:${minuteStr}:00`;
+
+  return fromZonedTime(polishDateStr, 'Europe/Warsaw');
+};
