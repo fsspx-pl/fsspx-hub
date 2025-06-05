@@ -99,7 +99,6 @@ export const ServiceWeeks: CollectionConfig = {
             if (!template?.services?.length) continue;
 
             for (const templateService of template.services) {
-              // Convert the feast date from Polish timezone to UTC for proper storage
               const utcDate = polishTimeToUtc(feast.date);
               
               const serviceData = {

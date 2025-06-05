@@ -16,15 +16,6 @@ export const polishTimeToUtc = (date: Date): Date => {
 };
 
 /**
- * Converts a UTC date to Polish local time for display
- * @param date - The UTC date
- * @returns Date object representing Polish local time
- */
-export const utcToPolishTime = (date: Date): Date => {
-  return toZonedTime(date, POLISH_TIMEZONE);
-};
-
-/**
  * Formats a date in Polish timezone with Polish locale
  * @param date - The date to format (can be UTC)
  * @param formatString - The format string
