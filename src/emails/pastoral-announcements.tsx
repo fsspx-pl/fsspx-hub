@@ -14,15 +14,15 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { addDays, isSunday, parse, setHours } from "date-fns";
+import { addDays, isSunday, parse, parseISO, setHours } from "date-fns";
 import { format } from "date-fns-tz";
-import { pl } from 'date-fns/locale';
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
+import { formatInPolishTime, polishTimeToUtc, createPolishDate } from "@/common/timezone";
 
 const now = new Date();
 
-const referenceDate = parse("2025-03-30", "yyyy-MM-dd", now); // sunday
+const referenceDate = createPolishDate(2025, 3, 30); // March
 const feastBase = { title: "Test Feast", color: VestmentColor.VIOLET, date: referenceDate, rank: 1 } as Feast;
 const testFeasts: FeastWithMasses[] = [
   {
@@ -30,7 +30,7 @@ const testFeasts: FeastWithMasses[] = [
     commemorations: ["Świętych Apostołów Piotra i Pawła"],
     masses: [
       { 
-        date: setHours(referenceDate, 10).toISOString(),
+        date: createPolishDate(2025, 3, 30, 10).toISOString(),
         category: 'mass',
         massType: 'read',
         tenant: 'test-tenant',
@@ -38,7 +38,7 @@ const testFeasts: FeastWithMasses[] = [
         updatedAt: now.toISOString(),
       } as ServiceType,
       { 
-        date: setHours(referenceDate, 11).toISOString(),
+        date: createPolishDate(2025, 3, 30, 11).toISOString(),
         category: 'mass',
         massType: 'silent', 
         notes: 'Msza w intencji zmarłych ofiarodawców',
@@ -47,7 +47,7 @@ const testFeasts: FeastWithMasses[] = [
         updatedAt: now.toISOString(),
       } as ServiceType,
       { 
-        date: setHours(referenceDate, 12).toISOString(),
+        date: createPolishDate(2025, 3, 30, 12).toISOString(),
         category: 'other',
         customTitle: 'Nabożeństwo do świętego Józefa',
         notes: 'Po Mszy Św. odbędzie się nabożeństwo do świętego Józefa',
@@ -75,7 +75,7 @@ const testFeasts: FeastWithMasses[] = [
     },
     masses: [
       { 
-        date: setHours(referenceDate, 12).toISOString(),
+        date: createPolishDate(2025, 4, 1, 12).toISOString(),
         category: 'mass',
         massType: 'solemn',
         tenant: 'test-tenant',
@@ -103,9 +103,9 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
   return (
     <Section style={{ margin: "0", padding: 0 }}>
       {feastsWithMasses.map((feast, feastIndex) => {
-        const dayNum = format(feast.date, 'd', { locale: pl, timeZone: 'Europe/Warsaw' });
-        const dayName = format(feast.date, 'EEEE', { locale: pl, timeZone: 'Europe/Warsaw' });
-        const monthName = format(feast.date, 'MMMM', { locale: pl, timeZone: 'Europe/Warsaw' });
+        const dayNum = formatInPolishTime(feast.date, 'd');
+        const dayName = formatInPolishTime(feast.date, 'EEEE');
+        const monthName = formatInPolishTime(feast.date, 'MMMM');
         const commemoration = feast.commemorations?.[0];
         const vestmentColor = vestmentColorToTailwind(feast.color as VestmentColor);
 
@@ -141,7 +141,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                     {feast.masses.map((service, idx) => (
                       <tr key={idx}>
                         <td style={{ whiteSpace: "nowrap", verticalAlign: "top", width: "50px" }}>
-                          <Text className="my-0 font-semibold">{format(service.date, 'HH:mm', { timeZone: 'Europe/Warsaw' })}</Text>
+                          <Text className="my-0 font-semibold">{formatInPolishTime(service.date, "HH:mm")}</Text>
                         </td>
                         <td>
                           <Text className="my-0">{getServiceTitle(service)}</Text>
