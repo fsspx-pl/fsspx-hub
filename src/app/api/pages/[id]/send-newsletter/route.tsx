@@ -197,13 +197,13 @@ export async function POST(
     }
 
     const campaignResponse = await createCampaign(page as Page);
-    const sendResponse = await sendCampaign(campaignResponse.data.id);
+    // const sendResponse = await sendCampaign(campaignResponse.data.id);
     await assignCampaign(id, campaignResponse.data.id);
 
     return NextResponse.json({
       message: "Newsletter created and sent successfully",
       campaignId: campaignResponse.id,
-      sendStatus: sendResponse
+      // sendStatus: sendResponse
     });
   } catch (error) {
     console.error("Error in newsletter process:", error);

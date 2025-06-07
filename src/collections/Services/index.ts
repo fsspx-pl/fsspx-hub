@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { Service } from '@/payload-types';
 import capitalizeFirstLetter from '@/utilities/capitalizeFirstLetter';
+import { formatInPolishTime } from '@/common/timezone';
 
 const dayNameHook: FieldHook<Service> = ({ data }) => {
   if (!data?.date) return null;
@@ -16,7 +17,7 @@ const dayNameHook: FieldHook<Service> = ({ data }) => {
 const serviceTitleHook: FieldHook<Service> = ({ data }) => {
   if (!data?.date) return null;
   
-  const dateStr = format(new Date(data.date), 'dd.MM HH:mm', { locale: pl });
+  const dateStr = formatInPolishTime(new Date(data.date), 'dd.MM HH:mm');
   const category = capitalizeFirstLetter(data.category || '');
   const massType = data.massType ? ` - ${capitalizeFirstLetter(data.massType)}` : '';
   
