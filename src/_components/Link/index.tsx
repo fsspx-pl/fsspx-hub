@@ -16,6 +16,7 @@ type CMSLinkType = {
   className?: string
   disabled?: boolean
   isStatic?: boolean
+  preventNavigation?: boolean
 }
 
 const ExternalLinkIcon = ({ className }: { className?: string }) => (
@@ -45,6 +46,7 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   className,
   disabled,
   isStatic = false,
+  preventNavigation = false,
 }) => {
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
@@ -56,16 +58,25 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
   const linkClasses = !isStatic ?
     'after:bg-[#C81910] after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left' : 'after:bg-gray-400 after:scale-x-100'
+  
+  // If preventNavigation is true or there's no valid href, render as span instead of Link
+  const shouldRenderAsSpan = preventNavigation || disabled || (!href && !url)
+  
   return (
     <>
-      { disabled && <span className={`no-underline ${className}`}>{label && label}</span> }
-      { !disabled && <div className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
-        <Link {...newTabProps} href={href ?? ''} className={`no-underline ${className}`}>
-        {label && label}
-        {children && children}
-      </Link>
-      </div>
-      }
+        <div className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
+      {shouldRenderAsSpan ? (
+          <span className={`${className} cursor-pointer`}>
+            {label && label}
+            {children && children}
+          </span>
+      ) : (
+          <Link {...newTabProps} href={href ?? ''} className={className}>
+            {label && label}
+            {children && children}
+          </Link>
+      )}
+        </div>
       {newTab && (
         <ExternalLinkIcon className="w-4 h-4" />
       )}

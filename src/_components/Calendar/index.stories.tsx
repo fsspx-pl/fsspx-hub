@@ -9,7 +9,6 @@ const meta: Meta<typeof Calendar> = {
   title: 'Components/Calendar',
   component: Calendar,
   parameters: {
-    layout: 'centered',
     viewport: {
       defaultViewport: 'mobile1',
       viewports: {
@@ -114,7 +113,6 @@ export const MonthlyView: Story = {
         initialFeasts={mockFeasts} 
         initialDate={todayFeast?.date.toISOString() ?? today.toISOString()}
       >
-        <div style={{ width: '100%', maxWidth: '600px' }}>
           <Calendar />
           <div style={{ 
             marginTop: '16px', 
@@ -124,12 +122,13 @@ export const MonthlyView: Story = {
             fontSize: '14px',
             color: '#6b7280'
           }}>
-            💡 <strong>Instrukcje:</strong><br/>
-            • Kliknij na nazwę miesiąca, aby przełączyć między widokami<br/>
-            • W widoku miesięcznym kliknij na dzień, aby przejść do widoku tygodniowego<br/>
-            • Szczegóły nabożeństw widoczne są tylko w widoku tygodniowym
+            💡 <strong>Nowa nawigacja:</strong><br/>
+            • <strong>Widok tygodniowy:</strong> &quot;MAJ 2025 - Tydz. 24&quot; z nawigacją po tygodniach<br/>
+            • <strong>Widok miesięczny:</strong> &quot;MAJ 2025&quot; z nawigacją po miesiącach<br/>
+            • Kliknij na okres, aby przełączyć między widokami<br/>
+            • Użyj strzałek, aby nawigować po okresach<br/>
+            • W widoku miesięcznym kliknij dzień, aby przejść do widoku tygodniowego
           </div>
-        </div>
       </FeastDataProvider>
     );
   },

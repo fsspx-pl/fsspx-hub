@@ -198,7 +198,7 @@ export default function Email({
             src="https://poznan.fsspx.pl/api/media/file/long-1.png"
             width="342"
             height="50"
-            alt="Bractwo Kapłańskie św. Piusa X - logo"
+            alt={`${copyright} - logo`}
           />
           <Text
             style={{

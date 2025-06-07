@@ -105,8 +105,8 @@ export default async function AnnouncementPage({
         createdAt={page.createdAt}
         updatedAt={page.updatedAt}
       />
-      <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 md:flex-row">
-        <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
+      <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 lg:flex-row">
+        <div className="lg:order-2 self-center lg:self-auto w-full lg:w-auto lg:basis-full justify-between">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
             initialDate={feastsWithMasses.length > 0 ? now.toISOString() : serverNow}
@@ -116,11 +116,13 @@ export default async function AnnouncementPage({
         </div>
         <div>
         <div
-          className="overflow-auto flex-1 prose prose-lg max-w-none text-justify md:text-left"
+          className="overflow-auto flex-1 prose prose-lg max-w-none text-left"
           dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
         >
         </div>
-        <SenderForm formId="b82BgW" />
+        {process.env.NODE_ENV === 'production' && (
+          <SenderForm formId="b82BgW" />
+        )}
         </div>
       </Gutter>
     </>
