@@ -1,7 +1,7 @@
 'use client'
 
 import { garamond } from '@/fonts'
-import { format, isSameDay } from 'date-fns'
+import { format, isPast, isSameDay } from 'date-fns'
 import React from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -26,6 +26,10 @@ export const MonthView: React.FC<MonthViewProps> = ({ onDaySelect }) => {
 
     if(isSameDay(date, currentDate)) {
       return '!bg-[#e9c9c9] rounded-lg'
+    }
+
+    if(isPast(date)) {
+      return 'opacity-50'
     }
 
     return ''
