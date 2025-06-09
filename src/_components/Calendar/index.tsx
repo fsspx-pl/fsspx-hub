@@ -203,7 +203,7 @@ export const Calendar: React.FC = () => {
                 {selectedDay.rank && (
                   <div className={`self-stretch text-sm`}>
                     <span className="leading-[14px]">
-                      święto { romanize(selectedDay.rank)} klasa
+                      { romanize(selectedDay.rank)} klasy
                     </span>
                     {selectedDay.color !== undefined && (
                       <>

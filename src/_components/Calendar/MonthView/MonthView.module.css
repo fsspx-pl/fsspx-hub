@@ -31,13 +31,20 @@
   transition: all 0.2s ease-in-out;
 }
 
-
 .calendar :global(.react-calendar__tile) {
   border-radius: 0.375rem;
   padding: unset;
 }
 
+.calendar :global(.react-calendar__tile--now) {
+  background: none !important;
+
+  &:enabled:hover {
+    background: #d7d7d7 !important;
+  }
+}
+
 .calendar :global(.react-calendar__month-view__days__day--neighboringMonth) {
-  color: #d1d5db;
+  color: #f8f7f7;
 }
 

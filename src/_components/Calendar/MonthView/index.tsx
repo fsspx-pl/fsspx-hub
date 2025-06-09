@@ -1,7 +1,7 @@
 'use client'
 
 import { garamond } from '@/fonts'
-import { format, isPast, isSameDay } from 'date-fns'
+import { format, isPast, isSameDay, isToday } from 'date-fns'
 import React from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
@@ -18,21 +18,22 @@ export const MonthView: React.FC<MonthViewProps> = ({ onDaySelect }) => {
   const { selectedDay, currentDate } = useFeastData()
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
+    const classes = []
     if (view !== 'month') return ''
 
     if(selectedDay && isSameDay(date, selectedDay.date)) {
-      return '!bg-[#f8f7f7] rounded-lg'
+      classes.push('!bg-[#f8f7f7] rounded-lg')
     }
 
     if(isSameDay(date, currentDate)) {
-      return '!bg-[#e9c9c9] rounded-lg'
+      classes.push('!border-1 !border-[#d7d7d7] !border-solid !border-inset')
     }
 
-    if(isPast(date)) {
-      return 'opacity-50'
+    if(isPast(date) && !isSameDay(date, currentDate)) {
+      classes.push('opacity-50')
     }
 
-    return ''
+    return classes.join(' ')
   }
 
   const onClickDay = (value: Date) => {

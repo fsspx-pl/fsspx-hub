@@ -6,15 +6,14 @@ import { Calendar, FeastWithMasses } from "@/_components/Calendar";
 import { FeastDataProvider } from "@/_components/Calendar/context/FeastDataContext";
 import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
+import { garamond } from "@/fonts";
 import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
 import { format, parse, parseISO } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
-import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
-import { garamond } from "@/fonts";
-import Script from "next/script";
 import { SenderForm, SenderScript } from "./SenderForm";
+import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -110,6 +109,7 @@ export default async function AnnouncementPage({
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
             initialDate={feastsWithMasses.length > 0 ? now.toISOString() : serverNow}
+            tenantId={tenant?.id ?? ''}
           >
             <Calendar />
           </FeastDataProvider>

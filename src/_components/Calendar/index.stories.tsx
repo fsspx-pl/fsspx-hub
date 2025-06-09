@@ -88,6 +88,7 @@ export const WeeklyView: Story = {
       <FeastDataProvider 
         initialFeasts={mockFeasts} 
         initialDate={todayFeast?.date.toISOString() ?? today.toISOString()}
+        tenantId="example.com"
       >
         <Calendar />
       </FeastDataProvider>
@@ -109,9 +110,10 @@ export const MonthlyView: Story = {
     const todayFeast = mockFeasts[todayIndex];
     
     return (
-      <FeastDataProvider 
+            <FeastDataProvider 
         initialFeasts={mockFeasts} 
         initialDate={todayFeast?.date.toISOString() ?? today.toISOString()}
+        tenantId="example.com"
       >
           <Calendar />
           <div style={{ 
@@ -129,7 +131,7 @@ export const MonthlyView: Story = {
             • Użyj strzałek, aby nawigować po okresach<br/>
             • W widoku miesięcznym kliknij dzień, aby przejść do widoku tygodniowego
           </div>
-      </FeastDataProvider>
+        </FeastDataProvider>
     );
   },
 }
