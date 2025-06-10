@@ -1,11 +1,11 @@
-import { Service, ServiceWeek, Tenant } from '@/payload-types';
 import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
 import { getFeasts } from '@/common/getFeasts';
 import { createPolishDate } from '@/common/timezone';
 import { Feast } from '@/feast';
-import { addDays, addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, setHours, setMinutes, startOfWeek } from 'date-fns';
-import { CollectionConfig } from 'payload';
+import { Service, ServiceWeek, Tenant } from '@/payload-types';
+import { addDays, addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
+import { CollectionConfig, Payload } from 'payload';
 
 // Define type for feast days grouped by day of week
 interface FeastsByDay {
@@ -28,6 +28,81 @@ const dayMap: Record<number, string> = {
   4: 'thursday',
   5: 'friday',
   6: 'saturday'
+};
+
+type FeastTemplate = NonNullable<Tenant['feastTemplates']>[keyof NonNullable<Tenant['feastTemplates']>];
+
+/**
+ * Finds the appropriate service template for a given feast.
+ * @param feast - The feast to find a template for.
+ * @param feastTemplates - The available feast templates from the tenant.
+ * @returns The matching template or undefined.
+ */
+const findTemplateForFeast = (feast: Feast, feastTemplates: Tenant['feastTemplates']): FeastTemplate | undefined => {
+  if (!feastTemplates) return undefined;
+
+  const templatesArray = Object.values(feastTemplates);
+  return templatesArray.find(template => {
+    const applicableDays = template?.applicableDays as number[];
+    return applicableDays?.includes(getDay(feast.date));
+  });
+};
+
+/**
+ * Creates a collection of services for a given feast based on a template.
+ * @param feast - The feast to generate services for.
+ * @param template - The service template to use.
+ * @param tenantId - The ID of the tenant.
+ * @param payload - The Payload instance.
+ * @returns A promise that resolves to an array of service references.
+ */
+const createServicesForFeast = async (
+  feast: Feast,
+  template: FeastTemplate,
+  tenantId: string,
+  payload: Payload
+): Promise<{ service: string }[]> => {
+  if (!template?.services?.length) return [];
+
+  const servicePromises = template.services.map(async (templateService) => {
+    if (!templateService) return null;
+    
+    const timeString = templateService.time as string;
+    const timeMatch = timeString.match(/(\d{2}):(\d{2})/);
+
+    if (!timeMatch) {
+      payload.logger.error(`Invalid time format in template: ${timeString} for feast: ${feast.title}`);
+      return null;
+    }
+
+    const hours = parseInt(timeMatch[1], 10);
+    const minutes = parseInt(timeMatch[2], 10);
+
+    const year = feast.date.getUTCFullYear();
+    const month = feast.date.getUTCMonth() + 1;
+    const day = feast.date.getUTCDate();
+
+    const utcDate = createPolishDate(year, month, day, hours, minutes);
+
+    const serviceData = {
+      tenant: tenantId,
+      date: utcDate.toISOString(),
+      category: templateService.category,
+      massType: templateService.massType,
+      notes: templateService.notes,
+    };
+
+    try {
+      const newService = await payload.create({ collection: 'services', data: serviceData });
+      return { service: newService.id };
+    } catch (error) {
+      payload.logger.error(`Failed to create service for feast ${feast.title}: ${error}`);
+      return null;
+    }
+  });
+
+  const createdServices = await Promise.all(servicePromises);
+  return createdServices.filter(Boolean) as { service: string }[];
 };
 
 export const ServiceWeeks: CollectionConfig = {
@@ -74,7 +149,7 @@ export const ServiceWeeks: CollectionConfig = {
         
         // skip first Sunday and span across the next one
         const feasts = await getFeasts(addDays(startDate, 1), addDays(endDate, 1));
-        const feastsByDay = feasts.reduce((acc: FeastsByDay, feast) => {
+        const feastsByDay = feasts.reduce<FeastsByDay>((acc, feast) => {
           const dayOfWeek = getDay(feast.date);
           if (!acc[dayOfWeek]) acc[dayOfWeek] = [];
           acc[dayOfWeek].push(feast);
@@ -84,61 +159,19 @@ export const ServiceWeeks: CollectionConfig = {
         const updatedData: any = { ...data };
         
         for (const [dayNumber, dayFeasts] of Object.entries(feastsByDay)) {
-          const tabName = dayMap[Number(dayNumber)];
-          const services = [];
+          const servicePromises = dayFeasts.map((feast: Feast) => {
+            const template = findTemplateForFeast(feast, tenant.feastTemplates);
+            if (!template) return Promise.resolve([]);
+            return createServicesForFeast(feast, template, tenant.id, req.payload);
+          });
           
-          for (const feast of dayFeasts) {
-            const feastTemplates = tenant?.feastTemplates;
-            
-            if (!feastTemplates) continue;
+          const servicesForDay = (await Promise.all(servicePromises)).flat();
 
-            const templatesArray = Object.values(feastTemplates);
-            const template = templatesArray.find(template => {
-              const applicableDays = template.applicableDays as number[];
-              return applicableDays?.includes(getDay(feast.date));
-            });
-            
-            if (!template?.services?.length) continue;
-
-            for (const templateService of template.services) {
-              const time = parseISO(templateService.time as string);
-              const hours = time.getUTCHours();
-              const minutes = time.getUTCMinutes();
-
-              const year = feast.date.getUTCFullYear();
-              const month = feast.date.getUTCMonth() + 1; // getUTCMonth is 0-indexed
-              const day = feast.date.getUTCDate();
-              
-              const utcDate = createPolishDate(year, month, day, hours, minutes);
-              
-              const serviceData = {
-                tenant: data.tenant,
-                date: utcDate.toISOString(),
-                category: templateService.category,
-                massType: templateService.massType,
-                notes: templateService.notes,
-              };
-              
-              try {
-                const newService = await req.payload.create({
-                  collection: 'services',
-                  data: serviceData
-                });
-                
-                services.push({
-                  service: newService.id
-                });
-              } catch (error) {
-                req.payload.logger.error(`Failed to create service: ${error}`);
-              }
-            }
-          }
-          
-          // Update tab with the new services
-          if (services.length > 0) {
+          if (servicesForDay.length > 0) {
+            const tabName = dayMap[Number(dayNumber)];
             updatedData[tabName] = {
               ...(updatedData[tabName] || {}),
-              services
+              services: servicesForDay,
             };
           }
         }

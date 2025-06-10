@@ -6,15 +6,14 @@ import { Calendar, FeastWithMasses } from "@/_components/Calendar";
 import { FeastDataProvider } from "@/_components/Calendar/context/FeastDataContext";
 import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
+import { garamond } from "@/fonts";
 import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
 import { format, parse, parseISO } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
-import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
-import { garamond } from "@/fonts";
-import Script from "next/script";
 import { SenderForm, SenderScript } from "./SenderForm";
+import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -105,22 +104,25 @@ export default async function AnnouncementPage({
         createdAt={page.createdAt}
         updatedAt={page.updatedAt}
       />
-      <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 md:flex-row">
-        <div className="md:order-2 self-center md:self-auto w-full md:w-auto md:basis-1/3 justify-between">
+      <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 lg:flex-row">
+        <div className="lg:order-2 self-center lg:self-auto w-full lg:w-auto lg:basis-full justify-between">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
             initialDate={feastsWithMasses.length > 0 ? now.toISOString() : serverNow}
+            tenantId={tenant?.id ?? ''}
           >
             <Calendar />
           </FeastDataProvider>
         </div>
         <div>
         <div
-          className="overflow-auto flex-1 prose prose-lg max-w-none text-justify md:text-left"
+          className="overflow-auto flex-1 prose prose-lg max-w-none text-left"
           dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
         >
         </div>
-        <SenderForm formId="b82BgW" />
+        {process.env.NODE_ENV === 'production' && (
+          <SenderForm formId="b82BgW" />
+        )}
         </div>
       </Gutter>
     </>

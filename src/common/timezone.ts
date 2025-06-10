@@ -1,4 +1,4 @@
-import { fromZonedTime, toZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { pl } from 'date-fns/locale';
 
 /**
@@ -13,15 +13,6 @@ export const POLISH_TIMEZONE = 'Europe/Warsaw';
  */
 export const polishTimeToUtc = (date: Date): Date => {
   return fromZonedTime(date, POLISH_TIMEZONE);
-};
-
-/**
- * Converts a UTC date to Polish local time for display
- * @param date - The UTC date
- * @returns Date object representing Polish local time
- */
-export const utcToPolishTime = (date: Date): Date => {
-  return toZonedTime(date, POLISH_TIMEZONE);
 };
 
 /**

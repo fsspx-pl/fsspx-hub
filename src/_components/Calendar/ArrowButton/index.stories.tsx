@@ -9,6 +9,7 @@ const meta = {
   },
   argTypes: {
     disabled: { control: 'boolean' },
+    onClick: { action: 'clicked' },
   },
   tags: ['autodocs'],
 } satisfies Meta<typeof ArrowButton>
@@ -16,11 +17,27 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-
 export const Default: Story = {
-  decorators: [
-    (Story) => (
-      <Story />
-    ),
-  ],
+  args: {
+    onClick: () => console.log('Arrow clicked'),
+  },
+}
+
+export const Disabled: Story = {
+  args: {
+    disabled: true,
+  },
+}
+
+export const LeftArrow: Story = {
+  args: {
+    className: 'rotate-180',
+    onClick: () => console.log('Left arrow clicked'),
+  },
+}
+
+export const RightArrow: Story = {
+  args: {
+    onClick: () => console.log('Right arrow clicked'),
+  },
 } 

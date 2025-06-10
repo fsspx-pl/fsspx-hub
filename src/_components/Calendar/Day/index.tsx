@@ -12,6 +12,7 @@ type Props = {
   className?: string
   hasMoreLeft?: boolean
   hasMoreRight?: boolean
+  hideDayName?: boolean
 }
 
 export const Day: React.FC<Props> = ({ 
@@ -21,6 +22,7 @@ export const Day: React.FC<Props> = ({
   className, 
   hasMoreLeft, 
   hasMoreRight,
+  hideDayName = false,
 }) => {
   const isSunday = date.getDay() === 0;
   const textColor = isSunday ? 'text-[#c81910]' : 'text-[#4a4b4f]';
@@ -28,11 +30,13 @@ export const Day: React.FC<Props> = ({
   const dayName = format(date, 'EEE', { locale: polishLocale }).replace('.', '');
   
   return (
-    <button 
+    <div 
       onClick={onClick}
       className={`
         min-w-[38px] sm:min-w-[46px]
-        p-1 sm:p-3 
+        p-1 sm:p-3
+        text-center
+        cursor-pointer
         flex-col justify-start items-center inline-flex 
         transition-all duration-300 ease-in-out
         ${isSelected ? 'bg-[#f8f7f7] rounded-t-lg' : ''} 
@@ -42,7 +46,7 @@ export const Day: React.FC<Props> = ({
     >
       <div 
         className={`
-          self-stretch text-[21.80px] font-semibold 
+          self-stretch font-semibold text-xl
           ${textColor} ${garamond.className}
           transition-opacity duration-300
           relative
@@ -66,7 +70,7 @@ export const Day: React.FC<Props> = ({
           relative
         `}
       >
-        {dayName}
+        {!hideDayName && dayName}
         {(hasMoreLeft || hasMoreRight) && !isSelected && (
           <div className={`
             absolute inset-0 pointer-events-none
@@ -76,6 +80,6 @@ export const Day: React.FC<Props> = ({
           `} />
         )}
       </div>
-    </button>
+    </div>
   )
 } 
