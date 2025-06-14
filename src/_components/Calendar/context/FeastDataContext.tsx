@@ -2,18 +2,24 @@
 
 import { Feast } from '@/feast'
 import { Service as ServiceType } from '@/payload-types'
-import { addDays, isSameDay, subDays } from 'date-fns'
-import React, { createContext, useContext, useState } from 'react'
+import { addDays, isSameDay, subDays, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns'
+import React, { createContext, useContext, useState, useCallback } from 'react'
 
 type FeastWithMasses = Feast & { masses: ServiceType[] }
+
+type ViewMode = 'weekly' | 'monthly'
 
 type FeastDataContextType = {
   currentDate: Date
   feasts: FeastWithMasses[]
   selectedDay: FeastWithMasses | undefined
+  viewMode: ViewMode
   handlePrevious: () => void
   handleNext: () => void
   handleDateSelect: (date: Date) => void
+  setViewMode: (mode: ViewMode) => void
+  loadedServiceMonths: Set<string>
+  isLoadingServices: boolean
 }
 
 const FeastDataContext = createContext<FeastDataContextType | undefined>(undefined)
@@ -40,22 +46,87 @@ export const FeastDataProvider: React.FC<{
   children: React.ReactNode;
   initialFeasts: FeastWithMasses[];
   initialDate: string;
-}> = ({ children, initialFeasts, initialDate }) => {
+  tenantId: string;
+}> = ({ children, initialFeasts, initialDate, tenantId }) => {
   const [currentDate, setCurrentDate] = useState(new Date(initialDate))
-  const [feasts] = useState<FeastWithMasses[]>(initialFeasts)
+  const [feasts, setFeasts] = useState<FeastWithMasses[]>(initialFeasts)
   const [selectedDay, setSelectedDay] = useState<FeastWithMasses | undefined>(
     selectTodayOrFirstFeast(initialFeasts, initialDate)
   )
-
-  const handlePrevious = () => {
-    setCurrentDate((prev) => subDays(prev, 1))
-    setSelectedDay(undefined)
+  const [viewMode, setViewMode] = useState<ViewMode>('weekly')
+  // Initialize loaded months based on initial feasts that have masses
+  const getInitialLoadedMonths = () => {
+    const monthsWithMasses = new Set<string>()
+    initialFeasts.forEach(feast => {
+      if (feast.masses.length > 0) {
+        const monthKey = `${feast.date.getFullYear()}-${(feast.date.getMonth() + 1).toString().padStart(2, '0')}`
+        monthsWithMasses.add(monthKey)
+      }
+    })
+    return monthsWithMasses
   }
 
-  const handleNext = () => {
-    setCurrentDate((prev) => addDays(prev, 1))
+  const [loadedServiceMonths, setLoadedServiceMonths] = useState<Set<string>>(getInitialLoadedMonths())
+  const [isLoadingServices, setIsLoadingServices] = useState(false)
+
+  const loadServicesForMonth = useCallback(async (date: Date) => {
+    if (!tenantId) return
+    
+    const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`
+    if (loadedServiceMonths.has(monthKey)) return
+
+    setIsLoadingServices(true)
+    try {
+      const monthStart = startOfMonth(date)
+      const monthEnd = endOfMonth(date)
+      
+      const response = await fetch(
+        `/api/services?tenant=${tenantId}&start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}`
+      )
+      
+      if (response.ok) {
+        const newServices: ServiceType[] = await response.json()
+        
+        // Merge new services with existing feasts
+        setFeasts(currentFeasts => 
+          currentFeasts.map(feast => {
+            const additionalMasses = newServices.filter(service => 
+              isSameDay(new Date(service.date), feast.date) &&
+              !feast.masses.some(existing => existing.id === service.id)
+            )
+            
+            return additionalMasses.length > 0 
+              ? { ...feast, masses: [...feast.masses, ...additionalMasses] }
+              : feast
+          })
+        )
+        
+        setLoadedServiceMonths(prev => new Set([...prev, monthKey]))
+      }
+    } catch (error) {
+      console.error('Failed to load services for month:', error)
+    } finally {
+      setIsLoadingServices(false)
+    }
+  }, [tenantId, loadedServiceMonths])
+
+  const handlePrevious = useCallback(() => {
+    setCurrentDate((prev) => {
+      const newDate = viewMode === 'weekly' ? subDays(prev, 7) : subMonths(prev, 1)
+      loadServicesForMonth(newDate)
+      return newDate
+    })
     setSelectedDay(undefined)
-  }
+  }, [loadServicesForMonth, viewMode])
+
+  const handleNext = useCallback(() => {
+    setCurrentDate((prev) => {
+      const newDate = viewMode === 'weekly' ? addDays(prev, 7) : addMonths(prev, 1)
+      loadServicesForMonth(newDate)
+      return newDate
+    })
+    setSelectedDay(undefined)
+  }, [loadServicesForMonth, viewMode])
 
   const handleDateSelect = (date: Date) => {
     const selected = feasts.find(feast => isSameDay(feast.date, date))
@@ -66,9 +137,13 @@ export const FeastDataProvider: React.FC<{
     currentDate,
     feasts,
     selectedDay,
+    viewMode,
     handlePrevious,
     handleNext,
     handleDateSelect,
+    setViewMode,
+    loadedServiceMonths,
+    isLoadingServices,
   }
 
   return (
@@ -80,7 +155,7 @@ export const FeastDataProvider: React.FC<{
 
 export const useFeastData = () => {
   const context = useContext(FeastDataContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useFeastData must be used within a FeastDataProvider')
   }
   return context

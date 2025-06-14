@@ -1,12 +1,12 @@
 import { tenantAdmins } from '@/access/tenantAdmins';
+import { formatInPolishTime } from '@/common/timezone';
 import serviceFields from '@/fields/service';
-import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, FieldHook } from 'payload';
-import { createRevalidateServices } from './hooks/revalidateServices';
-import { format } from 'date-fns';
-import { pl } from 'date-fns/locale';
 import { Service } from '@/payload-types';
 import capitalizeFirstLetter from '@/utilities/capitalizeFirstLetter';
-import { formatInPolishTime } from '@/common/timezone';
+import { format } from 'date-fns';
+import { pl } from 'date-fns/locale';
+import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, FieldHook } from 'payload';
+import { createRevalidateServices } from './hooks/revalidateServices';
 
 const dayNameHook: FieldHook<Service> = ({ data }) => {
   if (!data?.date) return null;
@@ -17,7 +17,7 @@ const dayNameHook: FieldHook<Service> = ({ data }) => {
 const serviceTitleHook: FieldHook<Service> = ({ data }) => {
   if (!data?.date) return null;
   
-  const dateStr = formatInPolishTime(new Date(data.date), 'dd.MM HH:mm');
+  const dateStr = formatInPolishTime(data.date, 'dd.MM HH:mm');
   const category = capitalizeFirstLetter(data.category || '');
   const massType = data.massType ? ` - ${capitalizeFirstLetter(data.massType)}` : '';
   
@@ -45,7 +45,7 @@ export const Services: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'serviceTitle',
-    defaultColumns: ['date', 'dayName', 'category', 'massType', 'tenant'],
+    defaultColumns: ['serviceTitle', 'dayName', 'category', 'massType', 'tenant'],
     group: 'Services',
   },
   fields: [
@@ -65,6 +65,7 @@ export const Services: CollectionConfig = {
               displayFormat: 'dd.MM.yyyy HH:mm',
             },
             width: '50%',
+
           },
           required: true,
         },

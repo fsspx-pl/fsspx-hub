@@ -1,4 +1,4 @@
-import { fromZonedTime, toZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { pl } from 'date-fns/locale';
 
 /**
