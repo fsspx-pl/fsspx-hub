@@ -8,7 +8,7 @@ import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
 import { garamond } from "@/fonts";
 import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
-import { format, parse, parseISO } from "date-fns";
+import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
@@ -81,7 +81,28 @@ export default async function AnnouncementPage({
 
   const tenant = page.tenant ? page.tenant as Tenant : null;
   const period = page?.period ? page.period as PageType['period'] : null;
-  const feastsWithMasses: FeastWithMasses[] = tenant ? await getFeastsWithMasses(period || undefined, tenant, now) : [];
+
+  // Calculate the date range for initial data fetch
+  const currentDate = parseISO(isoDate);
+  const prevMonth = startOfMonth(subMonths(currentDate, 1));
+  const nextMonth = endOfMonth(addMonths(currentDate, 1));
+
+  // Fetch feasts for the entire year
+  const feastsWithMasses: FeastWithMasses[] = tenant 
+    ? await getFeastsWithMasses(
+        {
+          start: new Date(currentDate.getFullYear(), 0, 1).toISOString(), // Start of year
+          end: new Date(currentDate.getFullYear(), 11, 31).toISOString(), // End of year
+        },
+        tenant,
+        now,
+        {
+          servicesStart: prevMonth.toISOString(),
+          servicesEnd: nextMonth.toISOString(),
+        }
+      ) 
+    : [];
+
   const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant, page.title, period?.start as string) : [];
 
   const user = page.author ? page.author as User : null;
@@ -115,14 +136,13 @@ export default async function AnnouncementPage({
           </FeastDataProvider>
         </div>
         <div>
-        <div
-          className="overflow-auto flex-1 prose prose-lg max-w-none text-left"
-          dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
-        >
-        </div>
-        {process.env.NODE_ENV === 'production' && (
-          <SenderForm formId="b82BgW" />
-        )}
+          <div
+            className="overflow-auto flex-1 prose prose-lg max-w-none text-left"
+            dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
+          />
+          {process.env.NODE_ENV === 'production' && (
+            <SenderForm formId="b82BgW" />
+          )}
         </div>
       </Gutter>
     </>

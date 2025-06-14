@@ -2,7 +2,7 @@
 
 import { Feast } from '@/feast'
 import { Service as ServiceType } from '@/payload-types'
-import { addDays, isSameDay, subDays, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns'
+import { addDays, isSameDay, subDays, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns'
 import React, { createContext, useContext, useState, useCallback } from 'react'
 
 type FeastWithMasses = Feast & { masses: ServiceType[] }
@@ -112,21 +112,21 @@ export const FeastDataProvider: React.FC<{
 
   const handlePrevious = useCallback(() => {
     setCurrentDate((prev) => {
-      const newDate = subDays(prev, 1)
+      const newDate = viewMode === 'weekly' ? subDays(prev, 7) : subMonths(prev, 1)
       loadServicesForMonth(newDate)
       return newDate
     })
     setSelectedDay(undefined)
-  }, [loadServicesForMonth])
+  }, [loadServicesForMonth, viewMode])
 
   const handleNext = useCallback(() => {
     setCurrentDate((prev) => {
-      const newDate = addDays(prev, 1)
+      const newDate = viewMode === 'weekly' ? addDays(prev, 7) : addMonths(prev, 1)
       loadServicesForMonth(newDate)
       return newDate
     })
     setSelectedDay(undefined)
-  }, [loadServicesForMonth])
+  }, [loadServicesForMonth, viewMode])
 
   const handleDateSelect = (date: Date) => {
     const selected = feasts.find(feast => isSameDay(feast.date, date))
@@ -155,7 +155,7 @@ export const FeastDataProvider: React.FC<{
 
 export const useFeastData = () => {
   const context = useContext(FeastDataContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useFeastData must be used within a FeastDataProvider')
   }
   return context

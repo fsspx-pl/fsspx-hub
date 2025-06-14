@@ -10,6 +10,11 @@ export type FeastWithMasses = Feast & {
   masses: Service[];
 };
 
+type ServicesDateRange = {
+  servicesStart: string;
+  servicesEnd: string;
+};
+
 /**
  * Converts a date to Polish timezone for comparison
  */
@@ -22,7 +27,8 @@ const toPolishTime = (date: Date | string): Date => {
 export async function getFeastsWithMasses(
   period: PageType['period'] | undefined, 
   tenant: Tenant,
-  referenceDate?: Date
+  referenceDate?: Date,
+  servicesDateRange?: ServicesDateRange
 ) {
   // Case 1: Period is defined (for emails) - filter feasts to the specified period
   if (period?.start && period?.end) {
@@ -32,17 +38,11 @@ export async function getFeastsWithMasses(
     // Get feasts only for the specified period
     const feasts = await getFeasts(startDate, endDate);
     
-    // Get masses for the period, with some buffer for context
-    const currentMonth = startOfMonth(startDate);
-    const prevMonth = subMonths(currentMonth, 1);
-    const nextMonth = addMonths(endOfMonth(endDate), 1);
-    const massesStart = startOfMonth(prevMonth);
-    const massesEnd = endOfMonth(nextMonth);
-    
+    // Get masses for the period
     const masses = tenant?.id ? await getServices(
       tenant,
-      massesStart,
-      massesEnd
+      startDate,
+      endDate
     ) : [];
 
     return feasts.map((feast: Feast) => {
@@ -66,12 +66,20 @@ export async function getFeastsWithMasses(
   const yearEnd = endOfYear(currentDate);
   const feasts = await getFeasts(yearStart, yearEnd);
   
-  // Get masses only for prev/current/next month (for initial load)
-  const currentMonth = startOfMonth(currentDate);
-  const prevMonth = subMonths(currentMonth, 1);
-  const nextMonth = addMonths(currentMonth, 1);
-  const massesStart = startOfMonth(prevMonth);
-  const massesEnd = endOfMonth(nextMonth);
+  // Get masses based on provided date range or default to prev/current/next month
+  let massesStart: Date;
+  let massesEnd: Date;
+
+  if (servicesDateRange) {
+    massesStart = parseISO(servicesDateRange.servicesStart);
+    massesEnd = parseISO(servicesDateRange.servicesEnd);
+  } else {
+    const currentMonth = startOfMonth(currentDate);
+    const prevMonth = subMonths(currentMonth, 1);
+    const nextMonth = addMonths(currentMonth, 1);
+    massesStart = startOfMonth(prevMonth);
+    massesEnd = endOfMonth(nextMonth);
+  }
   
   const masses = tenant?.id ? await getServices(
     tenant,
