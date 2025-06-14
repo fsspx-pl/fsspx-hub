@@ -81,7 +81,7 @@ export default async function AnnouncementPage({
 
   const tenant = page.tenant ? page.tenant as Tenant : null;
   const period = page?.period ? page.period as PageType['period'] : null;
-  const feastsWithMasses: FeastWithMasses[] = period && tenant ? await getFeastsWithMasses(period, tenant) : [];
+  const feastsWithMasses: FeastWithMasses[] = tenant ? await getFeastsWithMasses(period || undefined, tenant, now) : [];
   const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant, page.title, period?.start as string) : [];
 
   const user = page.author ? page.author as User : null;

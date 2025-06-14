@@ -1,10 +1,10 @@
 import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
 import { getFeasts } from '@/common/getFeasts';
-import { createPolishDate } from '@/common/timezone';
+import { formatInPolishTime } from '@/common/timezone';
 import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
-import { addDays, addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
+import { addDays, addWeeks, endOfWeek, getDay, getISOWeek, parseISO, startOfWeek } from 'date-fns';
 import { CollectionConfig, Payload } from 'payload';
 
 // Define type for feast days grouped by day of week
@@ -35,17 +35,34 @@ type FeastTemplate = NonNullable<Tenant['feastTemplates']>[keyof NonNullable<Ten
 /**
  * Finds the appropriate service template for a given feast.
  * @param feast - The feast to find a template for.
- * @param feastTemplates - The available feast templates from the tenant.
+ * @param templates - The available feast templates from the tenant.
  * @returns The matching template or undefined.
  */
-const findTemplateForFeast = (feast: Feast, feastTemplates: Tenant['feastTemplates']): FeastTemplate | undefined => {
-  if (!feastTemplates) return undefined;
+const findTemplateForFeast = (feast: Feast, templates: Tenant['feastTemplates']): FeastTemplate | undefined => {
+  if (!templates) return undefined;
 
-  const templatesArray = Object.values(feastTemplates);
-  return templatesArray.find(template => {
-    const applicableDays = template?.applicableDays as number[];
-    return applicableDays?.includes(getDay(feast.date));
-  });
+  console.log(`\nFinding template for feast: "${feast.title}"`);
+  console.log(`Feast date: ${feast.date.toISOString()}`);
+  console.log(`Feast Polish date: ${formatInPolishTime(feast.date, 'yyyy-MM-dd HH:mm:ss')}`);
+  
+  const availableTemplates = Object.entries(templates).map(([name, template]) => ({
+    name,
+    ...template
+  }));
+  console.log('Available templates:', availableTemplates);
+  
+  for (const template of availableTemplates) {
+    const applicableDays = (template.applicableDays || []) as number[];
+    const dayOfWeek = getDay(new Date(formatInPolishTime(feast.date, 'yyyy-MM-dd')));
+    console.log(`Checking ${template.name} template with applicable days:`, applicableDays, 'against day:', dayOfWeek);
+    console.log(`Match result:`, applicableDays.includes(dayOfWeek));
+    
+    if (applicableDays.includes(dayOfWeek)) {
+      console.log(`Found specific template for ${feast.title}: ${template.name} with days:`, applicableDays);
+      return template;
+    }
+  }
+  return undefined;
 };
 
 /**
@@ -78,11 +95,12 @@ const createServicesForFeast = async (
     const hours = parseInt(timeMatch[1], 10);
     const minutes = parseInt(timeMatch[2], 10);
 
-    const year = feast.date.getUTCFullYear();
-    const month = feast.date.getUTCMonth() + 1;
-    const day = feast.date.getUTCDate();
-
-    const utcDate = createPolishDate(year, month, day, hours, minutes);
+    // Create date in Polish timezone
+    const polishDate = formatInPolishTime(feast.date, 'yyyy-MM-dd');
+    const serviceDate = new Date(`${polishDate}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`);
+    
+    // Convert to UTC for storage
+    const utcDate = new Date(serviceDate.getTime() - serviceDate.getTimezoneOffset() * 60000);
 
     const serviceData = {
       tenant: tenantId,
@@ -147,18 +165,38 @@ export const ServiceWeeks: CollectionConfig = {
 
         if (!tenant) return data;
         
-        // skip first Sunday and span across the next one
-        const feasts = await getFeasts(addDays(startDate, 1), addDays(endDate, 1));
+        // Get feasts for the week
+        const feasts = await getFeasts(startDate, endDate);
+        console.log('Feasts received:', feasts.map((f: Feast) => ({
+          title: f.title,
+          date: f.date.toISOString(),
+          day: getDay(f.date),
+          polishDate: formatInPolishTime(f.date, 'yyyy-MM-dd HH:mm:ss')
+        })));
+
         const feastsByDay = feasts.reduce<FeastsByDay>((acc, feast) => {
-          const dayOfWeek = getDay(feast.date);
+          // Convert UTC date to Polish time before getting the day
+          const polishDate = formatInPolishTime(feast.date, 'yyyy-MM-dd');
+          const dayOfWeek = getDay(new Date(polishDate));
+          console.log(`Grouping feast "${feast.title}" (${feast.date.toISOString()} -> ${polishDate}) into day ${dayOfWeek} (${dayMap[dayOfWeek]})`);
           if (!acc[dayOfWeek]) acc[dayOfWeek] = [];
           acc[dayOfWeek].push(feast);
           return acc;
         }, {});
+
+        console.log('Feasts grouped by day:', Object.entries(feastsByDay).map(([day, feasts]) => ({
+          day: dayMap[Number(day)],
+          feasts: feasts.map((feast: Feast) => feast.title)
+        })));
         
         const updatedData: any = { ...data };
         
-        for (const [dayNumber, dayFeasts] of Object.entries(feastsByDay)) {
+        // Process days starting from Monday (1) to Sunday (0)
+        const dayOrder = [1, 2, 3, 4, 5, 6, 0]; // Monday to Sunday
+        for (const dayNumber of dayOrder) {
+          const dayFeasts = feastsByDay[dayNumber] || [];
+          console.log(`Processing ${dayMap[dayNumber]} with ${dayFeasts.length} feasts`);
+          
           const servicePromises = dayFeasts.map((feast: Feast) => {
             const template = findTemplateForFeast(feast, tenant.feastTemplates);
             if (!template) return Promise.resolve([]);
@@ -168,7 +206,8 @@ export const ServiceWeeks: CollectionConfig = {
           const servicesForDay = (await Promise.all(servicePromises)).flat();
 
           if (servicesForDay.length > 0) {
-            const tabName = dayMap[Number(dayNumber)];
+            const tabName = dayMap[dayNumber];
+            console.log(`Assigning ${servicesForDay.length} services to ${tabName}`);
             updatedData[tabName] = {
               ...(updatedData[tabName] || {}),
               services: servicesForDay,
@@ -251,15 +290,17 @@ export const ServiceWeeks: CollectionConfig = {
           displayFormat: 'd MMM yyyy',
         },
         description: {
-          pl: 'Pierwszy dzień tygodnia (musi być to niedziela)',
-          en: 'First day of the week (must be Sunday)'
+          pl: 'Pierwszy dzień tygodnia (musi być to poniedziałek)',
+          en: 'First day of the week (must be Monday)'
         },
       },
       validate: (value: Date | null | undefined) => {
-        if (!isSunday(value as Date)) {
-          return 'First day of the week must be Sunday'
+        if (!value) return 'Start date is required';
+        const day = getDay(value);
+        if (day !== 1) { // 1 = Monday
+          return 'First day of the week must be Monday';
         }
-        return true
+        return true;
       },
       defaultValue: async ({ req }) => {
         const payload = req.payload;
@@ -273,11 +314,11 @@ export const ServiceWeeks: CollectionConfig = {
         const lastServiceWeek = result?.docs?.[0];
 
         if (!lastServiceWeek) {
-          return startOfWeek(new Date(), { weekStartsOn: 0 });
+          return startOfWeek(new Date(), { weekStartsOn: 1 }); // 1 = Monday
         }
 
         const nextWeekDate = addWeeks(parseISO(lastServiceWeek.start), 1);
-        return startOfWeek(nextWeekDate, { weekStartsOn: 0 });
+        return startOfWeek(nextWeekDate, { weekStartsOn: 1 }); // 1 = Monday
       }
     },
     {
@@ -291,7 +332,7 @@ export const ServiceWeeks: CollectionConfig = {
           ({ data }) => {
             if (!data?.start) return;
             const start = new Date(data.start);
-            return endOfWeek(start, { weekStartsOn: 0 });
+            return endOfWeek(start, { weekStartsOn: 1 }); // 1 = Monday
           }
         ]
       }

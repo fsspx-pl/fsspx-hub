@@ -20,6 +20,15 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    timezones: {
+      defaultTimezone: 'Europe/Warsaw',
+      supportedTimezones: [
+        {
+          label: 'Europe/Warsaw',
+          value: 'Europe/Warsaw',
+        },
+      ],
+    },
   },
   globals: [ Settings, Header, Footer ],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
