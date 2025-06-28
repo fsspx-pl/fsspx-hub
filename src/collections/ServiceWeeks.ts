@@ -175,9 +175,10 @@ export const ServiceWeeks: CollectionConfig = {
         })));
 
         const feastsByDay = feasts.reduce<FeastsByDay>((acc, feast) => {
-          // Convert UTC date to Polish time before getting the day
+          // Get day of week directly in Polish timezone to avoid timezone conversion issues
+          const polishDayOfWeek = parseInt(formatInPolishTime(feast.date, 'i'), 10); // 'i' format gives ISO day of week (1=Monday, 7=Sunday)
+          const dayOfWeek = polishDayOfWeek === 7 ? 0 : polishDayOfWeek; // Convert ISO format (1-7) to JS format (0-6)
           const polishDate = formatInPolishTime(feast.date, 'yyyy-MM-dd');
-          const dayOfWeek = getDay(new Date(polishDate));
           console.log(`Grouping feast "${feast.title}" (${feast.date.toISOString()} -> ${polishDate}) into day ${dayOfWeek} (${dayMap[dayOfWeek]})`);
           if (!acc[dayOfWeek]) acc[dayOfWeek] = [];
           acc[dayOfWeek].push(feast);
