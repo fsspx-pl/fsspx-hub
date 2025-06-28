@@ -106,6 +106,7 @@ export const Pages: CollectionConfig = {
       type: 'ui',
       admin: {
         position: 'sidebar',
+        condition: (_, siblingData) => siblingData.type === 'pastoral-announcements',
         components: {
           Field: {
             path: '@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton'
