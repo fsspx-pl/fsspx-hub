@@ -13,9 +13,9 @@ const meta: Meta<typeof Calendar> = {
       defaultViewport: 'mobile1',
       viewports: {
         mobile1: {
-          name: 'Mobile (350px)',
+          name: 'Mobile (338px)',
           styles: {
-            width: '350px',
+            width: '338px',
             height: '568px',
           },
         },

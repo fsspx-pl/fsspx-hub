@@ -14,8 +14,7 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { addDays, isSunday, parse, parseISO, setHours } from "date-fns";
-import { format } from "date-fns-tz";
+import { addDays, isSunday } from "date-fns";
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
 import { formatInPolishTime, polishTimeToUtc, createPolishDate } from "@/common/timezone";
@@ -84,6 +83,42 @@ const testFeasts: FeastWithMasses[] = [
       } as ServiceType,
     ],
   },
+  {
+    ...{
+      ...feastBase,
+      date: addDays(referenceDate, 3),
+      color: VestmentColor.BLACK,
+      commemorations: ["Świętego Józefa"],
+    },
+    masses: [
+      { 
+        date: createPolishDate(2025, 4, 1, 12).toISOString(),
+        category: 'mass',
+        massType: 'solemn',
+        tenant: 'test-tenant',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+      } as ServiceType,
+      { 
+        date: createPolishDate(2025, 3, 30, 11).toISOString(),
+        category: 'mass',
+        massType: 'silent', 
+        notes: 'Msza w intencji zmarłych ofiarodawców',
+        tenant: 'test-tenant',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+      } as ServiceType,
+      { 
+        date: createPolishDate(2025, 3, 30, 12).toISOString(),
+        category: 'other',
+        customTitle: 'Nabożeństwo do świętego Józefa',
+        notes: 'Po Mszy Św. odbędzie się nabożeństwo do świętego Józefa',
+        tenant: 'test-tenant',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+      } as ServiceType,
+    ],
+  },
 ];
 
 const getServiceTitle = (service: ServiceType) => {
@@ -100,62 +135,103 @@ const getServiceTitle = (service: ServiceType) => {
 };
 
 const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsWithMasses }) => {
+  // Split days into pairs for 2-column layout
+  const dayPairs = [];
+  for (let i = 0; i < feastsWithMasses.length; i += 2) {
+    dayPairs.push(feastsWithMasses.slice(i, i + 2));
+  }
+
+  const DayCell: React.FC<{ feast: FeastWithMasses }> = ({ feast }) => {
+    const dayNum = formatInPolishTime(feast.date, 'd');
+    const monthAbbr = formatInPolishTime(feast.date, 'MMM').toUpperCase();
+    const weekdayAbbr = formatInPolishTime(feast.date, 'EE').toLowerCase();
+    const commemoration = feast.commemorations?.[0];
+    const vestmentColor = vestmentColorToTailwind(feast.color as VestmentColor);
+
+    return (
+      <Section className="p-4">
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <tbody>
+            <tr>
+              <td style={{ verticalAlign: "top", paddingRight: "12px" }}>
+                {/* Left side - Feast content */}
+                <Text className="text-[#333] font-semibold text-base mb-1 mt-0">
+                  {feast.title}
+                </Text>
+                
+                {commemoration && (
+                  <Text className="text-[#333] font-medium text-base mb-1 mt-0">
+                    {commemoration}
+                  </Text>
+                )}
+                
+                <Text style={{ fontSize: "14px", color: "#555", margin: "0", paddingBottom: "12px" }}>
+                  {romanize(feast.rank)} klasy · kolor szat:&nbsp;
+                  <span className={`${vestmentColor}`}>{feast.color}</span>
+                </Text>
+                
+                {feast.masses.length === 0 ? (
+                  <Text className="text-[#4B5563]">
+                    Brak nabożeństw tego dnia.
+                  </Text>
+                ) : (
+                  <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 0.5em" }}>
+                    <tbody>
+                      {feast.masses.map((service, idx) => (
+                        <tr key={idx}>
+                          <td style={{ whiteSpace: "nowrap", verticalAlign: "top", width: "38px", paddingRight: "12px" }}>
+                            <Text className="my-0 font-semibold">{formatInPolishTime(service.date, "HH:mm")}</Text>
+                          </td>
+                          <td>
+                            <Text className="my-0">{getServiceTitle(service)}</Text>
+                            <Text className="text-[#6B7280] my-0 text-sm leading-tight">{service.notes ?? ''}</Text>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </td>
+              <td style={{ width: "60px", textAlign: "center", verticalAlign: "top" }}>
+                {/* Right side - Date display */}
+                <div style={{ padding: "4px", border: "1px solid", borderColor: isSunday(feast.date) ? '#e9c9c9' : "#ddd", borderRadius: "4px", backgroundColor: "#fff" }}>
+                  <Text style={{ fontSize: "24px", fontWeight: "bold", margin: "0", lineHeight: "1", color: isSunday(feast.date) ? '#C62828' : "#333" }}>
+                    {dayNum}
+                  </Text>
+                  <Text style={{ fontSize: "12px", fontWeight: "600", margin: "0", lineHeight: "1.2", color: "#666", textTransform: "uppercase" }}>
+                    {monthAbbr}
+                  </Text>
+                  <Text style={{ fontSize: "11px", margin: "0", lineHeight: "1.2", color: "#888" }}>
+                    {weekdayAbbr}
+                  </Text>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </Section>
+    );
+  };
+
   return (
     <Section style={{ margin: "0", padding: 0 }}>
-      {feastsWithMasses.map((feast, feastIndex) => {
-        const dayNum = formatInPolishTime(feast.date, 'd');
-        const dayName = formatInPolishTime(feast.date, 'EEEE');
-        const monthName = formatInPolishTime(feast.date, 'MMMM');
-        const commemoration = feast.commemorations?.[0];
-        const vestmentColor = vestmentColorToTailwind(feast.color as VestmentColor);
-
-        return (
-          <Section key={`${feastIndex}-${dayNum}-${monthName}`} className="rounded-md bg-[#f8f9fa] px-4 pb-2 mt-4">
-            <Heading as="h3" style={{ fontSize: "18px", color: isSunday(feast.date) ? '#C62828' : "#333", marginBottom: "6px", fontWeight: 700 }}>
-                {dayNum} {monthName}, {dayName}
-            </Heading>
-            
-            <Text className="text-[#333] font-medium text-base mb-0 mt-0">
-              {feast.title}
-            </Text>
-            
-            {commemoration && (
-              <Text className="text-[#333] font-medium text-base mb-0 mt-0">
-                {commemoration}
-              </Text>
+      {dayPairs.map((pair, rowIndex) => (
+        <Row key={rowIndex} style={{ marginBottom: "10px" }}>
+          <Column style={{ width: "49.5%", verticalAlign: "top", backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
+            <DayCell feast={pair[0]} />
+          </Column>
+          <Column style={{ width: "1%" }}>
+            {/* Spacer column */}
+          </Column>
+          <Column style={{ width: "49.5%", verticalAlign: "top", backgroundColor: "#f8f9fa", borderRadius: "8px"}}>
+            {pair[1] ? (
+              <DayCell feast={pair[1]} />
+            ) : (
+              <Section style={{ height: "250px", minHeight: "250px" }} />
             )}
-            
-            <Text style={{ fontSize: "14px", color: "#555", margin: "0" }}>
-              {romanize(feast.rank)} klasy · kolor szat:&nbsp;
-              <span className={`${vestmentColor}`}>{feast.color}</span>
-            </Text>
-            
-            <Section>
-              {feast.masses.length === 0 ? (
-                <Text className="text-[#4B5563]">
-                  Brak nabożeństw tego dnia.
-                </Text>
-              ) : (
-                <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 0.5em" }}>
-                  <tbody>
-                    {feast.masses.map((service, idx) => (
-                      <tr key={idx}>
-                        <td style={{ whiteSpace: "nowrap", verticalAlign: "top", width: "50px" }}>
-                          <Text className="my-0 font-semibold">{formatInPolishTime(service.date, "HH:mm")}</Text>
-                        </td>
-                        <td>
-                          <Text className="my-0">{getServiceTitle(service)}</Text>
-                          <Text className="text-[#6B7280] my-0 text-sm leading-tight">{service.notes ?? ''}</Text>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </Section>
-          </Section>
-        );
-      })}
+          </Column>
+        </Row>
+      ))}
     </Section>
   );
 };
@@ -221,7 +297,7 @@ export default function Email({
         </Section>
 
         <Section className="px-4">
-          <Heading as="h2" style={{ fontSize: "24px", color: "#333", marginBottom: "0", borderBottom: "1px solid #eee", fontWeight: 400 }}>
+          <Heading as="h2" style={{ fontSize: "24px", color: "#333", fontWeight: 400 }}>
             Plan nabożeństw
           </Heading>
           <MassesList feastsWithMasses={feastsWithMasses} />

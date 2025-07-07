@@ -6,7 +6,7 @@
   font-family: inherit;
   line-height: 1.125em;
 
-  min-width: calc(38px * 7);
+  min-width: calc(42px * 7);
   @media (min-width: 640px) {
     min-width: calc(46px * 7);
   }
