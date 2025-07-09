@@ -26,7 +26,7 @@ export const MonthView: React.FC<MonthViewProps> = ({ onDaySelect }) => {
     }
 
     if(isSameDay(date, currentDate)) {
-      classes.push('!border-1 !border-[#d7d7d7] !border-solid !border-inset')
+      classes.push('!border-[2px] !border-[#d7d7d7] !border-solid !border-inset')
     }
 
     if(isPast(date) && !isSameDay(date, currentDate)) {
