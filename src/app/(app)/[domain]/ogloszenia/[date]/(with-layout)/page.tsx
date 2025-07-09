@@ -14,6 +14,7 @@ import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasse
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
 import { SenderForm, SenderScript } from "../SenderForm";
 import { enhanceFirstLetterInContent } from "../enhanceFirstLetterInContent";
+import { canAccessPrintVersion } from "@/utilities/getCurrentUser";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -121,6 +122,8 @@ export default async function AnnouncementPage({
     ? user.avatar as Media 
     : null;
 
+  const canShowPrintLink = await canAccessPrintVersion();
+
   return (
     <>
       <SenderScript accountId="f511ddc3f98190" formId="b82BgW" />
@@ -150,15 +153,17 @@ export default async function AnnouncementPage({
             className="overflow-auto flex-1 prose prose-lg max-w-none text-left"
             dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
           />
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <a 
-              href="./print"
-              target="_blank"
-              className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors"
-            >
-              📄 Wersja do druku
-            </a>
-          </div>
+          {canShowPrintLink && (
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <a 
+                href={`./${date}/print`}
+                target="_blank"
+                className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors"
+              >
+                🖨️ Wersja do druku
+              </a>
+            </div>
+          )}
           {process.env.NODE_ENV === 'production' && (
             <SenderForm formId="b82BgW" />
           )}

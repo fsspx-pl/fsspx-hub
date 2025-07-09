@@ -8,6 +8,7 @@ import { Service as ServiceType } from "@/payload-types";
 import React from "react";
 import { DateDisplay } from "./DateDisplay";
 import { Media } from "@/_components/Media";
+import { garamond } from "@/fonts";
 
 interface PrintableAnnouncementsProps {
   title: string;
@@ -113,8 +114,8 @@ export function PrintableAnnouncements({
             />
           <div className="absolute inset-0 bg-white bg-opacity-70"></div>
           <div className="relative z-10 text-center">
-            <h1 className="text-2xl font-extrabold mb-1 text-gray-900">Plan nabożeństw</h1>
-            <p className="text-lg font-semibold text-gray-700">
+            <h1 className={`text-4xl font-extrabold mb-1 text-gray-900 ${garamond.className}`}>Plan nabożeństw</h1>
+            <p className="text-lg font-medium text-gray-700">
               {tenant?.city} - {tenant?.type} {tenant?.patron}
             </p>
           </div>
@@ -125,11 +126,6 @@ export function PrintableAnnouncements({
           <div className="overflow-hidden h-full">
             <PrintableMassesList feastsWithMasses={feastsWithMasses} />
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center text-xs text-gray-500 py-2 flex-shrink-0">
-          <p>© {new Date().getFullYear()} - {tenant?.domain || 'fsspx.pl'} • Ad maiorem Dei gloriam!</p>
         </div>
       </div>
     </div>

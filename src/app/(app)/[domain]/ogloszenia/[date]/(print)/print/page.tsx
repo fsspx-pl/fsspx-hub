@@ -8,6 +8,8 @@ import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
 import { PrintableAnnouncements } from "../../PrintableAnnouncements";
 import { enhanceFirstLetterInContent } from "../../enhanceFirstLetterInContent";
+import { canAccessPrintVersion } from "@/utilities/getCurrentUser";
+import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -59,6 +61,11 @@ export default async function PrintPage({
 }: {
   params: Promise<{ domain: string; date: string }>;
 }) {
+  const hasAccess = await canAccessPrintVersion();
+  if (!hasAccess) {
+    notFound();
+  }
+
   const now = new Date(); 
   const { domain, date } = await params;
   const isoDate = parse(date, 'dd-MM-yyyy', now).toISOString();

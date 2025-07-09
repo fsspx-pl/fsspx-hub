@@ -11,7 +11,7 @@ export default function PrintLayout({
     <html lang="pl" className={`${gothic.className}`}>
       <body className="screenContainer">
         <div className="printContainer">
-          {children}
+        {children}
         </div>
       </body>
     </html>

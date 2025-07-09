@@ -11,9 +11,9 @@ export default function AnnouncementLayout({
   return (
     <html lang="pl" className={`${gothic.className}`}>
       <body>
-        <Header></Header>
-        {children}
-        <Footer></Footer>
+      <Header></Header>
+      {children}
+      <Footer></Footer>
       </body>
     </html>
   );
