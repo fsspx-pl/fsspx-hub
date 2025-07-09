@@ -10,10 +10,10 @@ import { garamond } from "@/fonts";
 import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
 import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Metadata } from "next";
-import { getFeastsWithMasses } from "../../../../../common/getFeastsWithMasses";
-import { formatAuthorName } from "../../../../../utilities/formatAuthorName";
-import { SenderForm, SenderScript } from "./SenderForm";
-import { enhanceFirstLetterInContent } from "./enhanceFirstLetterInContent";
+import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
+import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
+import { SenderForm, SenderScript } from "../SenderForm";
+import { enhanceFirstLetterInContent } from "../enhanceFirstLetterInContent";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -59,6 +59,7 @@ export async function generateMetadata({
     ? `${tenant.city} - ${tenant.type} ${tenant.patron}`
     : "";
   const title = `${copyright} - ${location}`;
+  
   return {
     title,
   };
@@ -103,6 +104,15 @@ export default async function AnnouncementPage({
       ) 
     : [];
 
+  // Filter feasts for the current period
+  const periodStart = period?.start ? parseISO(period.start) : currentDate;
+  const periodEnd = period?.end ? parseISO(period.end) : currentDate;
+  const periodFeasts = feastsWithMasses.filter(feast => {
+    const feastDate = typeof feast.date === 'string' ? parseISO(feast.date) : feast.date;
+    return feastDate >= periodStart && feastDate <= periodEnd;
+  });
+
+  // Regular page rendering
   const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant, page.title, period?.start as string) : [];
 
   const user = page.author ? page.author as User : null;
@@ -140,6 +150,15 @@ export default async function AnnouncementPage({
             className="overflow-auto flex-1 prose prose-lg max-w-none text-left"
             dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
           />
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <a 
+              href="./print"
+              target="_blank"
+              className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors"
+            >
+              📄 Wersja do druku
+            </a>
+          </div>
           {process.env.NODE_ENV === 'production' && (
             <SenderForm formId="b82BgW" />
           )}
