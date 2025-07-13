@@ -104,28 +104,62 @@ export function PrintableAnnouncements({
   const coverImage = tenant?.coverBackground as MediaType;
 
   return (
-    <div className="h-full bg-white">
-      <div className="h-full flex flex-col space-y-3">
-        {/* Hero Tile */}
-        <div 
-          className="w-full h-48 bg-gray-50 rounded flex items-center justify-center relative overflow-hidden flex-shrink-0">
-            <Media
-              resource={coverImage}
-              fill
-            />
-          <div className="absolute inset-0 bg-white bg-opacity-70"></div>
-          <div className="relative z-10 text-center">
-            <h1 className={`text-4xl font-extrabold mb-1 text-gray-900 ${garamond.className}`}>Plan nabożeństw</h1>
-            <p className="text-lg font-medium text-gray-700">
-              {tenant?.city} - {tenant?.type} {tenant?.patron}
-            </p>
+    <div className="bg-white">
+      {/* First Page - Masses Schedule */}
+      <div className="print-page">
+        <div className="h-full flex flex-col space-y-3">
+          {/* Hero Tile */}
+          <div 
+            className="w-full h-48 bg-gray-50 rounded flex items-center justify-center relative overflow-hidden flex-shrink-0">
+              <Media
+                resource={coverImage}
+                fill
+              />
+            <div className="absolute inset-0 bg-white bg-opacity-70"></div>
+            <div className="relative z-10 text-center">
+              <h1 className={`text-4xl font-extrabold mb-1 text-gray-900 ${garamond.className}`}>Plan nabożeństw</h1>
+              <p className="text-lg font-medium text-gray-700">
+                {tenant?.city} - {tenant?.type} {tenant?.patron}
+              </p>
+            </div>
+          </div>
+
+          {/* Masses Schedule Tile */}
+          <div className="flex-1 min-h-0">
+            <div className="overflow-hidden h-full">
+              <PrintableMassesList feastsWithMasses={feastsWithMasses} />
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Masses Schedule Tile */}
-        <div className="flex-1 min-h-0">
-          <div className="overflow-hidden h-full">
-            <PrintableMassesList feastsWithMasses={feastsWithMasses} />
+      {/* Second Page - Pastoral Announcements */}
+      <div className="print-page page-break">
+        <div className="h-full flex flex-col space-y-6">
+          {/* Hero Tile for Pastoral Announcements */}
+          <div 
+            className="w-full h-48 bg-gray-50 rounded flex items-center justify-center relative overflow-hidden flex-shrink-0">
+              <Media
+                resource={coverImage}
+                fill
+              />
+            <div className="absolute inset-0 bg-white bg-opacity-70"></div>
+            <div className="relative z-10 text-center">
+              <h1 className={`text-4xl font-extrabold mb-1 text-gray-900 ${garamond.className}`}>Ogłoszenia duszpasterskie</h1>
+              <p className="text-lg font-medium text-gray-700">
+                {tenant?.city} - {tenant?.type} {tenant?.patron}
+              </p>
+            </div>
+          </div>
+
+          {/* Pastoral Announcements Content */}
+          <div className="flex-1 min-h-0">
+            <div className="overflow-hidden h-full">
+              <div
+                className="prose prose-lg max-w-none text-left"
+                dangerouslySetInnerHTML={{ __html: content_html }}
+              />
+            </div>
           </div>
         </div>
       </div>

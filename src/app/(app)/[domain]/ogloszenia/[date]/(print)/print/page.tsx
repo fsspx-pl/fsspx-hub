@@ -3,13 +3,11 @@ import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
 import { FeastWithMasses } from "@/_components/Calendar";
 import { garamond } from "@/fonts";
 import { Page as PageType, Tenant } from "@/payload-types";
-import { format, parse, parseISO } from "date-fns";
+import { format, parse } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
 import { PrintableAnnouncements } from "../../PrintableAnnouncements";
 import { enhanceFirstLetterInContent } from "../../enhanceFirstLetterInContent";
-import { canAccessPrintVersion } from "@/utilities/getCurrentUser";
-import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -61,11 +59,6 @@ export default async function PrintPage({
 }: {
   params: Promise<{ domain: string; date: string }>;
 }) {
-  const hasAccess = await canAccessPrintVersion();
-  if (!hasAccess) {
-    notFound();
-  }
-
   const { domain, date } = await params;
   const parsedDate = parse(date, 'dd-MM-yyyy', new Date());
   const isoDate = parsedDate.toISOString();
