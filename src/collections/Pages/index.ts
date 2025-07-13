@@ -114,6 +114,19 @@ export const Pages: CollectionConfig = {
         }
       }
     },
+    {
+      name: 'printVersion',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        condition: (_, siblingData) => siblingData.type === 'pastoral-announcements',
+        components: {
+          Field: {
+            path: '@/_components/admin/PrintButton/index.tsx#PrintButton',
+          }
+        }
+      }
+    },
   ],
   hooks: {
     beforeValidate: [

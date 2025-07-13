@@ -22,6 +22,7 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { SendNewsletterButton as SendNewsletterButton_70fb5c0dadf60568e043f81a79cc0e95 } from '@/_components/admin/SendNewsletterButton/index.tsx'
+import { PrintButton as PrintButton_f6e598d9d2a2d8e9de76ba6be053f249 } from '@/_components/admin/PrintButton/index.tsx'
 
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -47,5 +48,6 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton": SendNewsletterButton_70fb5c0dadf60568e043f81a79cc0e95
+  "@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton": SendNewsletterButton_70fb5c0dadf60568e043f81a79cc0e95,
+  "@/_components/admin/PrintButton/index.tsx#PrintButton": PrintButton_f6e598d9d2a2d8e9de76ba6be053f249
 }
