@@ -5,15 +5,13 @@ import { User } from '@/payload-types'
 import { isSuperOrTenantAdmin } from '@/collections/Users/utilities/isSuperOrTenantAdmin'
 
 export async function getCurrentUser(): Promise<User | null> {
+const cookieStore = await cookies()
+const token = cookieStore.get('payload-token')?.value
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('payload-token')?.value
-    
     if (!token) {
       return null
     }
 
-    // Decode JWT token to get user ID
     const base64Payload = token.split('.')[1]
     const decodedPayload = JSON.parse(Buffer.from(base64Payload, 'base64').toString())
     

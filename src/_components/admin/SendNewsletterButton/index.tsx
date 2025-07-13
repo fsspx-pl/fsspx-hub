@@ -1,4 +1,4 @@
-import { Page, Tenant } from '@/payload-types'
+import { Page } from '@/payload-types'
 import { FieldLabel } from '@payloadcms/ui'
 import React from 'react'
 import { SendButton } from './SendButton'

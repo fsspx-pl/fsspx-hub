@@ -97,6 +97,7 @@ const PrintableMassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = (
 
 export function PrintableAnnouncements({
   title,
+  content_html,
   feastsWithMasses,
   tenant,
 }: PrintableAnnouncementsProps) {

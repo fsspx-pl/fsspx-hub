@@ -66,9 +66,9 @@ export default async function PrintPage({
     notFound();
   }
 
-  const now = new Date(); 
   const { domain, date } = await params;
-  const isoDate = parse(date, 'dd-MM-yyyy', now).toISOString();
+  const parsedDate = parse(date, 'dd-MM-yyyy', new Date());
+  const isoDate = parsedDate.toISOString();
   const page = await fetchTenantPageByDate(domain, isoDate);
 
   if (!page?.content_html) return null;
@@ -90,7 +90,7 @@ export default async function PrintPage({
           end: period?.end,
         },
         tenant,
-        now,
+        parsedDate,
         {
           servicesStart: period?.start,
           servicesEnd: period?.end,
