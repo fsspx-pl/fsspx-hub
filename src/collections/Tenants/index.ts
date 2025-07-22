@@ -7,6 +7,16 @@ import serviceFields from '@/fields/service'
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
+  labels: {
+    singular: {
+      pl: 'Lokalizacja',
+      en: 'Tenant',
+    },
+    plural: {
+      pl: 'Lokalizacje',
+      en: 'Tenants',
+    },
+  },
   access: {
     create: superAdmins,
     read: anyone,
@@ -19,11 +29,19 @@ export const Tenants: CollectionConfig = {
   fields: [
     {
       name: 'name',
+      label: {
+        en: 'Name',
+        pl: 'Nazwa',
+      },
       type: 'text',
       required: true,
     },
     {
       name: 'domain',
+      label: {
+        en: 'Subdomain',
+        pl: 'Subdomena',
+      },
       type: 'text',
       required: true,
     },
@@ -31,7 +49,10 @@ export const Tenants: CollectionConfig = {
     {
       name: 'senderListId',
       type: 'text',
-      label: 'Sender List ID',
+      label: {
+        en: 'Sender List ID',
+        pl: 'ID Listy Wysyłkowej',
+      },
       admin: {
         description: {
           pl: 'ID listy mailingowej w Sender.net. UWAGA: zmiana ID listy mailingowej wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
@@ -41,6 +62,10 @@ export const Tenants: CollectionConfig = {
     },
     {
       name: 'feastTemplates',
+      label: {
+        en: 'Feast Templates',
+        pl: 'Szablony nabożeństw dla danego dnia tygodnia',
+      },
       type: 'group',
       fields: [
 				{
@@ -62,14 +87,18 @@ export const Tenants: CollectionConfig = {
                 {
                 type: 'array',
                 name: 'services',
+                label: {
+                  en: 'Services',
+                  pl: 'Nabożeństwa',
+                },
                 fields: [
                   ...Object.values(serviceFields),
                 ]}
 							],
               admin: {
                 description: {
-                  pl: 'Szablon nabożeństw na niedzielę. Ponisze nabożeństwa bedą tworzone automatycznie podczas tworzenia nowych tygodni.',
-                  en: 'Template for Sunday services. These services will be automatically created for new service weeks.'
+                  pl: 'Szablon nabożeństw na niedzielę. Poniższe nabożeństwa zostaną utworzone automatycznie podczas utworzenia nowego Porządku Tygodniowego.',
+                  en: 'Template for Sunday services. These services will be automatically created for new Week Order.'
                 }
               }
 						},
@@ -89,6 +118,10 @@ export const Tenants: CollectionConfig = {
 								{
                 type: 'array',
                 name: 'services',
+                label: {
+                  en: 'Services',
+                  pl: 'Nabożeństwa',
+                },
                 fields: [
                   ...Object.values(serviceFields),
                 ]
@@ -97,8 +130,8 @@ export const Tenants: CollectionConfig = {
 							admin: {
 								width: '50%',
                 description: {
-                  pl: 'Szablon nabożeństw na dni powszednie (poniedziałek-sobota). Ponisze nabożeństwa bedą tworzone automatycznie podczas tworzenia nowych tygodni.',
-                  en: 'Template for weekday services (Monday-Saturday). These services will be automatically created for new service weeks.'
+                  pl: 'Szablon nabożeństw na dni powszednich (poniedziałek-sobota). Poniższe nabożeństwa zostaną utworzone automatycznie podczas utworzenia nowego Porządku Tygodniowego.',
+                  en: 'Template for weekday services (Monday-Saturday). These services will be automatically created for new Week Order.'
                 }
 							}
 						}

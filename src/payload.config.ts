@@ -1,6 +1,8 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { HTMLConverterFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
-import path, { join } from 'path'
+import { en } from '@payloadcms/translations/languages/en'
+import { pl } from '@payloadcms/translations/languages/pl'
+import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
@@ -30,7 +32,11 @@ export default buildConfig({
       ],
     },
   },
-  globals: [ Settings, Header, Footer ],
+  i18n: {
+    fallbackLanguage: 'pl',
+    supportedLanguages: { pl, en },
+  },
+  globals: [Settings, Header, Footer],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [

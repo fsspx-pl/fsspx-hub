@@ -15,6 +15,10 @@ export const period: Field = {
   fields: [
     {
       name: 'start',
+      label: {
+        en: 'Start Date',
+        pl: 'Data Początkowa',
+      },
       type: 'date',
       required: true,
       admin: {
@@ -23,6 +27,10 @@ export const period: Field = {
     },
     {
       name: 'end',
+      label: {
+        en: 'End Date',
+        pl: 'Data Końcowa',
+      },
       type: 'date',
       required: true,
       admin: {

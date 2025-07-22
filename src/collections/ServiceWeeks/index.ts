@@ -35,12 +35,12 @@ export const ServiceWeeks: CollectionConfig = {
   slug: 'serviceWeeks',
   labels: {
     singular: {
-      pl: 'Tygodniowy porządek nabożeństw',
+      pl: 'Porządek Tygodniowy',
       en: 'Service Week Order'
     },
     plural: {
-      pl: 'Tygodniowe porządki nabożeństw',
-      en: 'Service Week Orders'
+      pl: 'Porządki Tygodniowe',
+      en: 'Service Week Order'
     }
   },
   access: {
@@ -196,12 +196,16 @@ export const ServiceWeeks: CollectionConfig = {
   fields: [
     {
       name: 'tenant',
+      label: {
+        en: 'Tenant',
+        pl: 'Lokalizacja',
+      },
       type: 'relationship',
       relationTo: 'tenants',
       required: true,
       admin: {
         description: {
-          pl: 'Kaplica/misja, do której przypisany jest tygodniowy porządek nabożeństw',
+          pl: 'Kaplica/misja, do której przypisany jest Porządek tygodniowy',
           en: 'Chapel/Mission to which this service week order is assigned'
         },
         position: 'sidebar',
@@ -212,7 +216,7 @@ export const ServiceWeeks: CollectionConfig = {
       type: 'date',
       required: true,
       label: {
-        pl: 'Rozpoczęcie tygodnia',
+        pl: 'Początek tygodnia',
         en: 'Start of the week'
       },
       admin: {
@@ -297,6 +301,10 @@ export const ServiceWeeks: CollectionConfig = {
           fields: [
             {
               name: 'services',
+              label: {
+                en: 'Services',
+                pl: 'Nabożeństwa',
+              },
               type: 'array',
               fields: [
                 { name: 'service', type: 'relationship', relationTo: 'services' }
@@ -313,6 +321,10 @@ export const ServiceWeeks: CollectionConfig = {
           fields: [
             {
               name: 'services',
+              label: {
+                en: 'Services',
+                pl: 'Nabożeństwa',
+              },
               type: 'array',
               fields: [
                 { name: 'service', type: 'relationship', relationTo: 'services' }
@@ -329,6 +341,10 @@ export const ServiceWeeks: CollectionConfig = {
           fields: [
             {
               name: 'services',
+              label: {
+                en: 'Services',
+                pl: 'Nabożeństwa',
+              },
               type: 'array',
               fields: [
                 { name: 'service', type: 'relationship', relationTo: 'services' }
@@ -345,6 +361,10 @@ export const ServiceWeeks: CollectionConfig = {
           fields: [
             {
               name: 'services',
+              label: {
+                en: 'Services',
+                pl: 'Nabożeństwa',
+              },
               type: 'array',
               fields: [
                 { name: 'service', type: 'relationship', relationTo: 'services' }
@@ -361,6 +381,10 @@ export const ServiceWeeks: CollectionConfig = {
           fields: [
             {
               name: 'services',
+              label: {
+                en: 'Services',
+                pl: 'Nabożeństwa',
+              },
               type: 'array',
               fields: [
                 { name: 'service', type: 'relationship', relationTo: 'services' }
@@ -377,6 +401,10 @@ export const ServiceWeeks: CollectionConfig = {
           fields: [
             {
               name: 'services',
+              label: {
+                en: 'Services',
+                pl: 'Nabożeństwa',
+              },
               type: 'array',
               fields: [
                 { name: 'service', type: 'relationship', relationTo: 'services' }
@@ -393,6 +421,10 @@ export const ServiceWeeks: CollectionConfig = {
           fields: [
             {
               name: 'services',
+              label: {
+                en: 'Services',
+                pl: 'Nabożeństwa',
+              },
               type: 'array',
               fields: [
                 { name: 'service', type: 'relationship', relationTo: 'services' }

@@ -4,6 +4,10 @@ import { superAdminFieldAccess } from '../access/superAdmins'
 
 export const user: Field = {
   name: 'user',
+  label: {
+    en: 'Author',
+    pl: 'Autor',
+  },
   type: 'relationship',
   relationTo: 'users',
   // don't require this field because we need to auto-populate it, see below

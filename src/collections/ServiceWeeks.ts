@@ -127,11 +127,11 @@ export const ServiceWeeks: CollectionConfig = {
   slug: 'serviceWeeks',
   labels: {
     singular: {
-      pl: 'Tygodniowy porządek nabożeństw',
+      pl: 'Porządek Tygodniowy',
       en: 'Week Order'
     },
     plural: {
-      pl: 'Tygodniowe porządki nabożeństw',
+      pl: 'Porządki Tygodniowe',
       en: 'Week Orders'
     }
   },
@@ -144,7 +144,14 @@ export const ServiceWeeks: CollectionConfig = {
   admin: {
     useAsTitle: 'yearWeek',
     defaultColumns: ['yearWeek', 'start', 'tenant'],
-    group: 'Services',
+    group: {
+      pl: 'Nabożeństwa',
+      en: 'Services',
+    },
+    description: {
+      pl: 'Dodanie nowego tygodnia powoduje automatyczne generowanie nabożeństw na podstawie szablonu nabożeństw dla danego dnia, dostępnego w ustawieniach: Lokalizacja -> Szablony nabożeństw dla danego dnia tygodnia.',
+      en: 'Adding a new week automatically generates services based on the service template for that day, available in the Tenant settings.',
+    },
   },
   hooks: {
     beforeChange: [
@@ -267,10 +274,14 @@ export const ServiceWeeks: CollectionConfig = {
       name: 'tenant',
       type: 'relationship',
       relationTo: 'tenants',
+      label: {
+        en: 'Tenant',
+        pl: 'Lokalizacja',
+      },
       required: true,
       admin: {
         description: {
-          pl: 'Kaplica/misja, do której przypisany jest tygodniowy porządek nabożeństw',
+          pl: 'Kaplica/misja, do której przypisany jest Porządek tygodniowy',
           en: 'Chapel/Mission to which this service week order is assigned'
         },
         position: 'sidebar',
@@ -281,7 +292,7 @@ export const ServiceWeeks: CollectionConfig = {
       type: 'date',
       required: true,
       label: {
-        pl: 'Rozpoczęcie tygodnia',
+        pl: 'Początek tygodnia',
         en: 'Start of the week'
       },
       admin: {

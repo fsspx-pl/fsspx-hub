@@ -178,7 +178,7 @@ export interface Tenant {
   senderListId?: string | null;
   feastTemplates?: {
     /**
-     * Template for Sunday services. These services will be automatically created for new service weeks.
+     * Template for Sunday services. These services will be automatically created for new Week Order.
      */
     sunday?: {
       applicableDays?:
@@ -211,7 +211,7 @@ export interface Tenant {
         | null;
     };
     /**
-     * Template for weekday services (Monday-Saturday). These services will be automatically created for new service weeks.
+     * Template for weekday services (Monday-Saturday). These services will be automatically created for new Week Order.
      */
     otherDays?: {
       applicableDays?:
@@ -286,6 +286,8 @@ export interface Page {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * List of all services, which are automatically generated based on the Week Order. Each service can be edited individually.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services".
  */
@@ -312,6 +314,8 @@ export interface Service {
   createdAt: string;
 }
 /**
+ * Adding a new week automatically generates services based on the service template for that day, available in the Tenant settings.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "serviceWeeks".
  */

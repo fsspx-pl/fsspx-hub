@@ -17,11 +17,19 @@ export const Media: CollectionConfig = {
   fields: [
     {
       name: 'alt',
+      label: {
+        en: 'Alt Text',
+        pl: 'Tekst alternatywny',
+      },
       type: 'text',
       required: true,
     },
     {
       name: 'caption',
+      label: {
+        en: 'Caption',
+        pl: 'Opis',
+      },
       type: 'richText',
     },
   ],

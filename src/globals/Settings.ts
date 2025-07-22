@@ -2,6 +2,10 @@ import { GlobalConfig } from "payload";
 
 export const Settings: GlobalConfig = {
   slug: 'settings',
+  label: {
+    pl: 'Ogólne',
+    en: 'General',
+  },
   typescript: {
     interface: 'Settings',
   },
@@ -14,13 +18,20 @@ export const Settings: GlobalConfig = {
   fields: [
     {
       name: 'logo',
+      label: {
+        en: 'Logo',
+        pl: 'Logo',
+      },
       type: 'upload',
       relationTo: 'media',
       required: true,
     },
     {
       name: 'copyright',
-      label: 'Copyright holder',
+      label: {
+        en: 'Copyright holder',
+        pl: 'Prawa autorskie',
+      },
       type: 'text',
     },
   ],

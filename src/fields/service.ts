@@ -25,6 +25,10 @@ const time: Field = {
 
 const category: Field = {
   name: 'category',
+  label: {
+    en: 'Category',
+    pl: 'Kategoria',
+  },
   type: 'select',
   required: true,
   options: [
@@ -61,6 +65,10 @@ const category: Field = {
 
 const massType: Field = {
   name: 'massType',
+  label: {
+    en: 'Mass Type',
+    pl: 'Rodzaj Mszy Świętej',
+  },
   type: 'select',
   required: true,
   options: [
@@ -96,7 +104,7 @@ const massType: Field = {
   admin: {
     condition: (_, siblingData) => siblingData?.category === 'mass',
     description: {
-      pl: 'Typ Mszy Świętej, który będzie widoczny w kalendarzu oraz w newsletterze',
+      pl: 'Rodzaj Mszy Świętej, który będzie widoczny w kalendarzu oraz w newsletterze',
       en: 'Holy Mass type, visible in the calendar and newsletter'
     }
   },

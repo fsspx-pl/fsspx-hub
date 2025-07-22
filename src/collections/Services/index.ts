@@ -32,8 +32,8 @@ export const Services: CollectionConfig = {
       en: 'Service'
     },
     plural: {
-      pl: 'Nabożeństwa',
-      en: 'Services'
+      pl: 'Wszystkie nabożeństwa',
+      en: 'All services'
     }
   }, 
   access: {
@@ -46,7 +46,14 @@ export const Services: CollectionConfig = {
   admin: {
     useAsTitle: 'serviceTitle',
     defaultColumns: ['serviceTitle', 'dayName', 'category', 'massType', 'tenant'],
-    group: 'Services',
+    group: {
+      pl: 'Nabożeństwa',
+      en: 'Services',
+    },
+    description: {
+      pl: 'Lista wszystkich nabożeństw, które są generowane automatycznie na podstawie kolejnego tygodnia dodanego w menu: Porządek Tygodniowy. Każde z nabożenstw może być indywidualnie edytowane.',
+      en: 'List of all services, which are automatically generated based on the Week Order. Each service can be edited individually.'
+    },
   },
   fields: [
     {
@@ -72,6 +79,10 @@ export const Services: CollectionConfig = {
         // TODO assign tenant of a currently logged in user, if has only one. Don't even show the field if only one
         {
           name: 'tenant',
+          label: {
+            en: 'Tenant',
+            pl: 'Lokalizacja',
+          },
           type: 'relationship',
           relationTo: 'tenants',
           required: true,

@@ -3,6 +3,10 @@ import { Field } from "payload"
 export const location: Field[] = [
   {
     name: 'city',
+    label: {
+      en: 'City',
+      pl: 'Miasto',
+    },
     type: 'text',
     required: true,
   },
@@ -10,24 +14,33 @@ export const location: Field[] = [
     name: 'type',
     type: 'select',
     label: {
-      pl: 'Typ',
+      en: 'Type',
+      pl: 'Rodzaj',
     },
     localized: true,
     options: [
       // here it should be 'chapel' and 'mission',
       // but there is no localization of values in Payload
-      { label: { pl: 'Kaplica' }, value: 'Kaplica' },
-      { label: { pl: 'Misja' }, value: 'Misja' },
+      { label: { en: 'Chapel', pl: 'Kaplica' }, value: 'Kaplica' },
+      { label: { en: 'Mission', pl: 'Misja' }, value: 'Misja' },
     ],
     required: true,
     defaultValue: 'Kaplica',
   },
   {
     name: 'patron',
+    label: {
+      en: 'Patron',
+      pl: 'Patron',
+    },
     type: 'text',
   },
   {
     name: 'coverBackground',
+    label: {
+      en: 'Cover Background',
+      pl: 'Obraz tła',
+    },
     type: 'upload',
     relationTo: 'media',
     required: true,
@@ -35,6 +48,7 @@ export const location: Field[] = [
   {
     name: 'address',
     label: {
+      en: 'Address',
       pl: 'Adres',
     },
     type: 'group',
@@ -42,6 +56,7 @@ export const location: Field[] = [
       {
         name: 'street',
         label: {
+          en: 'Street',
           pl: 'Ulica',
         },
         type: 'text',
@@ -50,6 +65,7 @@ export const location: Field[] = [
       {
         name: 'zipcode',
         label: {
+          en: 'Zip Code',
           pl: 'Kod pocztowy',
         },
         type: 'text',
@@ -65,12 +81,17 @@ export const location: Field[] = [
       },
       {
         name: 'email',
+        label: {
+          en: 'Email',
+          pl: 'Email',
+        },
         type: 'email',
       },
       {
         name: 'phone',
         type: 'text',
         label: {
+          en: 'Phone Number',
           pl: 'Numer telefonu',
         },
         validate: (value: string | null | undefined) => {
