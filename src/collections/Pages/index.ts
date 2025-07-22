@@ -40,6 +40,10 @@ export const Pages: CollectionConfig = {
   fields: [
     {
       name: 'type',
+      label: {
+        en: 'Type',
+        pl: 'Rodzaj',
+      },
       type: 'select',
       options: [
         {
@@ -58,6 +62,10 @@ export const Pages: CollectionConfig = {
     },
     {
       name: 'title',
+      label: {
+        en: 'Title',
+        pl: 'Tytuł',
+      },
       type: 'text',
       required: true,
     },
@@ -66,7 +74,10 @@ export const Pages: CollectionConfig = {
     endLocal,
     { 
       name: 'slug',
-      label: 'Slug',
+      label: {
+        en: 'Slug',
+        pl: 'Slug',
+      },
       type: 'text',
       index: true,
       admin: {
@@ -80,7 +91,10 @@ export const Pages: CollectionConfig = {
     {
       name: 'campaignId',
       type: 'text',
-      label: 'Campaign ID from the campaign API provider',
+      label: {
+        en: 'Campaign ID from the campaign API provider',
+        pl: 'ID Kampanii od dostawcy API kampanii',
+      },
       defaultValue: '',
       admin: {
         position: 'sidebar',
@@ -98,11 +112,19 @@ export const Pages: CollectionConfig = {
     } as Field,
     {
       name: 'content',
+      label: {
+        en: 'Content',
+        pl: 'Treść',
+      },
       type: 'richText'
     },
     lexicalHTML('content', { name: 'content_html' }),
     {
       name: 'sendNewsletter',
+      label: {
+        en: 'Send Newsletter',
+        pl: 'Wyślij Newsletter',
+      },
       type: 'ui',
       admin: {
         position: 'sidebar',
@@ -116,6 +138,10 @@ export const Pages: CollectionConfig = {
     },
     {
       name: 'printVersion',
+      label: {
+        en: 'Print Version',
+        pl: 'Wersja do Druku',
+      },
       type: 'ui',
       admin: {
         position: 'sidebar',

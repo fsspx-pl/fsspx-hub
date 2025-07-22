@@ -6,6 +6,10 @@ import { isSuperAdmin } from '../utilities/isSuperAdmin'
 
 export const tenant: Field = {
   name: 'tenant',
+  label: {
+    en: 'Tenant',
+    pl: 'Lokalizacja',
+  },
   type: 'relationship',
   relationTo: 'tenants',
   // don't require this field because we need to auto-populate it, see below

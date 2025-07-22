@@ -11,6 +11,16 @@ import { revalidatePagesByAuthor } from './hooks/revalidateTenantPagesByAuthor'
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: {
+    singular: {
+      pl: 'Użytkownik',
+      en: 'User',
+    },
+    plural: {
+      pl: 'Użytkownicy',
+      en: 'Users',
+    },
+  },
   auth: true,
   admin: {
     useAsTitle: 'email',
@@ -60,20 +70,36 @@ export const Users: CollectionConfig = {
     },
     {
       name: 'firstName',
+      label: {
+        en: 'First Name',
+        pl: 'Imię',
+      },
       type: 'text',
     },
     {
       name: 'lastName',
+      label: {
+        en: 'Last Name',
+        pl: 'Nazwisko',
+      },
       type: 'text',
     },
     {
       name: 'avatar',
+      label: {
+        en: 'Avatar',
+        pl: 'Awatar',
+      },
       type: 'upload',
       relationTo: 'media',
       required: true,
     },
     {
       name: 'roles',
+      label: {
+        en: 'Roles',
+        pl: 'Role',
+      },
       type: 'select',
       hasMany: true,
       required: true,
@@ -84,11 +110,17 @@ export const Users: CollectionConfig = {
       },
       options: [
         {
-          label: 'Super Admin',
+          label: {
+            en: 'Super Admin',
+            pl: 'Super Administrator',
+          },
           value: 'super-admin',
         },
         {
-          label: 'User',
+          label: {
+            en: 'User',
+            pl: 'Użytkownik',
+          },
           value: 'user',
         },
       ],
@@ -96,7 +128,10 @@ export const Users: CollectionConfig = {
     {
       name: 'tenants',
       type: 'array',
-      label: 'Tenants',
+      label: {
+        en: 'Tenants',
+        pl: 'Lokalizacje',
+      },
       access: {
         create: tenantAdmins,
         update: tenantAdmins,
@@ -105,22 +140,36 @@ export const Users: CollectionConfig = {
       fields: [
         {
           name: 'tenant',
+          label: {
+            en: 'Tenant',
+            pl: 'Lokalizacja',
+          },
           type: 'relationship',
           relationTo: 'tenants',
           required: true,
         },
         {
           name: 'roles',
+          label: {
+            en: 'Roles',
+            pl: 'Role',
+          },
           type: 'select',
           hasMany: true,
           required: true,
           options: [
             {
-              label: 'Admin',
+              label: {
+                en: 'Admin',
+                pl: 'Administrator',
+              },
               value: 'admin',
             },
             {
-              label: 'User',
+              label: {
+                en: 'User',
+                pl: 'Użytkownik',
+              },
               value: 'user',
             },
           ],
@@ -129,6 +178,10 @@ export const Users: CollectionConfig = {
     },
     {
       name: 'lastLoggedInTenant',
+      label: {
+        en: 'Last Logged In Tenant',
+        pl: 'Ostatnio zalogowany w lokalizacji',
+      },
       type: 'relationship',
       relationTo: 'tenants',
       index: true,
