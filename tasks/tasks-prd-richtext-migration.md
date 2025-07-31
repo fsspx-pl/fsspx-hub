@@ -2,6 +2,7 @@
 
 - `tasks/prd-richtext-migration.md` - The Product Requirements Document guiding this implementation.
 - `src/_components/RichText/serialize.tsx` - This houses the custom serializers for rendering Lexical elements, starting with links.
+- `src/_components/RichText/index.tsx` - A wrapper component that uses the serialize function to render rich text content.
 - `src/app/(app)/[domain]/ogloszenia/[date]/(with-layout)/page.tsx` - The main announcements page that will be updated to use the `RichText` component.
 - `src/app/(app)/[domain]/ogloszenia/[date]/(print)/print/page.tsx` - The print-friendly version of the announcements page that also needs migrating.
 - `src/app/(app)/[domain]/ogloszenia/[date]/PrintableAnnouncements.tsx` - The component responsible for rendering the print layout, which currently uses `content_html`.
@@ -24,12 +25,12 @@
   - [x] 1.3 Ensure the serializer correctly maps the `url`, `newTab`, and `doc` fields from the Lexical link node to the corresponding props of the `CMSLink` component.
   - [x] 1.4 Add default serializers for standard HTML elements (`h1`-`h6`, `ul`, `ol`, `li`, `blockquote`) to ensure they render correctly.
 
-- [ ] **2.0 Migrate Announcements Page to RichText**
-  - [ ] 2.1 In `src/app/(app)/[domain]/ogloszenia/[date]/(with-layout)/page.tsx`, remove the usage of `content_html` and the call to `enhanceFirstLetterInContent`.
-  - [ ] 2.2 Replace the HTML rendering logic with the `<RichText />` component from `@payloadcms/richtext-lexical/react`.
-  - [ ] 2.3 Pass the `page.content` field (the JSON state) to the `data` prop of the `RichText` component.
-  - [ ] 2.4 Import and pass the custom serializers from `serialize.tsx` to the `RichText` component.
-  - [ ] 2.5 Add a fallback (e.g., return `null` or render an empty fragment) for cases where `page.content` is null or undefined to resolve any linter errors.
+- [x] **2.0 Migrate Announcements Page to RichText**
+  - [x] 2.1 In `src/app/(app)/[domain]/ogloszenia/[date]/(with-layout)/page.tsx`, remove the usage of `content_html` and the call to `enhanceFirstLetterInContent`.
+  - [x] 2.2 Replace the HTML rendering logic with the `<RichText />` component from `@payloadcms/richtext-lexical/react`.
+  - [x] 2.3 Pass the `page.content` field (the JSON state) to the `data` prop of the `RichText` component.
+  - [x] 2.4 Import and pass the custom serializers from `serialize.tsx` to the `RichText` component.
+  - [x] 2.5 Add a fallback (e.g., return `null` or render an empty fragment) for cases where `page.content` is null or undefined to resolve any linter errors.
 
 - [ ] **3.0 Migrate Printable Announcements to RichText**
   - [ ] 3.1 In `src/app/(app)/[domain]/ogloszenia/[date]/(print)/print/page.tsx`, remove the usage of `enhanceFirstLetterInContent` and pass the `page.content` object to the `PrintableAnnouncements` component instead of `content_html`.

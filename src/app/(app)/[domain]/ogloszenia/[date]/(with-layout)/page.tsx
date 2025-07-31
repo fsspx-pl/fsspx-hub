@@ -6,14 +6,15 @@ import { Calendar, FeastWithMasses } from "@/_components/Calendar";
 import { FeastDataProvider } from "@/_components/Calendar/context/FeastDataContext";
 import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
-import { garamond } from "@/fonts";
+import { RichText } from "@/_components/RichText";
+
 import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
 import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
 import { SenderForm, SenderScript } from "../SenderForm";
-import { enhanceFirstLetterInContent } from "../enhanceFirstLetterInContent";
+
 
 
 export async function generateStaticParams() {
@@ -77,9 +78,7 @@ export default async function AnnouncementPage({
   const page = await fetchTenantPageByDate(domain, isoDate);
   const serverNow = now.toISOString();
 
-  if (!page?.content_html) return null;
-
-  const enhancedContentHtml = enhanceFirstLetterInContent(page.content_html, garamond);
+  if (!page?.content) return null;
 
   const tenant = page.tenant ? page.tenant as Tenant : null;
   const period = page?.period ? page.period as PageType['period'] : null;
@@ -149,10 +148,9 @@ export default async function AnnouncementPage({
           </FeastDataProvider>
         </div>
         <div>
-          <div
-            className="overflow-auto flex-1 prose prose-lg max-w-none text-left"
-            dangerouslySetInnerHTML={{ __html: enhancedContentHtml }}
-          />
+          <div className="overflow-auto flex-1 prose prose-lg max-w-none text-left">
+            <RichText data={page.content} />
+          </div>
 
           {process.env.NODE_ENV === 'production' && (
             <SenderForm formId="b82BgW" />
