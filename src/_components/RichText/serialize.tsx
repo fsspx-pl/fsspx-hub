@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { Fragment } from 'react'
 
 import { CMSLink } from '@/_components/Link'
 import { Page } from '@/payload-types'
+import { garamond } from '@/fonts'
 
 // Text format constants
 const IS_BOLD = 1
@@ -90,19 +90,19 @@ export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | n
         
         switch (Tag) {
           case 'h1':
-            return <h1 key={i} className={`font-bold text-4xl`}>{serializedChildren}</h1>
+            return <h1 key={i} className={`font-bold text-4xl ${garamond.className}`}>{serializedChildren}</h1>
           case 'h2':
-            return <h2 key={i} className={`font-bold text-3xl`}>{serializedChildren}</h2>
+            return <h2 key={i} className={`font-bold text-3xl ${garamond.className}`}>{serializedChildren}</h2>
           case 'h3':
-            return <h3 key={i} className={`font-bold text-2xl`}>{serializedChildren}</h3>
+            return <h3 key={i} className={`font-bold text-2xl ${garamond.className}`}>{serializedChildren}</h3>
           case 'h4':
-            return <h4 key={i} className={`font-bold text-xl`}>{serializedChildren}</h4>
+            return <h4 key={i} className={`font-bold text-xl ${garamond.className}`}>{serializedChildren}</h4>
           case 'h5':
-            return <h5 key={i} className={`font-bold text-lg`}>{serializedChildren}</h5>
+            return <h5 key={i} className={`font-bold text-lg ${garamond.className}`}>{serializedChildren}</h5>
           case 'h6':
-            return <h6 key={i} className={`font-bold text-base`}>{serializedChildren}</h6>
+            return <h6 key={i} className={`font-bold text-base ${garamond.className}`}>{serializedChildren}</h6>
           default:
-            return <h1 key={i} className={`font-bold text-4xl`}>{serializedChildren}</h1>
+            return <h1 key={i} className={`font-bold text-4xl ${garamond.className}`}>{serializedChildren}</h1>
         }
       }
 
