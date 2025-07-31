@@ -3,7 +3,6 @@ import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenan
 import { endLocal, period, startLocal } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
 import { user } from '@/fields/user'
-import { lexicalHTML } from '@payloadcms/richtext-lexical'
 import { CollectionConfig, Field } from 'payload'
 import { anyone } from '../../access/anyone'
 import { loggedIn } from './access/loggedIn'
@@ -118,7 +117,6 @@ export const Pages: CollectionConfig = {
       },
       type: 'richText'
     },
-    lexicalHTML('content', { name: 'content_html' }),
     {
       name: 'sendNewsletter',
       label: {

@@ -9,10 +9,11 @@ import React from "react";
 import { DateDisplay } from "./DateDisplay";
 import { Media } from "@/_components/Media";
 import { garamond } from "@/fonts";
+import { RichText } from "@/_components/RichText";
 
 interface PrintableAnnouncementsProps {
   title: string;
-  content_html: string;
+  content: any;
   feastsWithMasses: FeastWithMasses[];
   tenant: Tenant | null;
 }
@@ -97,7 +98,7 @@ const PrintableMassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = (
 
 export function PrintableAnnouncements({
   title,
-  content_html,
+  content,
   feastsWithMasses,
   tenant,
 }: PrintableAnnouncementsProps) {
@@ -155,10 +156,9 @@ export function PrintableAnnouncements({
           {/* Pastoral Announcements Content */}
           <div className="flex-1 min-h-0">
             <div className="overflow-hidden h-full">
-              <div
-                className="prose prose-lg max-w-none text-left"
-                dangerouslySetInnerHTML={{ __html: content_html }}
-              />
+              <div className="prose prose-lg max-w-none text-left prose-a:no-underline">
+                <RichText data={content} />
+              </div>
             </div>
           </div>
         </div>

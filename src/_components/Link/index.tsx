@@ -63,8 +63,8 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   const shouldRenderAsSpan = preventNavigation || disabled || (!href && !url)
   
   return (
-    <>
-        <div className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
+    <div className='flex-row items-center gap-1 inline-flex'>
+        <span className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
       {shouldRenderAsSpan ? (
           <span className={`${className} cursor-pointer`}>
             {label && label}
@@ -76,10 +76,10 @@ export const CMSLink: React.FC<CMSLinkType> = ({
             {children && children}
           </Link>
       )}
-        </div>
+        </span>
       {newTab && (
-        <ExternalLinkIcon className="w-4 h-4" />
+        <ExternalLinkIcon className="text-[#C81910] w-4 h-4" />
       )}
-    </>
+    </div>
   )
 }

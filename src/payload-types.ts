@@ -280,7 +280,6 @@ export interface Page {
     };
     [k: string]: unknown;
   } | null;
-  content_html?: string | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -664,7 +663,6 @@ export interface PagesSelect<T extends boolean = true> {
   author?: T;
   tenant?: T;
   content?: T;
-  content_html?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

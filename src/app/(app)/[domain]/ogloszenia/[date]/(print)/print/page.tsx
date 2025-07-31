@@ -1,13 +1,13 @@
 import { fetchLatestPage, fetchTenantPageByDate } from "@/_api/fetchPage";
 import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
 import { FeastWithMasses } from "@/_components/Calendar";
-import { garamond } from "@/fonts";
+
 import { Page as PageType, Tenant } from "@/payload-types";
 import { format, parse } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
 import { PrintableAnnouncements } from "../../PrintableAnnouncements";
-import { enhanceFirstLetterInContent } from "../../enhanceFirstLetterInContent";
+
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -64,9 +64,7 @@ export default async function PrintPage({
   const isoDate = parsedDate.toISOString();
   const page = await fetchTenantPageByDate(domain, isoDate);
 
-  if (!page?.content_html) return null;
-
-  const enhancedContentHtml = enhanceFirstLetterInContent(page.content_html, garamond);
+  if (!page?.content) return null;
 
   const tenant = page.tenant ? page.tenant as Tenant : null;
   const period = page?.period ? page.period as PageType['period'] : null;
@@ -94,7 +92,7 @@ export default async function PrintPage({
   return (
     <PrintableAnnouncements
       title={page.title}
-      content_html={enhancedContentHtml}
+      content={page.content}
       feastsWithMasses={periodFeasts}
       tenant={tenant}
     />

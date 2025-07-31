@@ -1,5 +1,9 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { HTMLConverterFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
+import {
+  HTMLConverterFeature,
+  lexicalEditor,
+  convertLexicalToHTML,
+} from '@payloadcms/richtext-lexical'
 import { en } from '@payloadcms/translations/languages/en'
 import { pl } from '@payloadcms/translations/languages/pl'
 import path from 'path'
@@ -15,6 +19,7 @@ import { Users } from './collections/Users'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
+import { garamond } from '@/fonts'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -38,14 +43,7 @@ export default buildConfig({
   },
   globals: [Settings, Header, Footer],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
-  editor: lexicalEditor({
-    features: ({ defaultFeatures }) => [
-      ...defaultFeatures,
-      // The HTMLConverter Feature is the feature which manages the HTML serializers.
-      // If you do not pass any arguments to it, it will use the default serializers.
-      HTMLConverterFeature({}),
-    ],
-  }),
+  editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
