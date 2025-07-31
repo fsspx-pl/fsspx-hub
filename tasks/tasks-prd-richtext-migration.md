@@ -36,8 +36,13 @@
   - [ ] 3.2 Update the `PrintableAnnouncements` component (`src/app/(app)/[domain]/ogloszenia/[date]/PrintableAnnouncements.tsx`) to accept a `content` prop (Lexical JSON state).
   - [ ] 3.3 Inside `PrintableAnnouncements.tsx`, replace the `dangerouslySetInnerHTML` div with the `<RichText />` component, configured with the custom serializers.
 
-- [ ] **4.0 Code Cleanup and Finalization**
-  - [ ] 4.1 Delete the file `src/app/(app)/[domain]/ogloszenia/[date]/enhanceFirstLetterInContent.tsx`.
-  - [ ] 4.2 In `src/collections/Pages/index.ts`, remove the `lexicalHTML('content', { name: 'content_html' })` field hook.
-  - [ ] 4.3 Run the command `pnpm generate:types` to update `src/payload-types.ts` and remove the `content_html` field.
-  - [ ] 4.4 Conduct a final review of all modified files to ensure there are no type errors, linting issues, or console warnings.
+- [ ] **4.0 Migrate Newsletter Email to RichText**
+  - [ ] 4.1 Modify the `pastoral-announcements.tsx` email template to accept a `content` prop instead of `content_html`.
+  - [ ] 4.2 Replace the `dangerouslySetInnerHTML` logic with the `<RichText />` component and the custom serializers.
+  - [ ] 4.3 Update the API route in `src/app/api/pages/[id]/send-newsletter/route.tsx` to fetch `page.content` and pass it to the email template.
+
+- [ ] **5.0 Code Cleanup and Finalization**
+  - [ ] 5.1 Delete the file `src/app/(app)/[domain]/ogloszenia/[date]/enhanceFirstLetterInContent.tsx`.
+  - [ ] 5.2 In `src/collections/Pages/index.ts`, remove the `lexicalHTML('content', { name: 'content_html' })` field hook.
+  - [ ] 5.3 Run the command `pnpm generate:types` to update `src/payload-types.ts` and remove the `content_html` field.
+  - [ ] 5.4 Conduct a final review of all modified files to ensure there are no type errors, linting issues, or console warnings.
