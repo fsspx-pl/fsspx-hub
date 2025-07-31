@@ -32,10 +32,10 @@
   - [x] 2.4 Import and pass the custom serializers from `serialize.tsx` to the `RichText` component.
   - [x] 2.5 Add a fallback (e.g., return `null` or render an empty fragment) for cases where `page.content` is null or undefined to resolve any linter errors.
 
-- [ ] **3.0 Migrate Printable Announcements to RichText**
-  - [ ] 3.1 In `src/app/(app)/[domain]/ogloszenia/[date]/(print)/print/page.tsx`, remove the usage of `enhanceFirstLetterInContent` and pass the `page.content` object to the `PrintableAnnouncements` component instead of `content_html`.
-  - [ ] 3.2 Update the `PrintableAnnouncements` component (`src/app/(app)/[domain]/ogloszenia/[date]/PrintableAnnouncements.tsx`) to accept a `content` prop (Lexical JSON state).
-  - [ ] 3.3 Inside `PrintableAnnouncements.tsx`, replace the `dangerouslySetInnerHTML` div with the `<RichText />` component, configured with the custom serializers.
+- [x] **3.0 Migrate Printable Announcements to RichText**
+  - [x] 3.1 In `src/app/(app)/[domain]/ogloszenia/[date]/(print)/print/page.tsx`, remove the usage of `enhanceFirstLetterInContent` and pass the `page.content` object to the `PrintableAnnouncements` component instead of `content_html`.
+  - [x] 3.2 Update the `PrintableAnnouncements` component (`src/app/(app)/[domain]/ogloszenia/[date]/PrintableAnnouncements.tsx`) to accept a `content` prop (Lexical JSON state).
+  - [x] 3.3 Inside `PrintableAnnouncements.tsx`, replace the `dangerouslySetInnerHTML` div with the `<RichText />` component, configured with the custom serializers.
 
 - [ ] **4.0 Migrate Newsletter Email to RichText**
   - [ ] 4.1 Modify the `pastoral-announcements.tsx` email template to accept a `content` prop instead of `content_html`.
