@@ -148,7 +148,7 @@ export default async function AnnouncementPage({
           </FeastDataProvider>
         </div>
         <div>
-          <div className="overflow-auto flex-1 prose prose-lg max-w-none text-left">
+          <div className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline">
             <RichText data={page.content} />
           </div>
 
