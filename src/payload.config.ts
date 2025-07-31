@@ -43,41 +43,7 @@ export default buildConfig({
   },
   globals: [Settings, Header, Footer],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
-  editor: lexicalEditor({
-    features: ({ defaultFeatures }) => [
-      ...defaultFeatures,
-      // The HTMLConverter Feature is the feature which manages the HTML serializers.
-      // If you do not pass any arguments to it, it will use the default serializers.
-      HTMLConverterFeature({
-        converters: ({ defaultConverters }) => [
-          ...defaultConverters.filter(
-            (converter) => !converter.nodeTypes?.includes('heading'),
-          ),
-          {
-            nodeTypes: ['heading'],
-            converter: async ({ node, converters }) => {
-              const childrenText = await convertLexicalToHTML({
-                converters,
-                data: {
-                  root: {
-                    children: node.children,
-                    direction: null,
-                    format: '',
-                    indent: 0,
-                    type: 'root',
-                    version: 1,
-                  },
-                },
-              })
-
-              const classes = [garamond.className].filter(Boolean).join(' ')
-              return `<${node.tag} class="${classes}">${childrenText}</${node.tag}>`
-            },
-          },
-        ],
-      }),
-    ],
-  }),
+  editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
