@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import config from "@payload-config";
-import { Page, Tenant, Page as PageType } from "@/payload-types";
+import { Page, Tenant, Page as PageType, Service } from "@/payload-types";
 import { getPayload } from "payload";
 import { format, parseISO } from "date-fns";
 import { pl } from "date-fns/locale";
@@ -8,6 +8,24 @@ import Email from "@/emails/pastoral-announcements";
 import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
+
+function transformServiceForEmail(service: Service) {
+  return {
+    date: service.date,
+    category: service.category,
+    massType: service.massType || undefined,
+    customTitle: service.customTitle || undefined,
+    notes: service.notes || undefined,
+  };
+}
+
+// Transform feasts with masses for email
+function transformFeastsForEmail(feastsWithMasses: any[]) {
+  return feastsWithMasses.map(feast => ({
+    ...feast,
+    masses: feast.masses.map(transformServiceForEmail),
+  }));
+}
 
 async function getPage(id: string) {
   const payload = await getPayload({ config });
@@ -61,7 +79,7 @@ async function createCampaign(page: Page) {
       content_html={page.content_html as string}
       copyright={settings.copyright as string}
       slogan={footer.slogan as string}
-      feastsWithMasses={await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant)}
+      feastsWithMasses={transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant))}
     />,
     {
       pretty: true,

@@ -17,7 +17,7 @@ import {
 import { addDays, isSunday } from "date-fns";
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
-import { formatInPolishTime, polishTimeToUtc, createPolishDate } from "@/common/timezone";
+import { formatInPolishTime, createPolishDate } from "@/common/timezone";
 
 const now = new Date();
 
