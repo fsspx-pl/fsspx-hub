@@ -8,7 +8,10 @@ import Email from "@/emails/pastoral-announcements";
 import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
+import { serialize } from "@/_components/RichText/serialize";
+import React from "react";
 
+// Transform Service objects to match email component's expected format
 function transformServiceForEmail(service: Service) {
   return {
     date: service.date,
@@ -25,6 +28,17 @@ function transformFeastsForEmail(feastsWithMasses: any[]) {
     ...feast,
     masses: feast.masses.map(transformServiceForEmail),
   }));
+}
+
+// Convert Lexical content to HTML string
+async function convertContentToHtml(content: any): Promise<string> {
+  if (!content || !content.root || !content.root.children) {
+    return "";
+  }
+  
+  const serializedContent = serialize(content.root.children);
+  const html = await render(React.createElement('div', {}, serializedContent));
+  return html;
 }
 
 async function getPage(id: string) {
@@ -76,7 +90,7 @@ async function createCampaign(page: Page) {
   const html = await render(
     <Email
       title={titleWithDateSuffix}
-      content_html={page.content_html as string}
+      content_html={await convertContentToHtml(page.content)}
       copyright={settings.copyright as string}
       slogan={footer.slogan as string}
       feastsWithMasses={transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant))}
