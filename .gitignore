@@ -42,8 +42,3 @@ next-env.d.ts
 
 src/collections/media
 fonts
-
-# agents
-.cursorrules
-tasks
-.cursor/rules
