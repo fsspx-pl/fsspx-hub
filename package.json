@@ -4,7 +4,6 @@
   "maintainers": [
     "jacek@adamczyk.me"
   ],
-  "type": "module",
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"${NODE_OPTIONS} --no-deprecation\" next dev",

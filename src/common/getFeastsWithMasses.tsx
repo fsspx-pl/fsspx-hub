@@ -16,7 +16,7 @@ type ServicesDateRange = {
 };
 
 /**
- * Converts a date to Polish timezone for comparison
+ * Converts a date to Polish timezone
  */
 const toPolishTime = (date: Date | string): Date => {
   const dateStr = typeof date === 'string' ? date : date.toISOString();
@@ -30,15 +30,12 @@ export async function getFeastsWithMasses(
   referenceDate?: Date,
   servicesDateRange?: ServicesDateRange
 ) {
-  // Case 1: Period is defined (for emails) - filter feasts to the specified period
   if (period?.start && period?.end) {
     const startDate = parseISO(period.start as string);
     const endDate = parseISO(period.end as string);
     
-    // Get feasts only for the specified period
     const feasts = await getFeasts(startDate, endDate);
     
-    // Get masses for the period
     const masses = tenant?.id ? await getServices(
       tenant,
       startDate,
@@ -58,15 +55,12 @@ export async function getFeastsWithMasses(
     });
   }
   
-  // Case 2: Period is not defined (for calendar/announcement page) - get whole year feasts, limited masses
   const currentDate = referenceDate || (period?.start ? parseISO(period.start as string) : new Date());
   
-  // Get feasts for the whole year (for calendar navigation)
   const yearStart = startOfYear(currentDate);
   const yearEnd = endOfYear(currentDate);
   const feasts = await getFeasts(yearStart, yearEnd);
   
-  // Get masses based on provided date range or default to prev/current/next month
   let massesStart: Date;
   let massesEnd: Date;
 
