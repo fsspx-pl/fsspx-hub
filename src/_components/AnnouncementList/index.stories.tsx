@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { AnnouncementList } from './index';
-import { Page, User, Media } from '@/payload-types';
+import { Page, User, Media, Tenant } from '@/payload-types';
 import { defaultAvatar } from '../ArticleInfo/consts';
 
 const meta: Meta<typeof AnnouncementList> = {
@@ -23,7 +23,7 @@ type Story = StoryObj<typeof meta>;
 
 const LOREM_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque euismod, urna eu tincidunt consectetur, nisi nisl aliquam nunc, eget aliquam massa nisl quis neque.';
 
-const baseTenant = {
+const baseTenant: Tenant = {
   id: '1',
   name: 'Kaplica św. Józefa',
   domain: 'test.example.com',
