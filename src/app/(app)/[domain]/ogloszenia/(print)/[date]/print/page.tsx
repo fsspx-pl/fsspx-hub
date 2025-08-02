@@ -6,7 +6,7 @@ import { Page as PageType, Tenant } from "@/payload-types";
 import { format, parse } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
-import { PrintableAnnouncements } from "../../PrintableAnnouncements";
+import { PrintableAnnouncements } from "./PrintableAnnouncements";
 
 
 export async function generateStaticParams() {

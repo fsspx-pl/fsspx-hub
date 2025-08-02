@@ -48,6 +48,7 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   isStatic = false,
   preventNavigation = false,
 }) => {
+
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
       ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
@@ -71,7 +72,7 @@ export const CMSLink: React.FC<CMSLinkType> = ({
             {children && children}
           </span>
       ) : (
-          <Link {...newTabProps} href={href ?? ''} className={className}>
+          <Link {...newTabProps} href={href ?? ''} className={`${className} no-underline`}>
             {label && label}
             {children && children}
           </Link>

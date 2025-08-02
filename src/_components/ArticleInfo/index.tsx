@@ -12,6 +12,7 @@ type Props = {
   avatar?: MediaType | null;
   createdAt: string;
   updatedAt: string;
+  noDates?: boolean;
 };
 
 export const ArticleInfo: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const ArticleInfo: React.FC<Props> = ({
   avatar,
   createdAt,
   updatedAt,
+  noDates = false,
 }) => {
   return (
     <div
@@ -34,7 +36,7 @@ export const ArticleInfo: React.FC<Props> = ({
         />
       )}
       <span>{author}</span>
-      <div className="flex flex-row text-gray-400 gap-4 ml-2">
+      {!noDates && <div className="flex flex-row text-gray-400 gap-4 ml-2">
         <div className="hidden sm:flex items-center gap-2">
           <DateWithTooltip
             icon={Clock}
@@ -42,7 +44,7 @@ export const ArticleInfo: React.FC<Props> = ({
             date={createdAt}
           />
         </div>
-        {updatedAt ? (
+        {updatedAt && (
           <div className="hidden sm:flex items-center gap-2">
             {updatedAt && (
               <DateWithTooltip
@@ -52,8 +54,8 @@ export const ArticleInfo: React.FC<Props> = ({
               />
             )}
           </div>
-        ) : null}
-      </div>
+        )}
+      </div>}
     </div>
   );
 };

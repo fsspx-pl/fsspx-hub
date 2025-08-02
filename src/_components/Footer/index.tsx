@@ -1,8 +1,8 @@
+import { fetchFooter, fetchSettings } from '@/_api/fetchGlobals'
+import { Footer as FooterData, Settings } from '@/payload-types'
 import { Gutter } from '../Gutter'
 import { Logo } from '../Logo'
-import { Footer as FooterData, Media, Settings } from '@/payload-types'
-import { fetchFooter, fetchSettings } from '@/_api/fetchGlobals'
-import HeartWithCross from './heart-with-cross.svg'
+import { HeartWithCrossIcon } from '../LoadingIndicator'
 
 export async function Footer() {
   let footer: FooterData | null = null
@@ -59,7 +59,7 @@ export async function Footer() {
         <Gutter className="py-6 flex flex-wrap flex-col sm:flex-row">
           <div className="w-full flex items-center gap-1 flex-col">
             <p className="text-gray-400 text-sm text-center sm:text-left">© 2024 - {copyright}</p>
-            <HeartWithCross className="w-[16px] h-[25px]" />
+            <HeartWithCrossIcon className="w-6 h-6 fill-[#C81910]" />
           </div>
         </Gutter>
       </div>

@@ -16,8 +16,6 @@ export const PrintButton: React.FC<{ data: Page }> = async ({
   // Only show for pastoral announcements
   if (data.type !== 'pastoral-announcements') return null;
 
-  console.log(date)
-
   return (
     <div className={classes.fieldType}>
       <FieldLabel label="Print Version" />
