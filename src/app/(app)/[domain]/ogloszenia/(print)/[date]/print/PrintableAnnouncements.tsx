@@ -6,7 +6,7 @@ import { vestmentColorToTailwind } from "@/_components/Calendar/utils/vestmentCo
 import { VestmentColor } from "@/feast";
 import { Service as ServiceType } from "@/payload-types";
 import React from "react";
-import { DateDisplay } from "./DateDisplay";
+import { DateDisplay } from "../../../DateDisplay";
 import { Media } from "@/_components/Media";
 import { garamond } from "@/fonts";
 import { RichText } from "@/_components/RichText";

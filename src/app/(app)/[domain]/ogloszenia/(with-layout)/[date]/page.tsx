@@ -13,8 +13,7 @@ import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
-import { SenderForm, SenderScript } from "../SenderForm";
-
+import { SenderForm, SenderScript } from "./SenderForm";
 
 
 export async function generateStaticParams() {
@@ -173,7 +172,7 @@ function getBreadcrumbs(tenant: Tenant, title: string, date: string): Breadcrumb
     },
     {
       label: "Ogłoszenia",
-      href: "..",
+      href: "/ogloszenia",
     },
     {
       label: `${title} (${format(parseISO(date), 'dd.MM.yyyy')})`,
