@@ -120,8 +120,6 @@ export default async function AnnouncementPage({
     ? user.avatar as Media 
     : null;
 
-
-
   return (
     <>
       <SenderScript accountId="f511ddc3f98190" formId="b82BgW" />
@@ -147,9 +145,7 @@ export default async function AnnouncementPage({
           </FeastDataProvider>
         </div>
         <div>
-          <div className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline">
-            <RichText data={page.content} />
-          </div>
+          <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0"/>
 
           {process.env.NODE_ENV === 'production' && (
             <SenderForm formId="b82BgW" />

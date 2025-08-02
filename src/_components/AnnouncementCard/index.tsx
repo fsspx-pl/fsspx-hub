@@ -14,11 +14,13 @@ import { CMSLink } from '../Link';
 type Props = {
   announcement: Page;
   className?: string;
+  currentMonth?: Date;
 };
 
 export const AnnouncementCard: React.FC<Props> = ({
   announcement,
   className = '',
+  currentMonth,
 }) => {
   const author = announcement.author ? announcement.author as User : null;
   const authorName = formatAuthorName(author);
@@ -28,19 +30,42 @@ export const AnnouncementCard: React.FC<Props> = ({
   const isCurrent = isCurrentAnnouncement(announcement);
   const dateFormatted = format(new Date(announcement.period?.start as string), 'dd-MM-yyyy', { locale: pl });
   const linkTo = `/ogloszenia/${dateFormatted}`;
+  
+  // Check if announcement spans across months and is being displayed in the spanned-to month
+  const startDate = announcement.period?.start ? new Date(announcement.period.start) : null;
+  const endDate = announcement.period?.end ? new Date(announcement.period.end) : null;
+  const displayMonth = currentMonth || new Date();
+  
+  // Show "do:" text only when:
+  // 1. Announcement spans across months (start and end in different months)
+  // 2. Current display month is NOT the start month (i.e., we're in the spanned-to month)
+  const isSpanningAnnouncement = startDate && endDate && 
+    startDate.getMonth() !== endDate.getMonth() && 
+    startDate.getMonth() !== displayMonth.getMonth() &&
+    endDate.getMonth() === displayMonth.getMonth() &&
+    endDate.getFullYear() === displayMonth.getFullYear();
+  
+  const endDateFormatted = endDate ? format(endDate, 'dd.MM.yyyy', { locale: pl }) : '';
 
   return (
-    <article className={`prose prose-lg max-w-none ${className}`}>
+    <article className={`prose prose-lg max-w-none w-full ${className}`}>
       {date && (
-        <div className="flex flex-row items-center gap-2">
-          {/* TODO: make link as reference */}
-          <CMSLink url={linkTo}
-          >
-            <h3 className={`${garamond.className} m-0`}>
-              {date}
-            </h3>
-          </CMSLink>
-          {isCurrent && <Badge>Aktualne</Badge>}
+        <div className="flex justify-between items-baseline">
+          <div className="flex flex-row items-center gap-2">
+            {/* TODO: make link as reference */}
+            <CMSLink url={linkTo}
+            >
+              <h3 className={`${garamond.className} m-0`}>
+                {date}
+              </h3>
+            </CMSLink>
+            {isCurrent && <Badge>Aktualne</Badge>}
+          </div>
+          {isSpanningAnnouncement && endDateFormatted && (
+                <span className="text-sm text-gray-500 font-normal ml-2">
+                  do: {endDateFormatted}
+                </span>
+              )}
         </div>
       )}
       

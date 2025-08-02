@@ -19,13 +19,40 @@ export const fetchAnnouncementsByMonth = (domain: string, year: number, month: n
           ['tenant.domain']: {
             contains: domain
           },
-          ['period.start']: {
-            greater_than_equal: startDate.toISOString(),
-            less_than_equal: endDate.toISOString(),
-          },
           _status: {
             equals: 'published'
-          }
+          },
+          or: [
+            {
+              // Start date is within the month
+              ['period.start']: {
+                greater_than_equal: startDate.toISOString(),
+                less_than_equal: endDate.toISOString(),
+              }
+            },
+            {
+              // End date is within the month
+              ['period.end']: {
+                greater_than_equal: startDate.toISOString(),
+                less_than_equal: endDate.toISOString(),
+              }
+            },
+            {
+              // Spans across the month (starts before and ends after)
+              and: [
+                {
+                  ['period.start']: {
+                    less_than_equal: startDate.toISOString(),
+                  }
+                },
+                {
+                  ['period.end']: {
+                    greater_than_equal: endDate.toISOString(),
+                  }
+                }
+              ]
+            }
+          ]
         },
         sort: '-createdAt',
         depth: 2,

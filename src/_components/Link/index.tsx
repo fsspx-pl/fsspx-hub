@@ -56,8 +56,6 @@ export const CMSLink: React.FC<CMSLinkType> = ({
         }`
       : url
 
-  console.log("href", href)
-
   const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
   const linkClasses = !isStatic ?
     'after:bg-[#C81910] after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left' : 'after:bg-gray-400 after:scale-x-100'

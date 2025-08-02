@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { MonthNavigator } from './MonthNavigator';
+import { PeriodNavigator } from '../PeriodNavigator';
 import { AnnouncementList } from './index';
 import { Page } from '@/payload-types';
 
@@ -32,6 +32,11 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
   const [currentDate, setCurrentDate] = useState(initialDate);
   const [announcements, setAnnouncements] = useState<Page[]>(initialAnnouncements);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Check if we're in the current month to disable next button
+  const now = new Date();
+  const isCurrentMonth = currentDate.getFullYear() === now.getFullYear() && 
+                        currentDate.getMonth() === now.getMonth();
 
   const handleDateChange = async (newDate: Date) => {
     setIsLoading(true);
@@ -62,9 +67,12 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
 
   return (
     <div className="space-y-6">
-      <MonthNavigator
+      <PeriodNavigator
         currentDate={currentDate}
+        viewMode="monthly"
         onDateChange={handleDateChange}
+        titleClickable={false}
+        disableNext={isCurrentMonth}
       />
       {isLoading ? (
         <div className="text-center py-8">
@@ -72,7 +80,7 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
           <p className="mt-2 text-gray-600">Ładowanie ogłoszeń...</p>
         </div>
       ) : (
-        <AnnouncementList announcements={announcements} />
+        <AnnouncementList announcements={announcements} currentMonth={currentDate} />
       )}
     </div>
   );
