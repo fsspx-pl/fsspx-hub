@@ -33,7 +33,6 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
   const [announcements, setAnnouncements] = useState<Page[]>(initialAnnouncements);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Check if we're in the current month to disable next button
   const now = new Date();
   const isCurrentMonth = currentDate.getFullYear() === now.getFullYear() && 
                         currentDate.getMonth() === now.getMonth();
@@ -46,13 +45,11 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
       const year = newDate.getFullYear();
       const month = newDate.getMonth() + 1;
       
-      // Update URL with new month/year
       const params = new URLSearchParams(searchParams);
       params.set('year', year.toString());
       params.set('month', month.toString());
       router.push(`?${params.toString()}`, { scroll: false });
       
-      // Fetch new data for the selected month
       const response = await fetch(`/api/announcements?year=${year}&month=${month}&domain=${domain}`);
       if (response.ok) {
         const newAnnouncements = await response.json();

@@ -12,52 +12,49 @@ export const fetchAnnouncementsByMonth = (domain: string, year: number, month: n
       config: configPromise,
     });
 
-    try {
-      const result = await payload.find({
-        collection: 'pages',
-        where: {
-          ['tenant.domain']: {
-            contains: domain
-          },
-          _status: {
-            equals: 'published'
-          },
-          or: [
-            {
-              // Start date is within the month
-              ['period.start']: {
-                greater_than_equal: startDate.toISOString(),
-                less_than_equal: endDate.toISOString(),
-              }
+          try {
+        const result = await payload.find({
+          collection: 'pages',
+          where: {
+            ['tenant.domain']: {
+              contains: domain
             },
-            {
-              // End date is within the month
-              ['period.end']: {
-                greater_than_equal: startDate.toISOString(),
-                less_than_equal: endDate.toISOString(),
-              }
+            _status: {
+              equals: 'published'
             },
-            {
-              // Spans across the month (starts before and ends after)
-              and: [
-                {
-                  ['period.start']: {
-                    less_than_equal: startDate.toISOString(),
-                  }
-                },
-                {
-                  ['period.end']: {
-                    greater_than_equal: endDate.toISOString(),
-                  }
+            or: [
+              {
+                ['period.start']: {
+                  greater_than_equal: startDate.toISOString(),
+                  less_than_equal: endDate.toISOString(),
                 }
-              ]
-            }
-          ]
-        },
-        sort: '-createdAt',
-        depth: 2,
-        limit: 50, // Reasonable limit for a month
-      });
+              },
+              {
+                ['period.end']: {
+                  greater_than_equal: startDate.toISOString(),
+                  less_than_equal: endDate.toISOString(),
+                }
+              },
+              {
+                and: [
+                  {
+                    ['period.start']: {
+                      less_than_equal: startDate.toISOString(),
+                    }
+                  },
+                  {
+                    ['period.end']: {
+                      greater_than_equal: endDate.toISOString(),
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          sort: '-createdAt',
+          depth: 2,
+          limit: 50,
+        });
       
       return result.docs;
     } catch (err: unknown) {

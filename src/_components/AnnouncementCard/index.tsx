@@ -31,14 +31,10 @@ export const AnnouncementCard: React.FC<Props> = ({
   const dateFormatted = format(new Date(announcement.period?.start as string), 'dd-MM-yyyy', { locale: pl });
   const linkTo = `/ogloszenia/${dateFormatted}`;
   
-  // Check if announcement spans across months and is being displayed in the spanned-to month
   const startDate = announcement.period?.start ? new Date(announcement.period.start) : null;
   const endDate = announcement.period?.end ? new Date(announcement.period.end) : null;
   const displayMonth = currentMonth || new Date();
   
-  // Show "do:" text only when:
-  // 1. Announcement spans across months (start and end in different months)
-  // 2. Current display month is NOT the start month (i.e., we're in the spanned-to month)
   const isSpanningAnnouncement = startDate && endDate && 
     startDate.getMonth() !== endDate.getMonth() && 
     startDate.getMonth() !== displayMonth.getMonth() &&

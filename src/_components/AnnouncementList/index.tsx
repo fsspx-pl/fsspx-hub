@@ -20,8 +20,6 @@ export const AnnouncementList: React.FC<Props> = ({
   className = '',
   currentMonth,
 }) => {
-  // Since announcements are already filtered for the current month being viewed,
-  // we should group them all under the current month, not by their individual start dates
   const monthToUse = currentMonth || new Date();
   const monthKey = format(monthToUse, 'yyyy-MM');
   
@@ -29,7 +27,6 @@ export const AnnouncementList: React.FC<Props> = ({
     [monthKey]: announcements
   };
 
-  // Sort months in descending order (newest first)
   const sortedMonths = Object.keys(groupedAnnouncements).sort((a, b) => b.localeCompare(a));
 
   if (sortedMonths.length === 0) {
@@ -55,7 +52,7 @@ export const AnnouncementList: React.FC<Props> = ({
                 .sort((a, b) => {
                   const dateA = a.period?.start ? new Date(a.period.start) : new Date(0);
                   const dateB = b.period?.start ? new Date(b.period.start) : new Date(0);
-                  return dateA.getTime() - dateB.getTime(); // Ascending order
+                  return dateA.getTime() - dateB.getTime();
                 })
                 .map((announcement) => (
                   <AnnouncementCard
