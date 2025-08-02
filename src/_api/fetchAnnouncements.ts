@@ -65,32 +65,3 @@ export const fetchAnnouncementsByMonth = (domain: string, year: number, month: n
     }
   })();
 };
-
-export const fetchAnnouncementsForTenant = (domain: string): Promise<Page[]> => {
-  return (async (): Promise<Page[]> => {
-    const payload = await getPayload({
-      config: configPromise,
-    });
-
-    try {
-      const result = await payload.find({
-        collection: 'pages',
-        where: {
-          ['tenant.domain']: {
-            contains: domain
-          },
-          _status: {
-            equals: 'published'
-          }
-        },
-        sort: '-createdAt',
-        depth: 2,
-        limit: 100, // Reasonable limit for all announcements
-      });
-      
-      return result.docs;
-    } catch (err: unknown) {
-      return Promise.reject(err);
-    }
-  })();
-}; 
