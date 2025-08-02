@@ -48,19 +48,13 @@ export const AnnouncementList: React.FC<Props> = ({
         return (
           <section key={monthKey}>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
-              {monthAnnouncements
-                .sort((a, b) => {
-                  const dateA = a.period?.start ? new Date(a.period.start) : new Date(0);
-                  const dateB = b.period?.start ? new Date(b.period.start) : new Date(0);
-                  return dateA.getTime() - dateB.getTime();
-                })
-                .map((announcement) => (
-                  <AnnouncementCard
-                    key={announcement.id}
-                    announcement={announcement}
-                    currentMonth={monthToUse}
-                  />
-                ))}
+              {monthAnnouncements.map((announcement) => (
+                <AnnouncementCard
+                  key={announcement.id}
+                  announcement={announcement}
+                  currentMonth={monthToUse}
+                />
+              ))}
             </div>
           </section>
         );

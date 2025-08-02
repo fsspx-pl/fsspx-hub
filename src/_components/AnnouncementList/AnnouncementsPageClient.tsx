@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { PeriodNavigator } from '../PeriodNavigator';
 import { AnnouncementList } from './index';
 import { Page } from '@/payload-types';
+import { LoadingIndicator } from '../LoadingIndicator';
 
 type Props = {
   announcements: Page[];
@@ -72,8 +73,8 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
         disableNext={isCurrentMonth}
       />
       {isLoading ? (
-        <div className="text-center py-8">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="flex flex-col items-center justify-center py-8">
+          <LoadingIndicator />
           <p className="mt-2 text-gray-600">Ładowanie ogłoszeń...</p>
         </div>
       ) : (
