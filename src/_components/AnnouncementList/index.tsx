@@ -47,7 +47,7 @@ export const AnnouncementList: React.FC<Props> = ({
         
         return (
           <section key={monthKey}>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 auto-rows-fr">
               {monthAnnouncements.map((announcement) => (
                 <AnnouncementCard
                   key={announcement.id}

@@ -14,7 +14,8 @@ import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
 import { SenderForm, SenderScript } from "./SenderForm";
-
+import { CMSLink } from "@/_components/Link";
+import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -144,9 +145,14 @@ export default async function AnnouncementPage({
             <Calendar />
           </FeastDataProvider>
         </div>
-        <div>
+        <div className="flex flex-col gap-4">
           <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0"/>
-
+          <CMSLink url={'/ogloszenia'}
+            className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910]"
+          >
+            <Arrow className="w-4 h-3 fill-[#C81910] rotate-180" />
+            <span>Powrót do listy ogłoszeń</span>
+          </CMSLink>
           {process.env.NODE_ENV === 'production' && (
             <SenderForm formId="b82BgW" />
           )}
