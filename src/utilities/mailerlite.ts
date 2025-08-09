@@ -47,9 +47,6 @@ export async function createCampaign(campaignData: {
       'Authorization': `Bearer ${apiKey}`,
     };
 
-    console.log('Creating campaign at:', url);
-    console.log('Campaign data:', JSON.stringify(restData, null, 2));
-
     const response = await fetch(url, {
       method: 'POST',
       headers,
