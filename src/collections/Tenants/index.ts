@@ -47,16 +47,16 @@ export const Tenants: CollectionConfig = {
     },
     ...location,
     {
-      name: 'senderListId',
+      name: 'mailingGroupId',
       type: 'text',
       label: {
-        en: 'Sender List ID',
-        pl: 'ID Listy Wysyłkowej',
+        en: 'Mailing Group ID',
+        pl: 'ID Grupy Mailingowej',
       },
       admin: {
         description: {
-          pl: 'ID listy mailingowej w Sender.net. UWAGA: zmiana ID listy mailingowej wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
-          en: 'The ID of the mailing list in Sender.net. NOTE: changing the mailing list ID will affect the newsletter recipients for this location.'
+          pl: 'ID grupy mailingowej w Mailerlite. UWAGA: zmiana ID grupy mailingowej wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
+          en: 'The ID of the mailing group in Mailerlite. NOTE: changing the mailing group ID will affect the newsletter recipients for this location.'
         }
       }
     },

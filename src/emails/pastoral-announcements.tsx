@@ -166,7 +166,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                 )}
                 
                 <Text style={{ fontSize: "14px", color: "#555", margin: "0", paddingBottom: "12px" }}>
-                  {romanize(feast.rank)} klasy · kolor szat:&nbsp;
+                  {romanize(feast.rank)} klasy · kolor szat: 
                   <span className={`${vestmentColor}`}>{feast.color}</span>
                 </Text>
                 
@@ -215,20 +215,16 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
 
   return (
     <Section style={{ margin: "0", padding: 0 }}>
-      {dayPairs.map((pair, rowIndex) => (
-        <Row key={rowIndex} style={{ marginBottom: "10px" }}>
-          <Column style={{ width: "49.5%", verticalAlign: "top", backgroundColor: "#f8f9fa", borderRadius: "8px" }}>
-            <DayCell feast={pair[0]} />
-          </Column>
-          <Column style={{ width: "1%" }}>
-            {/* Spacer column */}
-          </Column>
-          <Column style={{ width: "49.5%", verticalAlign: "top", backgroundColor: "#f8f9fa", borderRadius: "8px"}}>
-            {pair[1] ? (
-              <DayCell feast={pair[1]} />
-            ) : (
-              <Section style={{ height: "250px", minHeight: "250px" }} />
-            )}
+      {feastsWithMasses.map((feast, index) => (
+        <Row key={index} style={{ marginBottom: "10px" }}>
+          <Column style={{ 
+            width: "100%", 
+            verticalAlign: "top", 
+            backgroundColor: "#f8f9fa", 
+            borderRadius: "8px",
+            marginBottom: "10px"
+          }}>
+            <DayCell feast={feast} />
           </Column>
         </Row>
       ))}
