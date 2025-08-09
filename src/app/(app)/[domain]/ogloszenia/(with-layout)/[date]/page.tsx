@@ -13,7 +13,7 @@ import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
-import { SenderForm, SenderScript } from "./SenderForm";
+
 import { CMSLink } from "@/_components/Link";
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 
@@ -123,7 +123,6 @@ export default async function AnnouncementPage({
 
   return (
     <>
-      <SenderScript accountId="f511ddc3f98190" formId="b82BgW" />
       <Gutter className="mb-4">
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
@@ -153,9 +152,6 @@ export default async function AnnouncementPage({
             <Arrow className="w-4 h-3 fill-[#C81910] rotate-180" />
             <span>Powrót do listy ogłoszeń</span>
           </CMSLink>
-          {process.env.NODE_ENV === 'production' && (
-            <SenderForm formId="b82BgW" />
-          )}
         </div>
       </Gutter>
     </>

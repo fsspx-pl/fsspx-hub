@@ -17,12 +17,12 @@ export const SendNewsletterButton: React.FC<{ data: Page }> = async ({
   if (!id) return null;
 
   const tenant = await fetchTenantById(tenantId);
-  if (!tenant?.senderListId) return null;
+  if (!tenant?.mailingGroupId) return null;
 
   return (
     <div className={classes.fieldType}>
       <FieldLabel label="Send Newsletter" />
-      <SendButton id={id} campaignId={campaignId} isDraft={isDraft} newsletterGroupId={tenant.senderListId}/>
+              <SendButton id={id} campaignId={campaignId} isDraft={isDraft} newsletterGroupId={tenant.mailingGroupId}/>
     </div>
   )
 }

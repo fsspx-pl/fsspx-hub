@@ -9,7 +9,9 @@ import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
 import { serialize } from "@/_components/RichText/serialize";
+import { createCampaign as createMailerliteCampaign, sendCampaign as sendMailerliteCampaign } from "@/utilities/mailerlite";
 import React from "react";
+import { minify } from "html-minifier-terser";
 
 // Transform Service objects to match email component's expected format
 function transformServiceForEmail(service: Service) {
@@ -39,6 +41,31 @@ async function convertContentToHtml(content: any): Promise<string> {
   const serializedContent = serialize(content.root.children);
   const html = await render(React.createElement('div', {}, serializedContent));
   return html;
+}
+
+async function minifyAndReplaceQuotes(html: string): Promise<string> {
+  let minified = await minify(html, {
+    removeComments: true,
+    useShortDoctype: true,
+    quoteCharacter: "'",
+  });
+  
+  // Remove script tags from the minified HTML
+  // Remove the second <!doctype html> if present in the minified HTML
+  // This ensures only a single doctype is present at the top of the email HTML
+  const doctypePattern = /<!doctype html>/gi;
+  const matches = minified.match(doctypePattern);
+  if (matches && matches.length > 1) {
+    // Remove all but the first occurrence
+    let firstIndex = minified.toLowerCase().indexOf('<!doctype html>');
+    let before = minified.slice(0, firstIndex + 15); // 15 = length of '<!doctype html>'
+    let after = minified.slice(firstIndex + 15).replace(doctypePattern, '');
+    minified = before + after;
+  }
+  return minified
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<template[^>]*>[\s\S]*?<\/template>/gi, '')
+    .replace(/ hidden id=['"]S:0['"]/gi, '');
 }
 
 async function getPage(id: string) {
@@ -82,12 +109,12 @@ async function createCampaign(page: Page) {
     .filter(Boolean)
     .join(" ");
 
-  const from = `${(page.tenant as Tenant).type} ${(page.tenant as Tenant).patron} - ${(page.tenant as Tenant).city} | FSSPX`;
+  const from_name = `${(page.tenant as Tenant).type} ${(page.tenant as Tenant).patron} - ${(page.tenant as Tenant).city} | FSSPX`;
 
   const footer = await fetchFooter();
   const settings = await fetchSettings();
 
-  const html = await render(
+  const rawHtml = await render(
     <Email
       title={titleWithDateSuffix}
       content_html={await convertContentToHtml(page.content)}
@@ -96,103 +123,37 @@ async function createCampaign(page: Page) {
       feastsWithMasses={transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant))}
     />,
     {
-      pretty: true,
+      htmlToTextOptions: {
+        baseElements: {
+          selectors:['body'],
+        }
+      },
     }
   );
+
+  const html = await minifyAndReplaceQuotes(rawHtml);
 
   const campaignData = {
     subject: titleWithDateSuffix,
-    from,
-    reply_to: process.env.SENDER_SENDER_EMAIL,
-    content_type: "html",
-    content: `
-      ${html}
-      ${unsubscribeText}
-    `,
-    groups: [(page.tenant as Tenant).senderListId],
+    from: process.env.MAILERLITE_SENDER_EMAIL || '',
+    from_name,
+    reply_to: process.env.MAILERLITE_SENDER_EMAIL || '',
+    content: html,
+    groups: [(page.tenant as Tenant).mailingGroupId].filter(Boolean) as string[],
   };
 
-  // Send to Sender API
-  const createResponse = await fetch(
-    `${process.env.SENDER_API_URL}/campaigns`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.SENDER_APIKEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(campaignData),
-    }
-  );
-
-  // Safely handle the response
-  let responseData;
-  const contentType = createResponse.headers.get("content-type");
-
-  if (contentType && contentType.includes("application/json")) {
-    responseData = await createResponse.json();
-  } else {
-    const textResponse = await createResponse.text();
-    console.error(
-      "Received non-JSON response when creating campaign:",
-      textResponse
-    );
-    throw new Error(
-      "Received non-JSON response from API when creating campaign"
-    );
-  }
-
-  if (!createResponse.ok) {
-    throw new Error(
-      `Failed to create campaign: ${responseData.message || "Unknown error"}`
-    );
-  }
-
-  return responseData;
+  const response = await createMailerliteCampaign(campaignData);
+  return response;
 }
 
 /**
- * Sends a created campaign
+ * Sends a created campaign using Mailerlite SDK
  */
 async function sendCampaign(campaignId: string) {
   const payload = await getPayload({ config });
   payload.logger.info(`Sending campaign with ID: ${campaignId}`);
 
-  const sendResponse = await fetch(
-    `${process.env.SENDER_API_URL}/campaigns/${campaignId}/send`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.SENDER_APIKEY}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  // Safely handle the response
-  let responseData;
-  const contentType = sendResponse.headers.get("content-type");
-
-  if (contentType && contentType.includes("application/json")) {
-    responseData = await sendResponse.json();
-  } else {
-    const textResponse = await sendResponse.text();
-    console.error(
-      "Received non-JSON response when sending campaign:",
-      textResponse
-    );
-    throw new Error(
-      "Received non-JSON response from API when sending campaign"
-    );
-  }
-
-  if (!sendResponse.ok) {
-    throw new Error(
-      `Failed to send campaign: ${responseData.message || "Unknown error"}`
-    );
-  }
-
-  return responseData;
+  return await sendMailerliteCampaign(campaignId);
 }
 
 async function assignCampaign(id: string, campaignId: string) {
@@ -229,8 +190,8 @@ export async function POST(
     }
 
     const campaignResponse = await createCampaign(page as Page);
-    const sendResponse = process.env.NODE_ENV === 'production' ? await sendCampaign(campaignResponse.data.id) : null;
-    await assignCampaign(id, campaignResponse.data.id);
+    const sendResponse = process.env.NODE_ENV === 'production' ? await sendCampaign(campaignResponse.id) : null;
+    // await assignCampaign(id, campaignResponse.id);
 
     return NextResponse.json({
       message: "Newsletter created and sent successfully",

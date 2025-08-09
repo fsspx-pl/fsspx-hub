@@ -60,7 +60,7 @@ export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDr
     setIsLoading(true)
     try {
       const newsletterGroup = await fetchNewsletterGroup(newsletterGroupId);
-      setModalMessage(`The newsletter will be sent to the group: "${newsletterGroup.title}" with ${newsletterGroup.subscribersCount} subscribers. This action cannot be undone.`);
+      setModalMessage(`The newsletter will be sent to the group: "${newsletterGroup.name}" with ${newsletterGroup.subscribersCount} subscribers. This action cannot be undone.`);
       openModal(sendNewsletterModalSlug)
     } catch (error) {
       toast.error('Failed to fetch newsletter group information. Please try again later.');

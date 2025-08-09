@@ -173,9 +173,9 @@ export interface Tenant {
     phone?: string | null;
   };
   /**
-   * The ID of the mailing list in Sender.net. NOTE: changing the mailing list ID will affect the newsletter recipients for this location.
+   * The ID of the mailing group in Mailerlite. NOTE: changing the mailing group ID will affect the newsletter recipients for this location.
    */
-  senderListId?: string | null;
+  mailingGroupId?: string | null;
   feastTemplates?: {
     /**
      * Template for Sunday services. These services will be automatically created for new Week Order.
@@ -605,7 +605,7 @@ export interface TenantsSelect<T extends boolean = true> {
         email?: T;
         phone?: T;
       };
-  senderListId?: T;
+  mailingGroupId?: T;
   feastTemplates?:
     | T
     | {
