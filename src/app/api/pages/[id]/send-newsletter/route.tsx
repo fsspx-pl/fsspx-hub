@@ -135,7 +135,7 @@ async function createCampaign(page: Page) {
 
   const campaignData = {
     subject: titleWithDateSuffix,
-    from: process.env.MAILERLITE_SENDER_EMAIL || '',
+    from: from_name,
     from_name,
     reply_to: process.env.MAILERLITE_SENDER_EMAIL || '',
     content: html,
@@ -191,7 +191,7 @@ export async function POST(
 
     const campaignResponse = await createCampaign(page as Page);
     const sendResponse = process.env.NODE_ENV === 'production' ? await sendCampaign(campaignResponse.id) : null;
-    // await assignCampaign(id, campaignResponse.id);
+    await assignCampaign(id, campaignResponse.id);
 
     return NextResponse.json({
       message: "Newsletter created and sent successfully",
