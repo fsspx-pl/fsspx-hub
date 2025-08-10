@@ -117,11 +117,21 @@ const testFeasts: FeastWithMasses[] = [
         createdAt: now.toISOString(),
         updatedAt: now.toISOString(),
       } as ServiceType,
+      { 
+        date: createPolishDate(2025, 3, 30, 12).toISOString(),
+        category: 'rosary',
+        tenant: 'test-tenant',
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+      } as ServiceType,
     ],
   },
 ];
 
 const getServiceTitle = (service: ServiceType) => {
+  if (service.category === 'rosary') {
+    return 'Różaniec';
+  }
   if (service.category === 'mass' && service.massType) {
     const massTypeMap = {
       'sung': 'śpiewana',
