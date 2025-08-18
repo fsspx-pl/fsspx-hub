@@ -218,8 +218,37 @@ export default function MinistranciPage() {
     );
   }
 
+  function wypiszMnie(dayIdx: number, massIdx: number) {
+    setData((prev) =>
+      prev.map((d, di) => {
+        if (di !== dayIdx) return d;
+        return {
+          ...d,
+          msze: d.msze.map((m, mi) => {
+            if (mi !== massIdx) return m;
+
+            const newZapisy = new Map(
+              Array.from(m.zapisy.entries()).map(([funkcja, osoby]) => [
+                funkcja,
+                osoby.filter((o) => o !== BIEŻĄCY_UŻYTKOWNIK),
+              ])
+            );
+
+            return { ...m, zapisy: newZapisy };
+          }),
+        };
+      })
+    );
+  }
+
   function mszaMaZapisanych(m: MassHour) {
     return m.typ.funkcje.some((f) => (m.zapisy.get(f.nazwa)?.length || 0) > 0);
+  }
+
+  function mszaMaBiezacegoUzytkownika(m: MassHour) {
+    return m.typ.funkcje.some((f) =>
+      m.zapisy.get(f.nazwa)?.includes(BIEŻĄCY_UŻYTKOWNIK)
+    );
   }
 
   return (
@@ -266,11 +295,12 @@ export default function MinistranciPage() {
                 <tbody>
                   <tr className="hoursRow">
                     {dz.msze.map((m, mIdx) => {
-                      const mszaHas = mszaMaZapisanych(m);
+                      const massHasAny = mszaMaZapisanych(m);
+                      const massHasCurrentUser = mszaMaBiezacegoUzytkownika(m);
                       return (
                         <td key={mIdx} className="hourCell">
                           <div
-                            className={`massCard ${mszaHas ? "hasAny" : "noAny"}`}
+                            className={`massCard ${massHasAny ? "hasAny" : "noAny"}`}
                           >
                             <table className="massTable">
                               <thead>
@@ -286,47 +316,62 @@ export default function MinistranciPage() {
                                         </span>
                                       </div>
                                       <div className="actions">
-                                        <details className="joinMenu">
-                                          <summary
+                                        {massHasCurrentUser ? (
+                                          <button
                                             className="joinBtn"
-                                            aria-label={`Zapisz mnie na ${m.godzina}`}
-                                            role="button"
+                                            aria-label={`Wypisz mnie z ${m.godzina}`}
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              if (past) return;
+                                              wypiszMnie(dIdx, mIdx);
+                                            }}
+                                            disabled={past}
                                           >
-                                            Zapisz mnie
-                                          </summary>
-                                          <div className="menu">
-                                            <div className="menuLabel">
-                                              Wybierz funkcję:
+                                            Wypisz mnie
+                                          </button>
+                                        ) : (
+                                          <details className="joinMenu">
+                                            <summary
+                                              className="joinBtn"
+                                              aria-label={`Zapisz mnie na ${m.godzina}`}
+                                              role="button"
+                                            >
+                                              Zapisz mnie
+                                            </summary>
+                                            <div className="menu">
+                                              <div className="menuLabel">
+                                                Wybierz funkcję:
+                                              </div>
+                                              {m.typ.funkcje.map((f) => (
+                                                <button
+                                                  key={f.nazwa}
+                                                  className="menuItem"
+                                                  onClick={(e) => {
+                                                    e.preventDefault();
+                                                    if (past) return;
+                                                    zapiszMnie(
+                                                      dIdx,
+                                                      mIdx,
+                                                      f.nazwa
+                                                    );
+                                                    (
+                                                      e.currentTarget.closest(
+                                                        "details"
+                                                      ) as HTMLDetailsElement
+                                                    )?.removeAttribute("open");
+                                                  }}
+                                                  disabled={past}
+                                                >
+                                                  {f.nazwa}
+                                                  <span className="count">
+                                                    {m.zapisy.get(f.nazwa)
+                                                      ?.length || 0}
+                                                  </span>
+                                                </button>
+                                              ))}
                                             </div>
-                                            {m.typ.funkcje.map((f) => (
-                                              <button
-                                                key={f.nazwa}
-                                                className="menuItem"
-                                                onClick={(e) => {
-                                                  e.preventDefault();
-                                                  if (past) return;
-                                                  zapiszMnie(
-                                                    dIdx,
-                                                    mIdx,
-                                                    f.nazwa
-                                                  );
-                                                  (
-                                                    e.currentTarget.closest(
-                                                      "details"
-                                                    ) as HTMLDetailsElement
-                                                  )?.removeAttribute("open");
-                                                }}
-                                                disabled={past}
-                                              >
-                                                {f.nazwa}
-                                                <span className="count">
-                                                  {m.zapisy.get(f.nazwa)
-                                                    ?.length || 0}
-                                                </span>
-                                              </button>
-                                            ))}
-                                          </div>
-                                        </details>
+                                          </details>
+                                        )}
                                       </div>
                                     </div>
                                   </th>
@@ -559,6 +604,7 @@ export default function MinistranciPage() {
         }
         .menu {
           position: absolute;
+          top: 0;
           right: 0;
           margin-top: 8px;
           background: #fff;
