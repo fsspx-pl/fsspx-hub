@@ -16,7 +16,7 @@ type MassType = {
 type MassHour = {
   godzina: string; // np. "09:00"
   typ: MassType; // typ Mszy (z listą funkcji)
-  zapisy: Record<string, string[]>; // { [nazwaFunkcji]: [listaOsob] }
+  zapisy: Map<string, string[]>; // { [nazwaFunkcji]: [listaOsob] }
 };
 
 type DaySchedule = {
@@ -144,14 +144,17 @@ function generateExampleWeekData(weekStart: Date): DaySchedule[] {
       }
 
       // Losowe zapisy oddzielnie od definicji funkcji
-      const zapisy: Record<string, string[]> = {};
+      const zapisy = new Map<string, string[]>();
       for (const f of typ.funkcje) {
         const count =
           rnd() > 0.65 ? (rnd() > 0.5 ? 2 : 1) : rnd() > 0.9 ? 3 : 0;
-        zapisy[f.nazwa] = Array.from({ length: count }, () => {
-          const idx = Math.floor(rnd() * exampleNames.length);
-          return exampleNames[idx];
-        });
+        zapisy.set(
+          f.nazwa,
+          Array.from({ length: count }, () => {
+            const idx = Math.floor(rnd() * exampleNames.length);
+            return exampleNames[idx];
+          })
+        );
       }
 
       return { godzina: g, typ, zapisy };
@@ -186,23 +189,29 @@ export default function MinistranciPage() {
     setData(generateExampleWeekData(weekStart));
   }, [weekStart]);
 
-  function zapiszMnie(dIdx: number, mIdx: number, nazwaFunkcji: string) {
+  function zapiszMnie(dayIdx: number, massIdx: number, nazwaFunkcji: string) {
     setData((prev) =>
       prev.map((d, di) => {
-        if (di !== dIdx) return d;
+        if (di !== dayIdx) return d;
         return {
           ...d,
           msze: d.msze.map((m, mi) => {
-            if (mi !== mIdx) return m;
-            const aktualne = m.zapisy[nazwaFunkcji] || [];
-            if (aktualne.includes(BIEŻĄCY_UŻYTKOWNIK)) return m;
-            return {
-              ...m,
-              zapisy: {
-                ...m.zapisy,
-                [nazwaFunkcji]: [...aktualne, BIEŻĄCY_UŻYTKOWNIK],
-              },
-            };
+            if (mi !== massIdx) return m;
+
+            if (m.zapisy.get(nazwaFunkcji)?.includes(BIEŻĄCY_UŻYTKOWNIK)) {
+              return m;
+            }
+
+            const newZapisy = new Map(
+              Array.from(m.zapisy.entries()).map(([funkcja, osoby]) => [
+                funkcja,
+                funkcja === nazwaFunkcji
+                  ? [...osoby, BIEŻĄCY_UŻYTKOWNIK]
+                  : osoby.filter((o) => o !== BIEŻĄCY_UŻYTKOWNIK),
+              ])
+            );
+
+            return { ...m, zapisy: newZapisy };
           }),
         };
       })
@@ -210,7 +219,7 @@ export default function MinistranciPage() {
   }
 
   function mszaMaZapisanych(m: MassHour) {
-    return m.typ.funkcje.some((f) => (m.zapisy[f.nazwa]?.length || 0) > 0);
+    return m.typ.funkcje.some((f) => (m.zapisy.get(f.nazwa)?.length || 0) > 0);
   }
 
   return (
@@ -311,8 +320,8 @@ export default function MinistranciPage() {
                                               >
                                                 {f.nazwa}
                                                 <span className="count">
-                                                  {m.zapisy[f.nazwa]?.length ||
-                                                    0}
+                                                  {m.zapisy.get(f.nazwa)
+                                                    ?.length || 0}
                                                 </span>
                                               </button>
                                             ))}
@@ -329,7 +338,7 @@ export default function MinistranciPage() {
                               </thead>
                               <tbody>
                                 {m.typ.funkcje.map((f) => {
-                                  const osoby = m.zapisy[f.nazwa] || [];
+                                  const osoby = m.zapisy.get(f.nazwa) ?? [];
                                   const has = osoby.length > 0;
                                   return (
                                     <tr
