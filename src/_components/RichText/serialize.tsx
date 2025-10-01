@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 
 import { CMSLink } from '@/_components/Link'
 import { Page } from '@/payload-types'
-import { garamond } from '@/fonts'
+import { Heading } from '@/_components/Heading'
 
 // Text format constants
 const IS_BOLD = 1
@@ -86,26 +86,12 @@ export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | n
       case 'heading': {
         const tag = typedNode.tag || 'h1'
         const validHeadingTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
-        const Tag = validHeadingTags.includes(tag) ? tag : 'h1'
-
-        const headingClass = `font-bold text-gray-700 ${garamond.className}`
-        
-        switch (Tag) {
-          case 'h1':
-            return <h1 key={i} className={`text-4xl ${headingClass}`}>{serializedChildren}</h1>
-          case 'h2':
-            return <h2 key={i} className={`text-3xl ${headingClass}`}>{serializedChildren}</h2>
-          case 'h3':
-            return <h3 key={i} className={`text-2xl ${headingClass}`}>{serializedChildren}</h3>
-          case 'h4':
-            return <h4 key={i} className={`text-xl ${headingClass}`}>{serializedChildren}</h4>
-          case 'h5':
-            return <h5 key={i} className={`text-lg ${headingClass}`}>{serializedChildren}</h5>
-          case 'h6':
-            return <h6 key={i} className={`text-base ${headingClass}`}>{serializedChildren}</h6>
-          default:
-            return <h1 key={i} className={`text-4xl ${headingClass}`}>{serializedChildren}</h1>
-        }
+        const as = (validHeadingTags.includes(tag) ? tag : 'h1') as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+        return (
+          <Heading key={i} as={as}>
+            {serializedChildren}
+          </Heading>
+        )
       }
 
       case 'list': {
