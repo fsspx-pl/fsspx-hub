@@ -1,5 +1,7 @@
+import React from 'react'
 import TextLogo from './fsspx.svg'
 import TwoHeartsLogo from './two-hearts-logo.svg'
+import classes from './index.module.scss'
 
 export const Logo = ({
   skipMainText,

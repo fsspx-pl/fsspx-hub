@@ -4,7 +4,6 @@ import { Feast, VestmentColor } from '@/feast'
 import { garamond } from '@/fonts'
 import { Service as ServiceType } from '@/payload-types'
 import { format, isBefore, isEqual } from 'date-fns'
-import React from 'react'
 import { Day } from './Day'
 import { MonthView } from './MonthView'
 import { PeriodNavigator } from '../PeriodNavigator'
@@ -12,6 +11,7 @@ import { useFeastData } from './context/FeastDataContext'
 import { massTypeMap } from './utils/massTypeMap'
 import { romanize } from './utils/romanize'
 import { vestmentColorToTailwind } from './utils/vestmentColorToHex'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 export type FeastWithMasses = Feast & {masses: ServiceType[] }
 
@@ -28,24 +28,28 @@ const WINDOW_SIZE = 7;
 
 export const Calendar: React.FC = () => {
   const { handleDateSelect, selectedDay, feasts, viewMode, setViewMode, currentDate } = useFeastData();
-  const now = new Date();
+  const [isClient, setIsClient] = useState(false);
+  const [now, setNow] = useState(currentDate);
   
-  // Select current day by default if no day is selected
-  React.useEffect(() => {
-    if (selectedDay) return;
+  useEffect(() => {
+    setIsClient(true);
+    setNow(new Date());
+  }, []);
+  
+  useEffect(() => {
+    if (selectedDay || !isClient) return;
     
     const today = new Date();
     const todayFeast = feasts.find(feast => isEqual(feast.date, today));
     if (!todayFeast) return;
     
     handleDateSelect(todayFeast.date);
-  }, [selectedDay, feasts, handleDateSelect]);
+  }, [selectedDay, feasts, handleDateSelect, isClient]);
 
   const firstFeastDate = feasts[0]?.date;
   const displayDate = selectedDay ? selectedDay.date : (firstFeastDate || currentDate);
 
-  // Weekly view state and handlers
-  const [windowStart, setWindowStart] = React.useState(() => {
+  const [windowStart, setWindowStart] = useState(() => {
     if (!selectedDay) return 0;
     
     const selectedIndex = feasts.findIndex(feast => isEqual(feast.date, selectedDay.date));
@@ -56,13 +60,13 @@ export const Calendar: React.FC = () => {
     return Math.min(calculatedStart, Math.max(0, feasts.length - WINDOW_SIZE));
   });
 
-  const visibleDays = React.useMemo(() => {
+  const visibleDays = useMemo(() => {
     return feasts.slice(windowStart, windowStart + WINDOW_SIZE);
   }, [feasts, windowStart]);
 
-  const [selectedDayColor, setSelectedDayColor] = React.useState(vestmentColorToTailwind(VestmentColor.BLACK));
+  const [selectedDayColor, setSelectedDayColor] = useState(vestmentColorToTailwind(VestmentColor.BLACK));
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedDay) return;
     setSelectedDayColor(vestmentColorToTailwind(selectedDay.color));
   }, [selectedDay]);
@@ -132,7 +136,7 @@ export const Calendar: React.FC = () => {
   }
 
   // Handle day selection in monthly view - switch to weekly view with selected day
-  const handleMonthlyDaySelect = React.useCallback((date: Date) => {
+  const handleMonthlyDaySelect = useCallback((date: Date) => {
     handleDateSelect(date)
     setViewMode('weekly')
     

@@ -5,6 +5,8 @@
     - Create a Next.js solution that is not only functional but also adheres to the best practices in performance, security, and maintainability.
 
     ### Code Style and Structure
+    - LLMS.txt is at URL: https://payloadcms.com/llms.txt
+    - LLMS-FULL.txt is at URL: https://payloadcms.com/llms-full.txt
     - Write concise, technical TypeScript code with accurate examples.
     - Use functional and declarative programming patterns; avoid classes.
     - Favor iteration and modularization over code duplication.
