@@ -48,7 +48,6 @@ export const MonthlyView: React.FC<MonthlyViewProps> = ({ onDaySelect }) => {
   }
   
   return (
-    <div className={`${styles.monthViewContainer} ${garamond.className}`}>
       <Calendar
         value={selectedDay?.date || currentDate}
         onClickDay={onClickDay}
@@ -65,6 +64,5 @@ export const MonthlyView: React.FC<MonthlyViewProps> = ({ onDaySelect }) => {
         nextLabel={null}
         prevLabel={null}
       />
-    </div>
   )
 } 
