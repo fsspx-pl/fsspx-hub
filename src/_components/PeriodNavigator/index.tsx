@@ -1,10 +1,11 @@
 'use client'
 
 import React from 'react'
-import { format, getWeek, addWeeks, subWeeks, addMonths, subMonths, subDays, addDays } from 'date-fns'
+import { format, getWeek, addMonths, subMonths, subDays, addDays } from 'date-fns'
 import { pl } from 'date-fns/locale'
 import { garamond } from '@/fonts'
 import { CMSLink } from '@/_components/Link'
+import { Tooltip } from 'react-tooltip'
 import ArrowButton from '../Calendar/ArrowButton'
 
 interface PeriodNavigatorProps {
@@ -66,6 +67,10 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
     }
   }
 
+  const tooltipText = viewMode === 'weekly' 
+    ? 'Kliknij, aby przejść do widoku miesięcznego'
+    : 'Kliknij, aby przejść do widoku tygodniowego'
+
   return (
     <div className="flex items-start justify-between py-3 w-full gap-4">
       <ArrowButton 
@@ -74,13 +79,23 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
         disabled={disablePrevious}
       />
       
-      <div onClick={onToggleView} className="text-gray-700 hover:text-gray-700 relative top-1">
+      <div 
+        onClick={onToggleView} 
+        className="text-gray-700 hover:text-gray-700 relative top-1 cursor-pointer"
+        data-tooltip-id="view-toggle-tooltip"
+        data-tooltip-content={tooltipText}
+      >
         { getPeriodText() }
       </div>
       
       <ArrowButton 
         onClick={handleNext}
         disabled={disableNext}
+      />
+      
+      <Tooltip 
+        id="view-toggle-tooltip"
+        place="top"
       />
     </div>
   )

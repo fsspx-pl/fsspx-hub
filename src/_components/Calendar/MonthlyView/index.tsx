@@ -1,20 +1,20 @@
 'use client'
 
 import { garamond } from '@/fonts'
-import { format, isPast, isSameDay, isToday } from 'date-fns'
+import { format, isPast, isSameDay } from 'date-fns'
 import React from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import { Day } from '../Day'
 import { useFeastData } from '../context/FeastDataContext'
 import { polishLocale } from '../utils/polishLocale'
-import styles from './MonthView.module.css'
+import styles from './MonthlyView.module.css'
 
-interface MonthViewProps {
+interface MonthlyViewProps {
   onDaySelect: (date: Date) => void
 }
 
-export const MonthView: React.FC<MonthViewProps> = ({ onDaySelect }) => {
+export const MonthlyView: React.FC<MonthlyViewProps> = ({ onDaySelect }) => {
   const { selectedDay, currentDate } = useFeastData()
 
   const tileClassName = ({ date, view }: { date: Date; view: string }) => {
@@ -48,7 +48,6 @@ export const MonthView: React.FC<MonthViewProps> = ({ onDaySelect }) => {
   }
   
   return (
-    <div className={`${styles.monthViewContainer} ${garamond.className}`}>
       <Calendar
         value={selectedDay?.date || currentDate}
         onClickDay={onClickDay}
@@ -65,6 +64,5 @@ export const MonthView: React.FC<MonthViewProps> = ({ onDaySelect }) => {
         nextLabel={null}
         prevLabel={null}
       />
-    </div>
   )
 } 
