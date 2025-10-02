@@ -3,7 +3,7 @@
 import { Feast } from '@/feast'
 import { Service as ServiceType } from '@/payload-types'
 import { addDays, isSameDay, subDays, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns'
-import React, { createContext, useContext, useState, useCallback } from 'react'
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
 
 type FeastWithMasses = Feast & { masses: ServiceType[] }
 
@@ -54,6 +54,9 @@ export const FeastDataProvider: React.FC<{
     selectTodayOrFirstFeast(initialFeasts, initialDate)
   )
   const [viewMode, setViewMode] = useState<ViewMode>('weekly')
+  
+  // Don't update currentDate here - it causes hydration mismatch
+  // We'll handle current date selection in the Calendar component instead
   // Initialize loaded months based on initial feasts that have masses
   const getInitialLoadedMonths = () => {
     const monthsWithMasses = new Set<string>()
