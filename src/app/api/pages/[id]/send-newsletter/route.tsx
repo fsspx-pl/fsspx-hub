@@ -133,11 +133,16 @@ async function createCampaign(page: Page) {
 
   const html = await minifyAndReplaceQuotes(rawHtml);
 
+  const senderEmail = (page.tenant as Tenant).address.email;
+  if (!senderEmail) {
+    throw new Error("Sender email is not configured for this tenant.");
+  }
+
   const campaignData = {
     subject: titleWithDateSuffix,
     from: from_name,
     from_name,
-    reply_to: process.env.MAILERLITE_SENDER_EMAIL || '',
+    reply_to: senderEmail,
     content: html,
     groups: [(page.tenant as Tenant).mailingGroupId].filter(Boolean) as string[],
   };
