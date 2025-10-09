@@ -1,15 +1,12 @@
-import { tenantAdmins } from '@/access/tenantAdmins'
+import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant'
 import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenantPages'
 import { endLocal, period, startLocal } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
 import { user } from '@/fields/user'
+import { endOfDay, startOfDay } from 'date-fns'
 import { CollectionConfig, Field } from 'payload'
-import { anyone } from '../../access/anyone'
-import { loggedIn } from './access/loggedIn'
 import { addPeriodStartDate } from './hooks/addPeriodStartDate'
 import formatSlug from './hooks/formatSlug'
-import { endOfDay } from 'date-fns'
-import { startOfDay } from 'date-fns'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -23,13 +20,13 @@ export const Pages: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'type', 'period.start', 'period.end'],
+    defaultColumns: ['title', 'type', 'period.start', 'period.end', 'tenant.name'],
   },
   access: {
-    read: anyone,
-    create: loggedIn,
-    update: tenantAdmins,
-    delete: tenantAdmins,
+    read: tenantReadOrPublic,
+    create: tenantOnlyAccess,
+    update: tenantOnlyAccess,
+    delete: tenantOnlyAccess,
   },
   versions: {
     drafts: {

@@ -6,6 +6,7 @@ import capitalizeFirstLetter from '@/utilities/capitalizeFirstLetter';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, FieldHook } from 'payload';
+import { tenantOnlyAccess } from '@/access/byTenant';
 import { createRevalidateServices } from './hooks/revalidateServices';
 
 const dayNameHook: FieldHook<Service> = ({ data }) => {
@@ -37,11 +38,10 @@ export const Services: CollectionConfig = {
     }
   }, 
   access: {
-    // TODO make this more secure, only a member of a given tenant should be able to do this
-    read: tenantAdmins,
-    create: tenantAdmins,
-    update: tenantAdmins,
-    delete: tenantAdmins,
+    read: tenantOnlyAccess,
+    create: tenantOnlyAccess,
+    update: tenantOnlyAccess,
+    delete: tenantOnlyAccess,
   },
   admin: {
     useAsTitle: 'serviceTitle',

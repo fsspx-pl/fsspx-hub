@@ -2,6 +2,7 @@ import { CollectionConfig } from 'payload'
 import { superAdmins } from '../../access/superAdmins'
 import { anyone } from '@/access/anyone'
 import { tenantAdmins } from '@/access/tenantAdmins'
+import { tenantOnlyAccess } from '@/access/byTenant'
 import { location } from '@/fields/location'
 import serviceFields from '@/fields/service'
 
@@ -20,7 +21,7 @@ export const Tenants: CollectionConfig = {
   access: {
     create: superAdmins,
     read: anyone,
-    update: tenantAdmins,
+    update: tenantOnlyAccess,
     delete: superAdmins,
   },
   admin: {

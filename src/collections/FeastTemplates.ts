@@ -2,6 +2,7 @@ import { anyone } from '@/access/anyone';
 import { tenantAdmins } from '@/access/tenantAdmins';
 import serviceFields from '@/fields/service';
 import { CollectionConfig } from 'payload';
+import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant';
 
 export const FeastTemplates: CollectionConfig = {
   slug: 'feastTemplates',
@@ -16,10 +17,10 @@ export const FeastTemplates: CollectionConfig = {
     }
   },
   access: {
-    read: anyone,
-    create: tenantAdmins,
-    update: tenantAdmins,
-    delete: tenantAdmins,
+    read: tenantReadOrPublic,
+    create: tenantOnlyAccess,
+    update: tenantOnlyAccess,
+    delete: tenantOnlyAccess,
   },
   admin: {
     useAsTitle: 'title',
