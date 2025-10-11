@@ -6,6 +6,7 @@ import { Feast } from '@/feast';
 import { Service, ServiceWeek, Tenant } from '@/payload-types';
 import { addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
+import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant';
 import { revalidateTag } from 'next/cache';
 
 // Define type for feast days grouped by day of week
@@ -44,10 +45,10 @@ export const ServiceWeeks: CollectionConfig = {
     }
   },
   access: {
-    read: anyone,
-    create: tenantAdmins,
-    update: tenantAdmins,
-    delete: tenantAdmins,
+    read: tenantReadOrPublic,
+    create: tenantOnlyAccess,
+    update: tenantOnlyAccess,
+    delete: tenantOnlyAccess,
   },
   admin: {
     useAsTitle: 'yearWeek',

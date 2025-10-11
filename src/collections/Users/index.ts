@@ -159,8 +159,8 @@ export const Users: CollectionConfig = {
           options: [
             {
               label: {
-                en: 'Admin',
-                pl: 'Administrator',
+                en: 'Tenant Admin',
+                pl: 'Administrator Lokalizacji',
               },
               value: 'admin',
             },
