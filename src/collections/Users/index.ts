@@ -92,7 +92,6 @@ export const Users: CollectionConfig = {
       },
       type: 'upload',
       relationTo: 'media',
-      required: true,
     },
     {
       name: 'roles',
