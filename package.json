@@ -5,6 +5,7 @@
     "jacek@adamczyk.me"
   ],
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=\"${NODE_OPTIONS} --no-deprecation\" next dev",
     "dev:email": "email dev --dir src/emails",
