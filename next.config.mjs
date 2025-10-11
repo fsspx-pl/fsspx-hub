@@ -34,11 +34,9 @@ const nextConfig = {
     });
     return config;
   },
-  allowedDevOrigins: ['poznan.localhost'],
-  images: {
-    domains: ['poznan.fsspx.pl'],
-    unoptimized: true, // For static exports if needed
-  },
+  allowedDevOrigins: ['poznan.localhost', 'warszawa.localhost'],
+  // Enable compression
+  compress: true,
 };
 
 export default withPayload(nextConfig);
