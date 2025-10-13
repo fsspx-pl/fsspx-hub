@@ -12,12 +12,16 @@ import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types
 import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
+import { prewarmCalendarCache } from "../../../../../../common/getFeasts";
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
 
 import { CMSLink } from "@/_components/Link";
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 
 export async function generateStaticParams() {
+  // Pre-warm the liturgical calendar cache at build time
+  await prewarmCalendarCache();
+  
   const tenants = await fetchTenants();
   const params = [];
 

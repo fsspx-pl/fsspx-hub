@@ -6,7 +6,7 @@ import { Media as MediaComponent } from "@/_components/Media";
 import { AnnouncementsPageClient } from "@/_components/AnnouncementList/AnnouncementsPageClient";
 import { Media, Tenant, Page } from "@/payload-types";
 import { Metadata } from "next";
-import { getMonthFromParams, generateMonthParams } from "./utils";
+import { getMonthFromParams } from "./utils";
 import { garamond } from "@/fonts";
 
 // Always fetch data dynamically - users can navigate to any month

@@ -17,7 +17,6 @@
     "ci": "payload migrate && pnpm build",
     "generate:types": "payload generate:types",
     "generate:schema": "payload-graphql generate:schema",
-    "standalone-script": "node ./src/scripts/standalone-script.js",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "postinstall": "pnpm download-fonts"
