@@ -8,10 +8,15 @@ const FONT_PATH = path.join(process.cwd(), "fonts");
 fs.mkdirSync(FONT_PATH, { recursive: true });
 
 FONTS.forEach((font) => {
+  const filePath = path.join(FONT_PATH, font.filename);
+  if (fs.existsSync(filePath)) {
+    console.log(`Skipping download of ${font.filename}, file already exists.`);
+    return;
+  }
+
   console.log(`Downloading ${font.filename}...`);
   
   https.get(font.url, (res) => {
-    const filePath = path.join(FONT_PATH, font.filename);
     const fileStream = fs.createWriteStream(filePath);
     
     res.pipe(fileStream);
