@@ -133,7 +133,7 @@ export default async function AnnouncementsListingPage({
         </div>
       </Gutter>
       
-      <Gutter className="mt-4 py-6">
+      <Gutter className="mt-4 py-6 w-full md:w-2/3 2xl:w-3/5">
         <AnnouncementsPageClient
           announcements={announcements}
           currentYear={year}

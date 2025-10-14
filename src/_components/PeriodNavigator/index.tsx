@@ -1,10 +1,10 @@
 'use client'
 
-import React from 'react'
-import { format, getWeek, addMonths, subMonths, subDays, addDays } from 'date-fns'
-import { pl } from 'date-fns/locale'
-import { garamond } from '@/fonts'
 import { CMSLink } from '@/_components/Link'
+import { garamond } from '@/fonts'
+import { addDays, addMonths, format, getWeek, subDays, subMonths } from 'date-fns'
+import { pl } from 'date-fns/locale'
+import React from 'react'
 import { Tooltip } from 'react-tooltip'
 import ArrowButton from '../Calendar/ArrowButton'
 
@@ -81,7 +81,7 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
       
       <div 
         onClick={onToggleView} 
-        className="text-gray-700 hover:text-gray-700 relative top-1 cursor-pointer"
+        className={`text-gray-700 hover:text-gray-700 relative top-1 ${titleClickable ? 'cursor-pointer' : ''}`}
         data-tooltip-id="view-toggle-tooltip"
         data-tooltip-content={tooltipText}
       >
@@ -93,10 +93,10 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
         disabled={disableNext}
       />
       
-      <Tooltip 
+      {titleClickable && <Tooltip 
         id="view-toggle-tooltip"
         place="top"
-      />
+      />}
     </div>
   )
 } 

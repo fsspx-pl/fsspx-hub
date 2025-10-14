@@ -1,11 +1,11 @@
 'use client'
 
-import { format } from 'date-fns'
 import { VestmentColor } from '@/feast'
+import { format } from 'date-fns'
+import { NO_MASSES_MESSAGE } from '../const'
 import { FeastWithMasses } from '../index'
 import { getServiceTitle } from '../utils/getServiceTitle'
 import { romanize } from '../utils/romanize'
-import { vestmentColorToTailwind } from '../utils/vestmentColorToHex'
 
 interface SelectedDayDetailsProps {
   selectedDay: FeastWithMasses
@@ -55,7 +55,7 @@ export const DayDetails: React.FC<SelectedDayDetailsProps> = ({
             </div>
           ))
         ) : (
-          <div className="self-center text-gray-400">Brak nabożeństw tego dnia.</div>
+          <div className="self-center text-gray-400">{NO_MASSES_MESSAGE}</div>
         )}
       </div>
     </div>

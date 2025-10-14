@@ -1,9 +1,7 @@
-import React from 'react';
-import { format, parseISO } from 'date-fns';
-import { pl } from 'date-fns/locale';
 import { Page } from '@/payload-types';
+import { format } from 'date-fns';
+import React from 'react';
 import { AnnouncementCard } from '../AnnouncementCard';
-import { garamond } from '@/fonts';
 
 type Props = {
   announcements: Page[];
@@ -27,14 +25,14 @@ export const AnnouncementList: React.FC<Props> = ({
     [monthKey]: announcements
   };
 
-  const sortedMonths = Object.keys(groupedAnnouncements).sort((a, b) => b.localeCompare(a));
+  const sortedMonths = Object.keys(groupedAnnouncements).sort((a, b) => a.localeCompare(b));
 
-  if (sortedMonths.length === 0) {
+  if (sortedMonths.length === 0 || announcements.length === 0) {
     return (
       <div className={`text-center py-12 ${className}`}>
         <div className="max-w-md mx-auto">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Brak ogłoszeń</h3>
-          <p className="text-gray-500">W tym miesiącu nie zostały opublikowane żadne ogłoszenia.</p>
+          <p className="text-gray-500">Dla tego miesiąca nie zostały opublikowane żadne ogłoszenia.</p>
         </div>
       </div>
     );
@@ -47,7 +45,7 @@ export const AnnouncementList: React.FC<Props> = ({
         
         return (
           <section key={monthKey}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 auto-rows-fr">
+            <div className="grid grid-cols-1 gap-10 auto-rows-fr mx-auto">
               {monthAnnouncements.map((announcement) => (
                 <AnnouncementCard
                   key={announcement.id}

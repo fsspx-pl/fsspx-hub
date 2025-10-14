@@ -59,7 +59,7 @@ const PrintableMassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = (
             
             {feast.masses.length === 0 ? (
               <p className="text-gray-500 text-sm mt-2">
-                Brak nabożeństw tego dnia.
+                Dla tego dnia nie zostały opublikowane żadne nabożeństwa.
               </p>
             ) : (
               <div className="mt-2">
