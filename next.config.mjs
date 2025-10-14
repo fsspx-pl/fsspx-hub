@@ -29,7 +29,8 @@ const nextConfig = {
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
-      exclude: /app\/icon\.svg$/,
+      // Match both Unix (/) and Windows (\) path separators
+      exclude: /app[/\\]icon\.svg$/,
       use: ['@svgr/webpack'],
     });
     return config;
