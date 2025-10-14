@@ -18,6 +18,7 @@ import { addDays, isSunday } from "date-fns";
 import React from 'react';
 import { Service as ServiceType } from "@/payload-types";
 import { formatInPolishTime, createPolishDate } from "@/common/timezone";
+import { NO_MASSES_MESSAGE } from "@/_components/Calendar/const";
 
 const now = new Date();
 
@@ -182,7 +183,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                 
                 {feast.masses.length === 0 ? (
                   <Text className="text-[#4B5563]">
-                    Brak nabożeństw tego dnia.
+                    {NO_MASSES_MESSAGE}
                   </Text>
                 ) : (
                   <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 0.5em" }}>

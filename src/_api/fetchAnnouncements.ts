@@ -51,7 +51,7 @@ export const fetchAnnouncementsByMonth = (domain: string, year: number, month: n
               }
             ]
           },
-          sort: 'createdAt',
+          sort: '-period.start',
           depth: 2,
           limit: 50,
         });

@@ -1,0 +1,1 @@
+export const NO_MASSES_MESSAGE = 'Dla tego dnia nie zostało dotychczas opublikowane żadne nabożeństwo.';
