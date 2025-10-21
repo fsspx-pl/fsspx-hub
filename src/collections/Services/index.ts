@@ -1,4 +1,4 @@
-import { tenantAdmins } from '@/access/tenantAdmins';
+import { tenantOnlyAccess } from '@/access/byTenant';
 import { formatInPolishTime } from '@/common/timezone';
 import serviceFields from '@/fields/service';
 import { Service } from '@/payload-types';
@@ -6,7 +6,6 @@ import capitalizeFirstLetter from '@/utilities/capitalizeFirstLetter';
 import { format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { CollectionAfterChangeHook, CollectionAfterDeleteHook, CollectionConfig, FieldHook } from 'payload';
-import { tenantOnlyAccess } from '@/access/byTenant';
 import { createRevalidateServices } from './hooks/revalidateServices';
 
 const dayNameHook: FieldHook<Service> = ({ data }) => {

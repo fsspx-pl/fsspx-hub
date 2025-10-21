@@ -328,71 +328,15 @@ export interface Service {
 export interface ServiceWeek {
   id: string;
   /**
-   * Chapel/Mission to which this service week order is assigned
+   * Tenant to which this service week order is assigned
    */
   tenant: string | Tenant;
   /**
-   * First day of the week (must be Monday)
+   * First day of the week (must be Sunday)
    */
   start: string;
   end?: string | null;
   yearWeek?: number | null;
-  monday?: {
-    services?:
-      | {
-          service?: (string | null) | Service;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  tuesday?: {
-    services?:
-      | {
-          service?: (string | null) | Service;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  wednesday?: {
-    services?:
-      | {
-          service?: (string | null) | Service;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  thursday?: {
-    services?:
-      | {
-          service?: (string | null) | Service;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  friday?: {
-    services?:
-      | {
-          service?: (string | null) | Service;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  saturday?: {
-    services?:
-      | {
-          service?: (string | null) | Service;
-          id?: string | null;
-        }[]
-      | null;
-  };
-  sunday?: {
-    services?:
-      | {
-          service?: (string | null) | Service;
-          id?: string | null;
-        }[]
-      | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -725,76 +669,6 @@ export interface ServiceWeeksSelect<T extends boolean = true> {
   start?: T;
   end?: T;
   yearWeek?: T;
-  monday?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              service?: T;
-              id?: T;
-            };
-      };
-  tuesday?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              service?: T;
-              id?: T;
-            };
-      };
-  wednesday?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              service?: T;
-              id?: T;
-            };
-      };
-  thursday?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              service?: T;
-              id?: T;
-            };
-      };
-  friday?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              service?: T;
-              id?: T;
-            };
-      };
-  saturday?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              service?: T;
-              id?: T;
-            };
-      };
-  sunday?:
-    | T
-    | {
-        services?:
-          | T
-          | {
-              service?: T;
-              id?: T;
-            };
-      };
   updatedAt?: T;
   createdAt?: T;
 }

@@ -27,8 +27,8 @@ describe('generateExcerpt', () => {
     const content = {
       root: {
         children: [
-          { text: 'First paragraph. ' },
-          { text: 'Second paragraph. ' },
+          { text: 'First paragraph.' },
+          { text: 'Second paragraph.' },
           { text: 'Third paragraph.' }
         ]
       }
@@ -55,10 +55,10 @@ describe('generateExcerpt', () => {
     const content = {
       root: {
         children: [
-          { text: 'Start of content. ' },
+          { text: 'Start of content.' },
           {
             children: [
-              { text: 'Nested content. ' }
+              { text: 'Nested content.' }
             ]
           },
           { text: 'End of content.' }
@@ -92,7 +92,8 @@ describe('generateExcerpt', () => {
       }
     };
     const result = generateExcerpt(content, 30);
-    expect(result).toMatch(/^This is a very long announcement\.\.\.$/);
+    // Truncates at 30 chars, no word boundary within 80% threshold, so cuts mid-word
+    expect(result).toBe('This is a very long announceme...');
   });
 
   it('should not break at word boundary if too far back', () => {
@@ -105,7 +106,8 @@ describe('generateExcerpt', () => {
       }
     };
     const result = generateExcerpt(content, 20);
-    expect(result).toMatch(/^ThisIsAVeryLongWord\.\.\.$/);
+    // No spaces, so truncates at exactly 20 chars
+    expect(result).toBe('ThisIsAVeryLongWordW...');
   });
 
   it('should return full text if shorter than max length', () => {

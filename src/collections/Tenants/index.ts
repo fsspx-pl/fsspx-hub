@@ -80,10 +80,12 @@ export const Tenants: CollectionConfig = {
 							},
 							fields: [
                 {
+                  admin: {
+                    hidden: true,
+                  },
                   type: 'json',
                   name: 'applicableDays',
                   defaultValue: [0],
-                  hidden: true,
                 },
                 {
                 type: 'array',
@@ -111,10 +113,12 @@ export const Tenants: CollectionConfig = {
 							},
 							fields: [
                 {
+                  admin: {
+                    hidden: true,
+                  },
                   type: 'json',
                   name: 'applicableDays',
                   defaultValue: [1, 2, 3, 4, 5, 6],
-                  hidden: true,
                 },
 								{
                 type: 'array',
