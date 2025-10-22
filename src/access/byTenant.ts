@@ -16,13 +16,13 @@ export const tenantOnlyAccess: Access = ({ req: { user }, data }) => {
   const lastTenantId = getLastTenantId(user)
   if (!lastTenantId) return false
 
-  // Individual document guard (create/update/delete)
+  // Document-level guard
   if (data?.tenant) {
     const docTenant = typeof data.tenant === 'string' ? data.tenant : data.tenant?.id
     return docTenant === lastTenantId
   }
 
-  // Collection-level guard (list/read with where)
+  // Collection-level guard
   return {
     tenant: {
       equals: lastTenantId,

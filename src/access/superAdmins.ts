@@ -1,7 +1,10 @@
-import { Access, FieldAccess } from 'payload'
-import { checkUserRoles } from '../utilities/checkUserRoles'
+import { User } from '@/payload-types'
+import { isSuperAdmin } from '@/utilities/isSuperAdmin'
+import { FieldAccess } from 'payload'
 
-export const superAdmins: Access = ({ req: { user } }) => checkUserRoles(['super-admin'], user)
-
-export const superAdminFieldAccess: FieldAccess = ({ req: { user } }) =>
-  checkUserRoles(['super-admin'], user)
+export const superAdmins: FieldAccess = args => {
+  const {
+    req: { user },
+  } = args
+  return isSuperAdmin(user as User)
+}
