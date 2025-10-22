@@ -1,13 +1,12 @@
 
 import { CollectionConfig } from 'payload'
-import { anyone } from '../../access/anyone'
-import { superAdminFieldAccess } from '../../access/superAdmins'
 import { adminsAndSelf } from '../../access/adminsAndSelf'
-import { tenantAdmins } from '../../access/tenantAdmins'
+import { superAdmins } from '../../access/superAdmins'
+import { superAndTenantAdmins } from '../../access/superAndTenantAdmins'
 import { loginAfterCreate } from './hooks/loginAfterCreate'
 import { recordLastLoggedInTenant } from './hooks/recordLastLoggedInTenant'
-import { isSuperOrTenantAdmin } from './utilities/isSuperOrTenantAdmin'
 import { revalidatePagesByAuthor } from './hooks/revalidateTenantPagesByAuthor'
+import { isSuperOrTenantAdmin } from './utilities/isSuperOrTenantAdmin'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -27,7 +26,7 @@ export const Users: CollectionConfig = {
   },
   access: {
     read: adminsAndSelf,
-    create: anyone,
+    create: isSuperOrTenantAdmin,
     update: adminsAndSelf,
     delete: adminsAndSelf,
     admin: isSuperOrTenantAdmin,
@@ -103,9 +102,9 @@ export const Users: CollectionConfig = {
       hasMany: true,
       required: true,
       access: {
-        create: superAdminFieldAccess,
-        update: superAdminFieldAccess,
-        read: superAdminFieldAccess,
+        create: superAdmins,
+        update: superAdmins,
+        read: superAdmins,
       },
       options: [
         {
@@ -132,9 +131,9 @@ export const Users: CollectionConfig = {
         pl: 'Lokalizacje',
       },
       access: {
-        create: tenantAdmins,
-        update: tenantAdmins,
-        read: tenantAdmins,
+        // create: superAndTenantAdmins,
+        // update: superAndTenantAdmins,
+        // read: superAndTenantAdmins,
       },
       fields: [
         {
@@ -186,8 +185,8 @@ export const Users: CollectionConfig = {
       index: true,
       access: {
         create: () => false,
-        read: tenantAdmins,
-        update: superAdminFieldAccess,
+        read: superAndTenantAdmins,
+        update: superAdmins,
       },
       admin: {
         position: 'sidebar',

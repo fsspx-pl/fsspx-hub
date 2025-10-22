@@ -1,9 +1,10 @@
 import { anyone } from '@/access/anyone';
-import { tenantAdmins } from '@/access/tenantAdmins';
+import { superAndTenantAdmins } from '@/access/superAndTenantAdmins';
 import { Service, ServiceWeek } from '@/payload-types';
 import { addWeeks, endOfWeek, getDay, getISOWeek, isSunday, parseISO, startOfWeek } from 'date-fns';
 import { CollectionConfig } from 'payload';
 import { createServicesFromTenantsFeastTemplates } from './hooks/createServicesFromTenantsFeastTemplates';
+import { tenantOnlyAccess } from '@/access/byTenant';
 
 // Type for the day object in ServiceWeek
 interface ServiceWeekDay {
@@ -27,9 +28,9 @@ export const ServiceWeeks: CollectionConfig = {
   },
   access: {
     read: anyone,
-    create: tenantAdmins,
-    update: tenantAdmins,
-    delete: tenantAdmins,
+    create: tenantOnlyAccess,
+    update: tenantOnlyAccess,
+    delete: tenantOnlyAccess,
   },
   admin: {
     useAsTitle: 'yearWeek',

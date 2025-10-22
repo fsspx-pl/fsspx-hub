@@ -1,8 +1,9 @@
 
+import { anyone } from '@/access/anyone'
+import { superAndTenantAdmins } from '@/access/superAndTenantAdmins'
 import { Tenant } from '@/payload-types'
+import { isSuperAdmin } from '@/utilities/isSuperAdmin'
 import { Field } from 'payload'
-import { superAdminFieldAccess } from '../access/superAdmins'
-import { isSuperAdmin } from '../utilities/isSuperAdmin'
 
 export const tenant: Field = {
   name: 'tenant',
@@ -22,9 +23,9 @@ export const tenant: Field = {
     position: 'sidebar',
   },
   access: {
-    create: superAdminFieldAccess,
-    read: () => true,
-    update: superAdminFieldAccess,
+    create: superAndTenantAdmins,
+    read: anyone,
+    update: superAndTenantAdmins,
   },
   hooks: {
     // automatically set the tenant to the last logged in tenant
@@ -34,11 +35,9 @@ export const tenant: Field = {
         if(!user) {
           return undefined
         }
-
-        if ((await isSuperAdmin(user)) && data?.tenant) {
+        if (isSuperAdmin(user) && data?.tenant) {
           return data.tenant
         }
-
         if ((user?.lastLoggedInTenant as Tenant)?.id) {
           return (user?.lastLoggedInTenant as Tenant)?.id
         }

@@ -1,5 +1,5 @@
 import { anyone } from '@/access/anyone';
-import { tenantAdmins } from '@/access/tenantAdmins';
+import { superAndTenantAdmins } from '@/access/superAndTenantAdmins';
 import serviceFields from '@/fields/service';
 import { CollectionConfig } from 'payload';
 import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant';

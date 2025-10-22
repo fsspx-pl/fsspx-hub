@@ -1,10 +1,11 @@
-import { CollectionConfig } from 'payload'
-import { superAdmins } from '../../access/superAdmins'
 import { anyone } from '@/access/anyone'
-import { tenantAdmins } from '@/access/tenantAdmins'
-import { tenantOnlyAccess } from '@/access/byTenant'
 import { location } from '@/fields/location'
 import serviceFields from '@/fields/service'
+import { CollectionConfig } from 'payload'
+import { superAdmins } from '../../access/superAdmins'
+import { isSuperAdmin } from '@/utilities/isSuperAdmin'
+import { checkTenantRoles } from '../Users/utilities/checkTenantRoles'
+import { Tenant } from '@/payload-types'
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -19,15 +20,62 @@ export const Tenants: CollectionConfig = {
     },
   },
   access: {
+    read: ({ req }) => {
+      const { user } = req
+      if (!user) return false
+      if (isSuperAdmin(user)) return true
+      if (!Array.isArray(user.tenants)) return false
+      if (!user.tenants.length) return false
+
+      const userTenantIds = user.tenants
+        .map((t: any) => (typeof t.tenant === 'string' ? t.tenant : t.tenant?.id))
+        .filter(Boolean)
+
+      if (!userTenantIds.length) return false
+      return {
+        id: { in: userTenantIds }
+      }
+    },
     create: superAdmins,
-    read: anyone,
-    update: tenantOnlyAccess,
+    update: ({ req }) => {
+      const { user } = req
+      if (!user) return false
+      if (isSuperAdmin(user)) return true
+      if (!Array.isArray(user.tenants)) return false
+      const adminTenantIds = user.tenants
+        .filter((t: any) => checkTenantRoles(['admin'], user, t.tenant))
+        .map((t: any) => (typeof t.tenant === 'string' ? t.tenant : t.tenant?.id))
+        .filter(Boolean)
+      if (!adminTenantIds.length) return false
+
+      return {
+        id: { in: adminTenantIds }
+      }
+    },
     delete: superAdmins,
   },
   admin: {
     useAsTitle: 'name',
+    defaultColumns: ['city', 'type', 'patron'],
   },
   fields: [
+    {
+      name: 'users',
+      label: {
+        pl: 'Użytkownicy tej lokalizacji',
+        en: 'Users of this location'
+      },
+      type: 'join',
+      collection: 'users',
+      on: 'tenants.tenant',
+      maxDepth: 2,
+      access: {
+        read: anyone
+      },
+      admin: {
+        allowCreate: false,
+      }
+    },
     {
       name: 'name',
       label: {
@@ -53,6 +101,9 @@ export const Tenants: CollectionConfig = {
       label: {
         en: 'Mailing Group ID',
         pl: 'ID Grupy Mailingowej',
+      },
+      access: {
+        read: superAdmins,
       },
       admin: {
         description: {
