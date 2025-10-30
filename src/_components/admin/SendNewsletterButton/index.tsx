@@ -22,7 +22,13 @@ export const SendNewsletterButton: React.FC<{ data: Page }> = async ({
   return (
     <div className={classes.fieldType}>
       <FieldLabel label="Send Newsletter" />
-              <SendButton id={id} campaignId={campaignId} isDraft={isDraft} newsletterGroupId={tenant.mailingGroupId}/>
+      <SendButton 
+        id={id} 
+        campaignId={campaignId} 
+        isDraft={isDraft} 
+        newsletterGroupId={tenant.mailingGroupId}
+        topicName={tenant.topicName}
+      />
     </div>
   )
 }

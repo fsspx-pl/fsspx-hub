@@ -99,16 +99,33 @@ export const Tenants: CollectionConfig = {
       name: 'mailingGroupId',
       type: 'text',
       label: {
-        en: 'Mailing Group ID',
-        pl: 'ID Grupy Mailingowej',
+        en: 'AWS SES Contact List Name',
+        pl: 'Nazwa Listy Kontaktów AWS SES',
       },
       access: {
         read: superAdmins,
       },
       admin: {
         description: {
-          pl: 'ID grupy mailingowej w Mailerlite. UWAGA: zmiana ID grupy mailingowej wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
-          en: 'The ID of the mailing group in Mailerlite. NOTE: changing the mailing group ID will affect the newsletter recipients for this location.'
+          pl: 'Nazwa listy kontaktów w AWS SES. UWAGA: zmiana nazwy listy kontaktów wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
+          en: 'The name of the contact list in AWS SES. NOTE: changing the contact list name will affect the newsletter recipients for this location.'
+        }
+      }
+    },
+    {
+      name: 'topicName',
+      type: 'text',
+      label: {
+        en: 'AWS SES Topic Name',
+        pl: 'Nazwa Tematu AWS SES',
+      },
+      access: {
+        read: superAdmins,
+      },
+      admin: {
+        description: {
+          pl: 'Nazwa tematu w AWS SES (np. poznan, warsaw). UWAGA: zmiana nazwy tematu wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
+          en: 'The topic name in AWS SES (e.g. poznan, warsaw). NOTE: changing the topic name will affect the newsletter recipients for this location.'
         }
       }
     },

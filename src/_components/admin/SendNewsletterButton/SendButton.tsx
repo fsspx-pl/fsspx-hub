@@ -6,11 +6,18 @@ import classes from './index.module.scss'
 
 const sendNewsletterModalSlug = 'send-newsletter-confirmation'
 
-export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDraft: boolean, newsletterGroupId: string }> = ({
+export const SendButton: React.FC<{ 
+  id: string, 
+  campaignId?: string | null, 
+  isDraft: boolean, 
+  newsletterGroupId: string,
+  topicName?: string | null
+}> = ({
   id,
   campaignId,
   isDraft,
-  newsletterGroupId
+  newsletterGroupId,
+  topicName
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isNewsletterSent, setIsNewsletterSent] = useState(Boolean(campaignId) ?? false)
@@ -48,8 +55,9 @@ export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDr
     }
   }
 
-  const fetchNewsletterGroup = useCallback(async (groupId: string) => {
-    const response = await fetch(`/api/newsletter-group/${groupId}`);
+  const fetchNewsletterGroup = useCallback(async (groupId: string, topic?: string | null) => {
+    const url = topic ? `/api/newsletter-group/${groupId}?topic=${topic}` : `/api/newsletter-group/${groupId}`;
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error('Failed to fetch newsletter group');
     }
@@ -59,15 +67,20 @@ export const SendButton: React.FC<{ id: string, campaignId?: string | null, isDr
   const openConfirmModal = useCallback(async () => {
     setIsLoading(true)
     try {
-      const newsletterGroup = await fetchNewsletterGroup(newsletterGroupId);
-      setModalMessage(`The newsletter will be sent to the group: "${newsletterGroup.name}" with ${newsletterGroup.subscribersCount} subscribers. This action cannot be undone.`);
+      const newsletterGroup = await fetchNewsletterGroup(newsletterGroupId, topicName);
+      
+      const subscriberCount = newsletterGroup.subscribersCount;
+      const subscriberText = subscriberCount === 1 ? 'subscriber' : 'subscribers';
+      const message = `The newsletter will be sent to ${subscriberCount} ${subscriberText}. This action cannot be undone.`;
+      
+      setModalMessage(message);
       openModal(sendNewsletterModalSlug)
     } catch (error) {
       toast.error('Failed to fetch newsletter group information. Please try again later.');
     } finally {
       setIsLoading(false)
     }
-  }, [openModal, newsletterGroupId, fetchNewsletterGroup])
+  }, [openModal, newsletterGroupId, topicName, fetchNewsletterGroup])
 
   const disabled = isLoading || isNewsletterSent || isDraft
 

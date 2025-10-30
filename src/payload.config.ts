@@ -17,6 +17,7 @@ import { Users } from './collections/Users'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -60,4 +61,16 @@ export default buildConfig({
     },
   }),
   sharp,
+  email: nodemailerAdapter({
+    defaultFromAddress: process.env.FROM_ADDRESS as string,
+    defaultFromName: process.env.FROM_NAME as string,
+    transportOptions: {
+      host: process.env.SMTP_HOST as string,
+      port: parseInt(process.env.SMTP_PORT as string),
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    },
+  }),
 })

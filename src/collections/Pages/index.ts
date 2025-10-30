@@ -85,17 +85,16 @@ export const Pages: CollectionConfig = {
       },
     },
     {
-      name: 'campaignId',
-      type: 'text',
+      name: 'newsletterSent',
+      type: 'checkbox',
       label: {
-        en: 'Campaign ID from the campaign API provider',
-        pl: 'ID Kampanii od dostawcy API kampanii',
+        en: 'Newsletter Sent',
+        pl: 'Biuletyn wysłany'
       },
-      defaultValue: '',
+      defaultValue: false,
       admin: {
-        position: 'sidebar',
         readOnly: true,
-        hidden: true,
+        position: 'sidebar',
       },
     },
     {

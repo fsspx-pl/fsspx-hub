@@ -189,9 +189,13 @@ export interface Tenant {
     phone?: string | null;
   };
   /**
-   * The ID of the mailing group in Mailerlite. NOTE: changing the mailing group ID will affect the newsletter recipients for this location.
+   * The name of the contact list in AWS SES. NOTE: changing the contact list name will affect the newsletter recipients for this location.
    */
   mailingGroupId?: string | null;
+  /**
+   * The topic name in AWS SES (e.g. poznan, warsaw). NOTE: changing the topic name will affect the newsletter recipients for this location.
+   */
+  topicName?: string | null;
   feastTemplates?: {
     /**
      * Template for Sunday services. These services will be automatically created for new Week Order.
@@ -278,7 +282,7 @@ export interface Page {
   startLocal?: string | null;
   endLocal?: string | null;
   slug?: string | null;
-  campaignId?: string | null;
+  newsletterSent?: boolean | null;
   author?: (string | null) | User;
   tenant: string | Tenant;
   content?: {
@@ -574,6 +578,7 @@ export interface TenantsSelect<T extends boolean = true> {
         phone?: T;
       };
   mailingGroupId?: T;
+  topicName?: T;
   feastTemplates?:
     | T
     | {
@@ -627,7 +632,7 @@ export interface PagesSelect<T extends boolean = true> {
   startLocal?: T;
   endLocal?: T;
   slug?: T;
-  campaignId?: T;
+  newsletterSent?: T;
   author?: T;
   tenant?: T;
   content?: T;

@@ -9,7 +9,8 @@ import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
 import { serialize } from "@/_components/RichText/serialize";
-import { createCampaign as createMailerliteCampaign, sendCampaign as sendMailerliteCampaign } from "@/utilities/mailerlite";
+import { sendBulkEmail } from "@/utilities/awsSes";
+import { sendNewsletterToContactList } from "@/utilities/nodemailerSes";
 import React from "react";
 import { minify } from "html-minifier-terser";
 
@@ -86,18 +87,10 @@ async function getPage(id: string) {
   return page;
 }
 
-async function createCampaign(page: Page) {
+async function sendNewsletter(page: Page) {
   if (!page.period) {
     throw new Error("Page has no period");
   }
-
-  const unsubscribeText = `
-    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-      <p>Nie chcesz otrzymywać ogłoszeń? <a href="{$unsubscribe_link}">
-        Wypisz się z newslettera
-      </a></p>
-    </div>
-  `;
 
   const startDate = page.period.start
     ? parseISO(page.period.start as string)
@@ -110,6 +103,7 @@ async function createCampaign(page: Page) {
     .join(" ");
 
   const from_name = `${(page.tenant as Tenant).type} ${(page.tenant as Tenant).patron} - ${(page.tenant as Tenant).city} | FSSPX`;
+  const fromEmail = (page.tenant as Tenant).address.email;
 
   const footer = await fetchFooter();
   const settings = await fetchSettings();
@@ -138,37 +132,63 @@ async function createCampaign(page: Page) {
     throw new Error("Sender email is not configured for this tenant.");
   }
 
-  const campaignData = {
+  const contactListName = (page.tenant as Tenant).mailingGroupId;
+  if (!contactListName) {
+    throw new Error("Contact list name is not configured for this tenant.");
+  }
+
+  const topicName = (page.tenant as Tenant).topicName;
+  if (!topicName) {
+    throw new Error("Topic name is not configured for this tenant.");
+  }
+
+  if (!fromEmail) {
+    throw new Error("Sender email is not configured for this tenant.");
+  }
+
+  // Try AWS SES bulk email first, fallback to Nodemailer
+  try {
+    console.log('Attempting AWS SES bulk email...');
+    const emailData = {
     subject: titleWithDateSuffix,
-    from: from_name,
-    from_name,
-    reply_to: senderEmail,
-    content: html,
-    groups: [(page.tenant as Tenant).mailingGroupId].filter(Boolean) as string[],
+      fromName: from_name,
+      fromEmail,
+      replyTo: senderEmail,
+      htmlContent: html,
+      contactListName: contactListName,
+      topicName: topicName,
   };
 
-  const response = await createMailerliteCampaign(campaignData);
+    const response = await sendBulkEmail(emailData);
   return response;
+  } catch (error) {
+    console.warn('AWS SES bulk email failed, trying Nodemailer:', error);
+    
+    // Fallback to Nodemailer
+    const result = await sendNewsletterToContactList({
+      contactListName: contactListName,
+      topicName: topicName,
+      subject: titleWithDateSuffix,
+      html: html,
+      from: `${from_name} <${fromEmail}>`,
+      replyTo: senderEmail,
+    });
+
+    return {
+      messageId: `nodemailer-${Date.now()}`,
+      data: result
+    };
+  }
 }
 
-/**
- * Sends a created campaign using Mailerlite SDK
- */
-async function sendCampaign(campaignId: string) {
-  const payload = await getPayload({ config });
-  payload.logger.info(`Sending campaign with ID: ${campaignId}`);
-
-  return await sendMailerliteCampaign(campaignId);
-}
-
-async function assignCampaign(id: string, campaignId: string) {
+async function markNewsletterAsSent(id: string) {
   const payload = await getPayload({ config });
 
   const updatedPage = await payload.update({
     collection: "pages",
     id,
     data: {
-      campaignId,
+      newsletterSent: true,
     },
   });
 
@@ -184,7 +204,7 @@ export async function POST(
   try {
     const page = await getPage(id);
 
-    if ((page as Page).campaignId) {
+    if ((page as Page).newsletterSent) {
       return NextResponse.json(
         {
           message: "Newsletter has already been sent for this page",
@@ -194,14 +214,13 @@ export async function POST(
       );
     }
 
-    const campaignResponse = await createCampaign(page as Page);
-    const sendResponse = process.env.NODE_ENV === 'production' ? await sendCampaign(campaignResponse.id) : null;
-    await assignCampaign(id, campaignResponse.id);
+    const newsletterResponse = await sendNewsletter(page as Page);
+    await markNewsletterAsSent(id);
 
     return NextResponse.json({
-      message: "Newsletter created and sent successfully",
-      campaignId: campaignResponse.id,
-      sendStatus: sendResponse
+      message: "Newsletter sent successfully",
+      messageId: newsletterResponse.messageId,
+      sendStatus: newsletterResponse
     });
   } catch (error) {
     console.error("Error in newsletter process:", error);
@@ -212,8 +231,8 @@ export async function POST(
     if (errorMessage.includes("Page not found")) {
       statusCode = 404;
     } else if (
-      errorMessage.includes("Failed to create campaign") ||
-      errorMessage.includes("Failed to send campaign")
+      errorMessage.includes("Failed to send bulk email") ||
+      errorMessage.includes("Contact list name is not configured")
     ) {
       statusCode = 400;
     }
