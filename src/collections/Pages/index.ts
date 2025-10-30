@@ -85,6 +85,19 @@ export const Pages: CollectionConfig = {
       },
     },
     {
+      name: 'campaignId',
+      type: 'text',
+      label: {
+        en: 'Legacy Campaign ID',
+        pl: 'Legacy Campaign ID',
+      },
+      admin: {
+        position: 'sidebar',
+        readOnly: true,
+        hidden: true,
+      },
+    },
+    {
       name: 'newsletterSent',
       type: 'checkbox',
       label: {

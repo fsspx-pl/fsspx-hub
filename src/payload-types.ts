@@ -282,6 +282,7 @@ export interface Page {
   startLocal?: string | null;
   endLocal?: string | null;
   slug?: string | null;
+  campaignId?: string | null;
   newsletterSent?: boolean | null;
   author?: (string | null) | User;
   tenant: string | Tenant;
@@ -632,6 +633,7 @@ export interface PagesSelect<T extends boolean = true> {
   startLocal?: T;
   endLocal?: T;
   slug?: T;
+  campaignId?: T;
   newsletterSent?: T;
   author?: T;
   tenant?: T;

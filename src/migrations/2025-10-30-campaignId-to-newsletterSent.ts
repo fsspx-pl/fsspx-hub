@@ -1,4 +1,4 @@
-import type { MigrateDownArgs, MigrateUpArgs } from 'payload/migrations';
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb';
 
 export async function up({ payload }: MigrateUpArgs): Promise<void> {
   const pageSize = 100;
@@ -29,6 +29,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
       });
     }
 
+    if(!res.page) return
     if (res.page >= res.totalPages) break;
     page += 1;
   }
@@ -55,6 +56,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
         depth: 0,
       });
     }
+    if(!res.page) return
     if (res.page >= res.totalPages) break;
     page += 1;
   }
