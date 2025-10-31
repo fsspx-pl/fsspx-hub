@@ -282,8 +282,6 @@ export interface Page {
   startLocal?: string | null;
   endLocal?: string | null;
   slug?: string | null;
-  campaignId?: string | null;
-  newsletterSent?: boolean | null;
   author?: (string | null) | User;
   tenant: string | Tenant;
   content?: {
@@ -301,6 +299,10 @@ export interface Page {
     };
     [k: string]: unknown;
   } | null;
+  newsletter?: {
+    sent?: boolean | null;
+  };
+  printActions?: {};
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -633,11 +635,15 @@ export interface PagesSelect<T extends boolean = true> {
   startLocal?: T;
   endLocal?: T;
   slug?: T;
-  campaignId?: T;
-  newsletterSent?: T;
   author?: T;
   tenant?: T;
   content?: T;
+  newsletter?:
+    | T
+    | {
+        sent?: T;
+      };
+  printActions?: T | {};
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

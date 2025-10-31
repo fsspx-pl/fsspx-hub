@@ -10,22 +10,20 @@ import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
 import { serialize } from "@/_components/RichText/serialize";
 import { sendBulkEmail } from "@/utilities/awsSes";
-import { sendNewsletterToContactList } from "@/utilities/nodemailerSes";
+import { sendEmail, sendNewsletterToContactList } from "@/utilities/nodemailerSes";
 import React from "react";
 import { minify } from "html-minifier-terser";
 
-// Transform Service objects to match email component's expected format
 function transformServiceForEmail(service: Service) {
   return {
     date: service.date,
     category: service.category,
-    massType: service.massType || undefined,
-    customTitle: service.customTitle || undefined,
-    notes: service.notes || undefined,
+    massType: service.massType,
+    customTitle: service.customTitle,
+    notes: service.notes,
   };
 }
 
-// Transform feasts with masses for email
 function transformFeastsForEmail(feastsWithMasses: any[]) {
   return feastsWithMasses.map(feast => ({
     ...feast,
@@ -33,7 +31,6 @@ function transformFeastsForEmail(feastsWithMasses: any[]) {
   }));
 }
 
-// Convert Lexical content to HTML string
 async function convertContentToHtml(content: any): Promise<string> {
   if (!content || !content.root || !content.root.children) {
     return "";
@@ -87,7 +84,7 @@ async function getPage(id: string) {
   return page;
 }
 
-async function sendNewsletter(page: Page) {
+async function sendNewsletter(page: Page, testEmail?: string) {
   if (!page.period) {
     throw new Error("Page has no period");
   }
@@ -127,11 +124,6 @@ async function sendNewsletter(page: Page) {
 
   const html = await minifyAndReplaceQuotes(rawHtml);
 
-  const senderEmail = (page.tenant as Tenant).address.email;
-  if (!senderEmail) {
-    throw new Error("Sender email is not configured for this tenant.");
-  }
-
   const contactListName = (page.tenant as Tenant).mailingGroupId;
   if (!contactListName) {
     throw new Error("Contact list name is not configured for this tenant.");
@@ -146,32 +138,41 @@ async function sendNewsletter(page: Page) {
     throw new Error("Sender email is not configured for this tenant.");
   }
 
-  // Try AWS SES bulk email first, fallback to Nodemailer
-  try {
-    console.log('Attempting AWS SES bulk email...');
-    const emailData = {
+  const emailData = {
     subject: titleWithDateSuffix,
-      fromName: from_name,
-      fromEmail,
-      replyTo: senderEmail,
-      htmlContent: html,
-      contactListName: contactListName,
-      topicName: topicName,
+    fromName: `${from_name} <${fromEmail}>`,
+    fromEmail,
+    replyTo: fromEmail,
+    htmlContent: html,
+    contactListName,
+    topicName,
   };
 
+  if(testEmail) {
+    console.log('Sending test email to:', testEmail);
+    const response = await sendEmail({
+      from: emailData.fromName,
+      to: testEmail,
+      subject: `[TEST] ${titleWithDateSuffix}`,
+      html,
+    });
+    return response;
+  }
+
+  try {
     const response = await sendBulkEmail(emailData);
-  return response;
+    return response;
   } catch (error) {
     console.warn('AWS SES bulk email failed, trying Nodemailer:', error);
     
     // Fallback to Nodemailer
     const result = await sendNewsletterToContactList({
-      contactListName: contactListName,
-      topicName: topicName,
+      contactListName,
+      topicName,
       subject: titleWithDateSuffix,
-      html: html,
-      from: `${from_name} <${fromEmail}>`,
-      replyTo: senderEmail,
+      html,
+      from: emailData.fromName,
+      replyTo: fromEmail,
     });
 
     return {
@@ -188,7 +189,7 @@ async function markNewsletterAsSent(id: string) {
     collection: "pages",
     id,
     data: {
-      newsletterSent: true,
+      newsletter: { sent: true },
     },
   });
 
@@ -197,14 +198,14 @@ async function markNewsletterAsSent(id: string) {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string  }> }
 ) {
   const { id } = await params;
-
+  const testEmail = request.nextUrl.searchParams.get('testEmail');
   try {
     const page = await getPage(id);
 
-    if ((page as Page).newsletterSent) {
+    if ((page as Page).newsletter?.sent) {
       return NextResponse.json(
         {
           message: "Newsletter has already been sent for this page",
@@ -214,8 +215,8 @@ export async function POST(
       );
     }
 
-    const newsletterResponse = await sendNewsletter(page as Page);
-    await markNewsletterAsSent(id);
+    const newsletterResponse = await sendNewsletter(page as Page, testEmail ?? undefined);
+    if(!testEmail) await markNewsletterAsSent(id);
 
     return NextResponse.json({
       message: "Newsletter sent successfully",

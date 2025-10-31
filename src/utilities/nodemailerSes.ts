@@ -3,7 +3,6 @@ import nodemailer from 'nodemailer';
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
 
-// Validate AWS configuration
 if (!process.env.AWS_REGION) {
   console.error('AWS_REGION environment variable is not set');
 }
@@ -228,29 +227,5 @@ export async function sendNewsletterToContactList(emailData: {
   } catch (error) {
     console.error('Failed to send newsletter to contact list:', error);
     throw new Error(`Newsletter sending failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
-
-/**
- * Test email sending functionality
- */
-export async function testEmailSending() {
-  try {
-    console.info('Testing email sending functionality...');
-    
-    const testEmail = process.env.FROM_ADDRESS!; // Send to self for testing
-    
-    const result = await sendEmail({
-      to: testEmail,
-      subject: 'Test Email from FSSPX Hub',
-      html: '<h1>Test Email</h1><p>This is a test email from the FSSPX Hub newsletter system.</p>',
-      text: 'Test Email\n\nThis is a test email from the FSSPX Hub newsletter system.'
-    });
-
-    console.info('✅ Test email sent successfully:', result.messageId);
-    return result;
-  } catch (error) {
-    console.error('❌ Test email failed:', error);
-    throw error;
   }
 }

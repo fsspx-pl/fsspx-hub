@@ -2,11 +2,11 @@ import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant'
 import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenantPages'
 import { endLocal, period, startLocal } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
-import { user } from '@/fields/user'
 import { endOfDay, startOfDay } from 'date-fns'
 import { CollectionConfig, Field } from 'payload'
 import { addPeriodStartDate } from './hooks/addPeriodStartDate'
 import formatSlug from './hooks/formatSlug'
+import { user } from '@/fields/user'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -85,32 +85,6 @@ export const Pages: CollectionConfig = {
       },
     },
     {
-      name: 'campaignId',
-      type: 'text',
-      label: {
-        en: 'Legacy Campaign ID',
-        pl: 'Legacy Campaign ID',
-      },
-      admin: {
-        position: 'sidebar',
-        readOnly: true,
-        hidden: true,
-      },
-    },
-    {
-      name: 'newsletterSent',
-      type: 'checkbox',
-      label: {
-        en: 'Newsletter Sent',
-        pl: 'Biuletyn wysłany'
-      },
-      defaultValue: false,
-      admin: {
-        readOnly: true,
-        position: 'sidebar',
-      },
-    },
-    {
       ...user as Field,
       name: 'author'
     } as Field,
@@ -127,38 +101,75 @@ export const Pages: CollectionConfig = {
       type: 'richText'
     },
     {
-      name: 'sendNewsletter',
+      name: 'newsletter',
+      type: 'group',
       label: {
-        en: 'Send Newsletter',
-        pl: 'Wyślij Newsletter',
+        en: 'Newsletter',
+        pl: 'Newsletter',
       },
-      type: 'ui',
       admin: {
         position: 'sidebar',
         condition: (_, siblingData) => siblingData.type === 'pastoral-announcements',
-        components: {
-          Field: {
-            path: '@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton'
+      },
+      fields: [
+        {
+          name: 'sent',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            readOnly: true,
+            hidden: true,
+          },
+        },
+        {
+          name: 'test',
+          type: 'ui',
+          admin: {
+            condition: (data) => !Boolean((data as any)?.newsletter?.sent),
+            components: {
+              Field: {
+                path: '@/_components/admin/SendNewsletterButton/TestSendControl.tsx#TestSendControl'
+              }
+            }
           }
-        }
-      }
+        },
+        {
+          name: 'send',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: {
+                path: '@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton'
+              }
+            }
+          }
+        },
+      ],
     },
     {
-      name: 'printVersion',
+      name: 'printActions',
+      type: 'group',
       label: {
-        en: 'Print Version',
-        pl: 'Wersja do Druku',
+        en: 'Print',
+        pl: 'Druk',
       },
-      type: 'ui',
       admin: {
         position: 'sidebar',
         condition: (_, siblingData) => siblingData.type === 'pastoral-announcements',
-        components: {
-          Field: {
-            path: '@/_components/admin/PrintButton/index.tsx#PrintButton',
+      },
+      fields: [
+        {
+          name: 'printVersion',
+          type: 'ui',
+          admin: {
+            components: {
+              Field: {
+                path: '@/_components/admin/PrintButton/index.tsx#PrintButton',
+              }
+            }
           }
-        }
-      }
+        },
+      ],
     },
   ],
   hooks: {

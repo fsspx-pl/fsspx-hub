@@ -18,7 +18,6 @@ export const PrintButton: React.FC<{ data: Page }> = async ({
 
   return (
     <div className={classes.fieldType}>
-      <FieldLabel label="Print Version" />
       <PrintPageButton
         date={date} 
         isDraft={isDraft}

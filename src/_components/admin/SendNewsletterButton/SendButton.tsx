@@ -8,19 +8,19 @@ const sendNewsletterModalSlug = 'send-newsletter-confirmation'
 
 export const SendButton: React.FC<{ 
   id: string, 
-  campaignId?: string | null, 
+  newsletterSent?: boolean | null, 
   isDraft: boolean, 
   newsletterGroupId: string,
   topicName?: string | null
 }> = ({
   id,
-  campaignId,
+  newsletterSent,
   isDraft,
   newsletterGroupId,
   topicName
 }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [isNewsletterSent, setIsNewsletterSent] = useState(Boolean(campaignId) ?? false)
+  const [isNewsletterSent, setIsNewsletterSent] = useState(Boolean(newsletterSent) ?? false)
   const { openModal } = useModal()
   const [modalMessage, setModalMessage] = useState('Are you sure you want to send this newsletter? This action cannot be undone.')
 
@@ -86,6 +86,7 @@ export const SendButton: React.FC<{
 
   return (
     <>
+      
       <Button 
         className={classes.button} 
         buttonStyle='secondary'
@@ -98,7 +99,7 @@ export const SendButton: React.FC<{
             ? 'Newsletter already sent' 
             : isDraft
               ? 'Publish page to send newsletter'
-              : 'Send newsletter'
+              : 'Send Newsletter'
         }
       </Button>
 

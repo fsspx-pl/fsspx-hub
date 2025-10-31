@@ -12,7 +12,7 @@ export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
   try {
     if (!['update', 'create'].includes(operation)) return;
     if (doc._status === "draft") return;
-    if (operation === 'update' && previousDoc?.campaignId !== doc.campaignId) return;
+    if (operation === 'update' && previousDoc?.newsletter?.sent !== doc.newsletter?.sent) return;
     if (!doc.tenant) return;
     if (!doc.period) return;
 

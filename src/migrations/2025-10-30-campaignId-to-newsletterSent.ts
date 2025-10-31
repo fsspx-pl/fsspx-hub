@@ -9,7 +9,6 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
       where: {
         and: [
           { type: { equals: 'pastoral-announcements' } },
-          // campaignId existed previously; treat any truthy string as sent
           { campaignId: { not_equals: '' } },
         ],
       },
@@ -24,7 +23,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
       await payload.update({
         collection: 'pages',
         id: doc.id,
-        data: { newsletterSent: true },
+        data: { newsletter: { sent: true } },
         depth: 0,
       });
     }
@@ -52,7 +51,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
       await payload.update({
         collection: 'pages',
         id: doc.id,
-        data: { newsletterSent: false },
+        data: { newsletter: { sent: false } },
         depth: 0,
       });
     }
@@ -62,4 +61,5 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
   }
 }
 
-export default { up, down };
+const migration = { up, down };
+export default migration;
