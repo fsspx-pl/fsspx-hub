@@ -117,15 +117,15 @@ export const Tenants: CollectionConfig = {
       type: 'text',
       label: {
         en: 'AWS SES Topic Name',
-        pl: 'Nazwa Tematu AWS SES',
+        pl: 'Nazwa Tematu w AWS SES',
       },
       access: {
         read: superAdmins,
       },
       admin: {
         description: {
-          pl: 'Nazwa tematu w AWS SES (np. poznan, warsaw). UWAGA: zmiana nazwy tematu wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
-          en: 'The topic name in AWS SES (e.g. poznan, warsaw). NOTE: changing the topic name will affect the newsletter recipients for this location.'
+          pl: 'Nazwa tematu w AWS SES (np. poznan, warszawa). UWAGA: zmiana nazwy tematu wpłynie na odbiorców ogłoszeń dla tej lokalizacji.',
+          en: 'The topic name in AWS SES (e.g. poznan, warszawa). NOTE: changing the topic name will affect the newsletter recipients for this location.'
         }
       }
     },
