@@ -4,13 +4,14 @@ import React from 'react'
 import { SendButton } from './SendButton'
 import classes from './index.module.scss'
 import { fetchTenantById } from '@/_api/fetchTenants'
+import { coerceBoolean } from '@/utilities/coerceBoolean'
 
 export const SendNewsletterButton: React.FC<{ data: Page }> = async ({ 
   data 
 }) => {
 
   const id = data.id;
-  const campaignId = data.campaignId;
+  const newsletterSent = data.newsletter?.sent;
   const tenantId = data.tenant as string;
   const isDraft = data._status === 'draft';
 
@@ -21,8 +22,13 @@ export const SendNewsletterButton: React.FC<{ data: Page }> = async ({
 
   return (
     <div className={classes.fieldType}>
-      <FieldLabel label="Send Newsletter" />
-              <SendButton id={id} campaignId={campaignId} isDraft={isDraft} newsletterGroupId={tenant.mailingGroupId}/>
+      <SendButton 
+        id={id} 
+        newsletterSent={newsletterSent} 
+        isDraft={isDraft} 
+        newsletterGroupId={tenant.mailingGroupId}
+        topicName={tenant.topicName}
+      />
     </div>
   )
 }

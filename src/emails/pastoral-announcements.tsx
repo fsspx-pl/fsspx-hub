@@ -343,6 +343,19 @@ export default function Email({
                 >
                   © {currentYear} - {copyright}
                 </Text>
+                <Text
+                  style={{
+                    fontSize: "12px",
+                    color: "#9CA3AF",
+                    marginBottom: "8px",
+                  }}
+                >
+                  Otrzymujesz ogłoszenia drogą mailową, ponieważ twój adres email jest zapisany w naszej liście subskrybentów.
+                  Jeśli nie chcesz ich otrzymywać,&nbsp;
+                  <a href="{{amazonSESUnsubscribeUrl}}" style={{ color: "#9CA3AF", textDecoration: "underline" }}>
+                    wypisz się z listy klikając w ten link.
+                  </a>
+                </Text>
                 <Img
                   src="https://poznan.fsspx.pl/api/media/file/favicon.png"
                   width="16"
