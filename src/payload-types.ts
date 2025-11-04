@@ -193,7 +193,7 @@ export interface Tenant {
    */
   mailingGroupId?: string | null;
   /**
-   * The topic name in AWS SES (e.g. poznan, warsaw). NOTE: changing the topic name will affect the newsletter recipients for this location.
+   * The topic name in AWS SES (e.g. poznan, warszawa). NOTE: changing the topic name will affect the newsletter recipients for this location.
    */
   topicName?: string | null;
   feastTemplates?: {

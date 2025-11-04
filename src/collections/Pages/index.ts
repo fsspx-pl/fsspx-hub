@@ -1,8 +1,9 @@
 import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant'
 import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenantPages'
+import { resetNewsletterSentOnCreate } from '@/collections/Pages/hooks/resetNewsletterSentOnCreate'
+import { normalizePeriodDates } from '@/collections/Pages/hooks/normalizePeriodDates'
 import { endLocal, period, startLocal } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
-import { endOfDay, startOfDay } from 'date-fns'
 import { CollectionConfig, Field } from 'payload'
 import { addPeriodStartDate } from './hooks/addPeriodStartDate'
 import formatSlug from './hooks/formatSlug'
@@ -173,6 +174,10 @@ export const Pages: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeChange: [
+      resetNewsletterSentOnCreate,
+      normalizePeriodDates,
+    ],
     beforeValidate: [
       async ({ operation, data }) => {
         if(operation !== 'create') return data;
@@ -180,15 +185,6 @@ export const Pages: CollectionConfig = {
         return {
           ...data,
           campaignId: undefined,
-        };
-      },
-    ],
-    beforeChange: [
-      async ({ data }) => {
-        if(!data?.period?.start) return data;
-        return {
-          ...data,
-          period: { ...data.period, start: startOfDay(data.period.start), end: endOfDay(data.period.end) },
         };
       },
     ],

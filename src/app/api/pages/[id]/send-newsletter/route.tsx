@@ -149,15 +149,15 @@ async function sendNewsletter(page: Page, testEmail?: string) {
   };
 
   if(testEmail) {
-    console.log('Sending test email to:', testEmail);
+    console.info('Sending test email to:', testEmail);
     const response = await sendEmail({
       from: emailData.fromName,
       to: testEmail,
       subject: `[TEST] ${titleWithDateSuffix}`,
       html,
     });
-    return response;
-  }
+  return response;
+}
 
   try {
     const response = await sendBulkEmail(emailData);
@@ -202,10 +202,11 @@ export async function POST(
 ) {
   const { id } = await params;
   const testEmail = request.nextUrl.searchParams.get('testEmail');
+
   try {
     const page = await getPage(id);
 
-    if ((page as Page).newsletter?.sent) {
+    if ((page as Page).newsletter?.sent && !testEmail) {
       return NextResponse.json(
         {
           message: "Newsletter has already been sent for this page",
