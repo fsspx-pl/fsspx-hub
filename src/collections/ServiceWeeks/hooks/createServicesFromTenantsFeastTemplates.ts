@@ -5,7 +5,8 @@ import { getDay, parseISO } from "date-fns";
 import { getFeasts } from "@/common/getFeasts";
 import { Feast } from "@/feast";
 import { createPolishDate, formatInPolishTime } from "@/common/timezone";
-import selectTemplateForDate, { getDayTabName } from '@/common/templates/selectTemplateForDate'
+import selectTemplateForDate from '@/common/templates/selectTemplateForDate'
+import { getDayTabName } from '@/common/templates/dayTabs'
 
 // Define type for feast days grouped by day of week
 interface FeastsByDay {

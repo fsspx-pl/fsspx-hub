@@ -1,12 +1,11 @@
-import { selectTemplateForDate, DayName } from '@/common/templates/selectTemplateForDate'
+import { selectTemplateForDate } from '@/common/templates/selectTemplateForDate'
+import { DAY_TAB_NAMES } from '@/common/templates/dayTabs'
 import { FeastTemplate } from '@/payload-types'
 
 const mass = { time: '09:00', category: 'mass' as const, massType: 'read' as const }
 
-const DAY_NAMES: DayName[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
-
 const createDayTabs = (services = [mass]) => {
-  return DAY_NAMES.reduce((acc, day) => {
+  return DAY_TAB_NAMES.reduce((acc, day) => {
     acc[day] = { services }
     return acc
   }, {} as Record<string, { services: typeof services }>)

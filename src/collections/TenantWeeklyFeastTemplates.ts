@@ -2,18 +2,7 @@ import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant'
 import serviceFields from '@/fields/service'
 import { CollectionConfig } from 'payload'
 import { isGeneric } from './TenantWeeklyFeastTemplates/utilities/isGeneric'
-
-const DAY_TAB_NAMES = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const
-
-const DAY_TABS_CONFIG = [
-  { name: 'monday', label: { pl: 'Poniedziałek', en: 'Monday' }, dayNumber: 1 },
-  { name: 'tuesday', label: { pl: 'Wtorek', en: 'Tuesday' }, dayNumber: 2 },
-  { name: 'wednesday', label: { pl: 'Środa', en: 'Wednesday' }, dayNumber: 3 },
-  { name: 'thursday', label: { pl: 'Czwartek', en: 'Thursday' }, dayNumber: 4 },
-  { name: 'friday', label: { pl: 'Piątek', en: 'Friday' }, dayNumber: 5 },
-  { name: 'saturday', label: { pl: 'Sobota', en: 'Saturday' }, dayNumber: 6 },
-  { name: 'sunday', label: { pl: 'Niedziela', en: 'Sunday' }, dayNumber: 0 },
-] as const
+import { DAY_TAB_NAMES, DAY_TABS_CONFIG } from '@/common/templates/dayTabs'
 
 function hasServicesForDay(template: any, dayTab: string): boolean {
   const dayData = template?.[dayTab]

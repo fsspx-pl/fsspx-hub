@@ -1,21 +1,6 @@
 import { getDay, parseISO } from 'date-fns'
 import { FeastTemplate } from '@/payload-types'
-
-export type DayName = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
-
-// Map date-fns getDay() output (0=Sunday, 1=Monday, ..., 6=Saturday) to day tab names
-export const getDayTabName = (dayNumber: number): DayName => {
-  const dayMap: Record<number, DayName> = {
-    0: 'sunday',
-    1: 'monday',
-    2: 'tuesday',
-    3: 'wednesday',
-    4: 'thursday',
-    5: 'friday',
-    6: 'saturday',
-  }
-  return dayMap[dayNumber] || 'sunday'
-}
+import { DayName, getDayTabName } from './dayTabs'
 
 const asDate = (d?: string | Date | null): Date | undefined => {
   if (!d) return undefined

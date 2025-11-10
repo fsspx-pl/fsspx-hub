@@ -1,6 +1,6 @@
 import { getDay, setHours, setMinutes, setSeconds, setMilliseconds, parseISO } from 'date-fns'
 import { Tenant, Service, FeastTemplate } from '@/payload-types'
-import { getDayTabName } from './selectTemplateForDate'
+import { getDayTabName } from './dayTabs'
 
 type GeneratedService = Pick<
   Service,
