@@ -5,7 +5,7 @@ import { unstable_cache } from 'next/cache';
 import { format } from 'date-fns';
 
 export const getServices = async (tenant: string | Tenant, start: Date, end: Date) => {
-  const tenantDomain = typeof tenant === 'string' ? tenant : tenant.domain;
+  const tenantDomain = typeof tenant === 'string' ? tenant : tenant.general.domain;
   const cacheKey = `services-${tenantDomain}-${format(start, 'yyyy-MM-dd')}-${format(end, 'yyyy-MM-dd')}`;
   return unstable_cache(
     async () => {

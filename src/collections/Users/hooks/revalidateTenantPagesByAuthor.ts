@@ -36,11 +36,11 @@ export const revalidatePagesByAuthor: CollectionAfterChangeHook = async ({
     // Revalidate each specific page
     for (const page of pages.docs) {
       const tenant = page.tenant as Tenant;
-      if (!tenant?.domain) continue;
+      if (!tenant?.general.domain) continue;
       if (!page.period) continue;
       // Revalidate the specific date page
       const date = format(new Date(page.period.start), 'dd-MM-yyyy');
-      const dateTag = `tenant:${tenant.domain}:date:${date}`;
+      const dateTag = `tenant:${tenant.general.domain}:date:${date}`;
       await revalidateTag(dateTag);
       payload.logger.info(`Revalidated date tag: ${dateTag} due to author change`);
 
@@ -61,8 +61,8 @@ export const revalidatePagesByAuthor: CollectionAfterChangeHook = async ({
       });
 
       if (newestPage.docs[0]?.id === page.id) {
-        await revalidateTag(`tenant:${tenant.domain}:latest`);
-        payload.logger.info(`Revalidated latest tag: tenant:${tenant.domain}:latest due to author change`);
+        await revalidateTag(`tenant:${tenant.general.domain}:latest`);
+        payload.logger.info(`Revalidated latest tag: tenant:${tenant.general.domain}:latest due to author change`);
       }
     }
   } catch (error: unknown) {

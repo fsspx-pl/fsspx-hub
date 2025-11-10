@@ -16,7 +16,7 @@ export const fetchAnnouncementsByMonth = (domain: string, year: number, month: n
         const result = await payload.find({
           collection: 'pages',
           where: {
-            ['tenant.domain']: {
+            ['tenant.general.domain']: {
               contains: domain
             },
             _status: {

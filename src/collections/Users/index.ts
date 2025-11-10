@@ -23,6 +23,7 @@ export const Users: CollectionConfig = {
   auth: true,
   admin: {
     useAsTitle: 'email',
+    defaultColumns: ['firstName', 'lastName', 'email', 'roles', 'tenants'],
   },
   access: {
     read: adminsAndSelf,

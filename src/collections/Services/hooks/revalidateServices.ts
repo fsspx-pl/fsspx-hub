@@ -16,8 +16,8 @@ export const createRevalidateServices = (errorMessage: string): CollectionAfterD
         id: typeof doc.tenant === 'string' ? doc.tenant : doc.tenant.id,
       }) as Tenant;
 
-      if (!tenant?.domain) return;
-      const tag = `tenant:${tenant.domain}:services`;
+      if (!tenant?.general.domain) return;
+      const tag = `tenant:${tenant.general.domain}:services`;
       await revalidateTag(tag);
       payload.logger.info(`Revalidated services tag: ${tag}`);
     } catch (error) {

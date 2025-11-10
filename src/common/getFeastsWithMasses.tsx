@@ -4,6 +4,9 @@ import { Feast } from "@/feast";
 import { Page as PageType, Service, Tenant } from "@/payload-types";
 import { isSameDay, parseISO, startOfMonth, endOfMonth, subMonths, addMonths, startOfYear, endOfYear } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import { fetchTenantWeeklyFeastTemplates } from '@/_api/fetchTenantWeeklyFeastTemplates'
+import selectTemplateForDate from '@/common/templates/selectTemplateForDate'
+import generateServicesFromTemplate from '@/common/templates/generateServicesFromTemplate'
 import { POLISH_TIMEZONE } from "@/common/timezone";
 
 export type FeastWithMasses = Feast & {
@@ -80,8 +83,26 @@ export async function getFeastsWithMasses(
   }
 
   const feasts = await getFeasts(feastsStart, feastsEnd);
-  const masses = tenant?.id 
+  let masses = tenant?.id 
     ? await getServices(tenant, massesStart, massesEnd) 
     : [];
+
+  // Synthesize services from templates for feast days without persisted services
+  if (tenant?.id) {
+    const templates = await fetchTenantWeeklyFeastTemplates(tenant.id)
+    const synthetic: Service[] = [] as any
+    for (const feast of feasts) {
+      const feastPolishDate = toPolishTime(feast.date)
+      const hasMass = masses.some(m => isSameDay(toPolishTime(m.date), feastPolishDate))
+      if (hasMass) continue
+      const t = selectTemplateForDate(templates as any, feastPolishDate)
+      if (!t) continue
+      const generated = generateServicesFromTemplate(t as any, tenant, feastPolishDate)
+      synthetic.push(...(generated as any))
+    }
+    if (synthetic.length) {
+      masses = [...masses, ...synthetic]
+    }
+  }
   return matchFeastsWithMasses(feasts, masses);
 }
