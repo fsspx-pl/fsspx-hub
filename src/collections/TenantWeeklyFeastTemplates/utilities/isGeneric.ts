@@ -9,11 +9,8 @@ export async function isGeneric(
   options: ValidateOptions<any, any, any, boolean>
 ): Promise<true | string> {
   try {
-      if (!value) return true
+    if (!value) return true
     const { req, data, siblingData, id } = options
-    
-    // Debug logging - remove after debugging
-    req.payload.logger.info('isGeneric validation', { value, id, hasData: !!data, hasSiblingData: !!siblingData })
     const tenantRaw = data?.tenant ?? siblingData?.tenant
     const tenantId = typeof tenantRaw === 'string' ? tenantRaw : tenantRaw?.id
     if (!tenantId) return true
@@ -29,21 +26,9 @@ export async function isGeneric(
       limit: 1,
     })
     
-    req.payload.logger.info('isGeneric query result', { 
-      tenantId, 
-      foundDocs: res.docs.length, 
-      docIds: res.docs.map((d: any) => d.id),
-      currentId: id 
-    })
-    
     // Exclude self when updating
     const others = res.docs.filter((d: any) => d.id !== id)
     if (others.length) {
-      req.payload.logger.warn('isGeneric validation failed - duplicate found', { 
-        tenantId, 
-        existingIds: others.map((d: any) => d.id),
-        currentId: id 
-      })
       // Try multiple ways to access translations
       const i18n = (req as any)?.i18n || (req as any)?.payload?.i18n
       const t = i18n?.t || (req as any)?.t
