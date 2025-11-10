@@ -25,12 +25,12 @@ export async function generateStaticParams() {
   const tenants = await fetchTenants();
   const params = [];
 
-  for (const tenant of tenants.filter((tenant) => tenant.domain)) {
-    const latestPost = await fetchLatestPage(tenant.domain.split('.')[0]);
+  for (const tenant of tenants.filter((tenant) => tenant.general.domain)) {
+    const latestPost = await fetchLatestPage(tenant.general.domain.split('.')[0]);
     if (latestPost?.createdAt) {
       const date = format(new Date(latestPost.createdAt), 'dd-MM-yyyy');
       params.push({
-        domain: tenant.domain,
+        domain: tenant.general.domain,
         date: date,
       });
     }
@@ -62,7 +62,7 @@ export async function generateMetadata({
 
   const copyright = settings?.copyright || "";
   const location = tenant
-    ? `${tenant.city} - ${tenant.type} ${tenant.patron}`
+    ? `${tenant.general.city} - ${tenant.general.type} ${tenant.general.patron}`
     : "";
   const title = `${copyright} - ${location}`;
   
@@ -131,7 +131,7 @@ export default async function AnnouncementPage({
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
       <NewMediumImpact
-        image={tenant?.coverBackground as Media}
+        image={tenant?.general.coverBackground as Media}
         title={page.title}
         author={author}
         authorAvatar={authorAvatar}
@@ -169,7 +169,7 @@ function getBreadcrumbs(tenant: Tenant, title: string, date: string): Breadcrumb
       disabled: true,
     },
     {
-      label: tenant.city,
+      label: tenant.general.city,
       href: "..",
     },
     {

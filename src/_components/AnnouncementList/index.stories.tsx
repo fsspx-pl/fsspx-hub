@@ -26,14 +26,16 @@ const LOREM_TEXT = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pel
 const baseTenant: Tenant = {
   id: '1',
   name: 'Kaplica św. Józefa',
-  domain: 'test.example.com',
-  city: 'Warszawa',
-  type: 'Kaplica',
-  patron: 'św. Józefa',
-  coverBackground: {} as Media,
-  address: {
-    street: 'ul. Testowa 1',
-    zipcode: '00-001',
+  general: {
+    domain: 'test.example.com',
+    city: 'Warszawa',
+    type: 'Kaplica',
+    patron: 'św. Józefa',
+    coverBackground: {} as Media,
+    address: {
+      street: 'ul. Testowa 1',
+      zipcode: '00-001',
+    },
   },
   createdAt: '2024-01-01T00:00:00.000Z',
   updatedAt: '2024-01-01T00:00:00.000Z',

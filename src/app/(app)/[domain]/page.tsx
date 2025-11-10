@@ -6,9 +6,9 @@ import { redirect } from "next/navigation";
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
   return tenants
-    .filter((tenant) => tenant.domain)
+    .filter((tenant) => tenant.general.domain)
     .map((tenant) => ({
-      domain: tenant.domain,
+      domain: tenant.general.domain,
     }));
 }
 

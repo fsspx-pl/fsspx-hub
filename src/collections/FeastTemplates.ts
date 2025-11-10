@@ -1,8 +1,6 @@
-import { anyone } from '@/access/anyone';
-import { superAndTenantAdmins } from '@/access/superAndTenantAdmins';
+import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant';
 import serviceFields from '@/fields/service';
 import { CollectionConfig } from 'payload';
-import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant';
 
 export const FeastTemplates: CollectionConfig = {
   slug: 'feastTemplates',

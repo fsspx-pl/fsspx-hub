@@ -14,6 +14,7 @@ import { ServiceWeeks } from './collections/ServiceWeeks'
 import { Services } from './collections/Services'
 import { Tenants } from './collections/Tenants'
 import { Users } from './collections/Users'
+import { TenantWeeklyFeastTemplates } from './collections/TenantWeeklyFeastTemplates'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
@@ -44,9 +45,23 @@ export default buildConfig({
   i18n: {
     fallbackLanguage: 'pl',
     supportedLanguages: { pl, en },
+    translations: {
+      pl: {
+        ...pl,
+        errors: {
+          onlyOneGenericPerTenant: 'Tylko jeden szablon ogólny jest dozwolony dla tej lokalizacji',
+        },
+      },
+      en: {
+        ...en,
+        errors: {
+          onlyOneGenericPerTenant: 'Only one generic template is allowed for this tenant',
+        },
+      },
+    },
   },
   globals: [Settings, Header, Footer],
-  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
+  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, TenantWeeklyFeastTemplates],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

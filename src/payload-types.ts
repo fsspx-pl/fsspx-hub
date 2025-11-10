@@ -26,6 +26,7 @@ export interface Config {
     media: Media;
     services: Service;
     serviceWeeks: ServiceWeek;
+    feastTemplates: FeastTemplate;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -33,7 +34,8 @@ export interface Config {
   };
   collectionsJoins: {
     tenants: {
-      users: 'users';
+      'general.users': 'users';
+      feastTemplates: 'feastTemplates';
     };
   };
   collectionsSelect: {
@@ -43,6 +45,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     serviceWeeks: ServiceWeeksSelect<false> | ServiceWeeksSelect<true>;
+    feastTemplates: FeastTemplatesSelect<false> | FeastTemplatesSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -171,98 +174,211 @@ export interface Media {
  */
 export interface Tenant {
   id: string;
-  users?: {
-    docs?: (string | User)[];
+  name: string;
+  general: {
+    users?: {
+      docs?: (string | User)[];
+      hasNextPage?: boolean;
+      totalDocs?: number;
+    };
+    domain: string;
+    city: string;
+    type: 'Kaplica' | 'Misja';
+    patron?: string | null;
+    coverBackground: string | Media;
+    address: {
+      street: string;
+      zipcode: string;
+      email?: string | null;
+      phone?: string | null;
+    };
+  };
+  /**
+   * Feast templates assigned to this location. Manage templates in the "Feast Templates" collection.
+   */
+  feastTemplates?: {
+    docs?: (string | FeastTemplate)[];
     hasNextPage?: boolean;
     totalDocs?: number;
   };
-  name: string;
-  domain: string;
-  city: string;
-  type: 'Kaplica' | 'Misja';
-  patron?: string | null;
-  coverBackground: string | Media;
-  address: {
-    street: string;
-    zipcode: string;
-    email?: string | null;
-    phone?: string | null;
+  newsletterSettings?: {
+    /**
+     * The name of the contact list in AWS SES. NOTE: changing the contact list name will affect the newsletter recipients for this location.
+     */
+    mailingGroupId?: string | null;
+    /**
+     * The topic name in AWS SES (e.g. poznan, warszawa). NOTE: changing the topic name will affect the newsletter recipients for this location.
+     */
+    topicName?: string | null;
   };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Define per-day service templates, optionally limited to a period. One generic template per day; dated templates must not overlap for the same days. Generic template (no period) is used when no period-based template applies.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "feastTemplates".
+ */
+export interface FeastTemplate {
+  id: string;
+  tenant: string | Tenant;
   /**
-   * The name of the contact list in AWS SES. NOTE: changing the contact list name will affect the newsletter recipients for this location.
+   * Only one generic template per location. Used when no period-based template applies.
    */
-  mailingGroupId?: string | null;
+  isGeneric?: boolean | null;
   /**
-   * The topic name in AWS SES (e.g. poznan, warszawa). NOTE: changing the topic name will affect the newsletter recipients for this location.
+   * Optional title to identify this template (e.g., "Lent", "Advent", "Regular")
    */
-  topicName?: string | null;
-  feastTemplates?: {
-    /**
-     * Template for Sunday services. These services will be automatically created for new Week Order.
-     */
-    sunday?: {
-      applicableDays?:
-        | {
-            [k: string]: unknown;
-          }
-        | unknown[]
-        | string
-        | number
-        | boolean
-        | null;
-      services?:
-        | {
-            time: string;
-            category: 'mass' | 'rosary' | 'lamentations' | 'other';
-            /**
-             * Holy Mass type, visible in the calendar and newsletter
-             */
-            massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
-            /**
-             * Service title, visible in the calendar and newsletter
-             */
-            customTitle?: string | null;
-            /**
-             * Additional information about the service, visible below the service title in the calendar and newsletter
-             */
-            notes?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
-    /**
-     * Template for weekday services (Monday-Saturday). These services will be automatically created for new Week Order.
-     */
-    otherDays?: {
-      applicableDays?:
-        | {
-            [k: string]: unknown;
-          }
-        | unknown[]
-        | string
-        | number
-        | boolean
-        | null;
-      services?:
-        | {
-            time: string;
-            category: 'mass' | 'rosary' | 'lamentations' | 'other';
-            /**
-             * Holy Mass type, visible in the calendar and newsletter
-             */
-            massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
-            /**
-             * Service title, visible in the calendar and newsletter
-             */
-            customTitle?: string | null;
-            /**
-             * Additional information about the service, visible below the service title in the calendar and newsletter
-             */
-            notes?: string | null;
-            id?: string | null;
-          }[]
-        | null;
-    };
+  title?: string | null;
+  periodStart?: string | null;
+  periodEnd?: string | null;
+  monday?: {
+    services?:
+      | {
+          time: string;
+          category: 'mass' | 'rosary' | 'lamentations' | 'other';
+          /**
+           * Holy Mass type, visible in the calendar and newsletter
+           */
+          massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+          /**
+           * Service title, visible in the calendar and newsletter
+           */
+          customTitle?: string | null;
+          /**
+           * Additional information about the service, visible below the service title in the calendar and newsletter
+           */
+          notes?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  tuesday?: {
+    services?:
+      | {
+          time: string;
+          category: 'mass' | 'rosary' | 'lamentations' | 'other';
+          /**
+           * Holy Mass type, visible in the calendar and newsletter
+           */
+          massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+          /**
+           * Service title, visible in the calendar and newsletter
+           */
+          customTitle?: string | null;
+          /**
+           * Additional information about the service, visible below the service title in the calendar and newsletter
+           */
+          notes?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  wednesday?: {
+    services?:
+      | {
+          time: string;
+          category: 'mass' | 'rosary' | 'lamentations' | 'other';
+          /**
+           * Holy Mass type, visible in the calendar and newsletter
+           */
+          massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+          /**
+           * Service title, visible in the calendar and newsletter
+           */
+          customTitle?: string | null;
+          /**
+           * Additional information about the service, visible below the service title in the calendar and newsletter
+           */
+          notes?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  thursday?: {
+    services?:
+      | {
+          time: string;
+          category: 'mass' | 'rosary' | 'lamentations' | 'other';
+          /**
+           * Holy Mass type, visible in the calendar and newsletter
+           */
+          massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+          /**
+           * Service title, visible in the calendar and newsletter
+           */
+          customTitle?: string | null;
+          /**
+           * Additional information about the service, visible below the service title in the calendar and newsletter
+           */
+          notes?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  friday?: {
+    services?:
+      | {
+          time: string;
+          category: 'mass' | 'rosary' | 'lamentations' | 'other';
+          /**
+           * Holy Mass type, visible in the calendar and newsletter
+           */
+          massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+          /**
+           * Service title, visible in the calendar and newsletter
+           */
+          customTitle?: string | null;
+          /**
+           * Additional information about the service, visible below the service title in the calendar and newsletter
+           */
+          notes?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  saturday?: {
+    services?:
+      | {
+          time: string;
+          category: 'mass' | 'rosary' | 'lamentations' | 'other';
+          /**
+           * Holy Mass type, visible in the calendar and newsletter
+           */
+          massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+          /**
+           * Service title, visible in the calendar and newsletter
+           */
+          customTitle?: string | null;
+          /**
+           * Additional information about the service, visible below the service title in the calendar and newsletter
+           */
+          notes?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  sunday?: {
+    services?:
+      | {
+          time: string;
+          category: 'mass' | 'rosary' | 'lamentations' | 'other';
+          /**
+           * Holy Mass type, visible in the calendar and newsletter
+           */
+          massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+          /**
+           * Service title, visible in the calendar and newsletter
+           */
+          customTitle?: string | null;
+          /**
+           * Additional information about the service, visible below the service title in the calendar and newsletter
+           */
+          notes?: string | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -480,6 +596,10 @@ export interface PayloadLockedDocument {
         value: string | ServiceWeek;
       } | null)
     | ({
+        relationTo: 'feastTemplates';
+        value: string | FeastTemplate;
+      } | null)
+    | ({
         relationTo: 'payload-jobs';
         value: string | PayloadJob;
       } | null);
@@ -565,56 +685,31 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "tenants_select".
  */
 export interface TenantsSelect<T extends boolean = true> {
-  users?: T;
   name?: T;
-  domain?: T;
-  city?: T;
-  type?: T;
-  patron?: T;
-  coverBackground?: T;
-  address?:
+  general?:
     | T
     | {
-        street?: T;
-        zipcode?: T;
-        email?: T;
-        phone?: T;
+        users?: T;
+        domain?: T;
+        city?: T;
+        type?: T;
+        patron?: T;
+        coverBackground?: T;
+        address?:
+          | T
+          | {
+              street?: T;
+              zipcode?: T;
+              email?: T;
+              phone?: T;
+            };
       };
-  mailingGroupId?: T;
-  topicName?: T;
-  feastTemplates?:
+  feastTemplates?: T;
+  newsletterSettings?:
     | T
     | {
-        sunday?:
-          | T
-          | {
-              applicableDays?: T;
-              services?:
-                | T
-                | {
-                    time?: T;
-                    category?: T;
-                    massType?: T;
-                    customTitle?: T;
-                    notes?: T;
-                    id?: T;
-                  };
-            };
-        otherDays?:
-          | T
-          | {
-              applicableDays?: T;
-              services?:
-                | T
-                | {
-                    time?: T;
-                    category?: T;
-                    massType?: T;
-                    customTitle?: T;
-                    notes?: T;
-                    id?: T;
-                  };
-            };
+        mailingGroupId?: T;
+        topicName?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -692,6 +787,117 @@ export interface ServiceWeeksSelect<T extends boolean = true> {
   start?: T;
   end?: T;
   yearWeek?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "feastTemplates_select".
+ */
+export interface FeastTemplatesSelect<T extends boolean = true> {
+  tenant?: T;
+  isGeneric?: T;
+  title?: T;
+  periodStart?: T;
+  periodEnd?: T;
+  monday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              time?: T;
+              category?: T;
+              massType?: T;
+              customTitle?: T;
+              notes?: T;
+              id?: T;
+            };
+      };
+  tuesday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              time?: T;
+              category?: T;
+              massType?: T;
+              customTitle?: T;
+              notes?: T;
+              id?: T;
+            };
+      };
+  wednesday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              time?: T;
+              category?: T;
+              massType?: T;
+              customTitle?: T;
+              notes?: T;
+              id?: T;
+            };
+      };
+  thursday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              time?: T;
+              category?: T;
+              massType?: T;
+              customTitle?: T;
+              notes?: T;
+              id?: T;
+            };
+      };
+  friday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              time?: T;
+              category?: T;
+              massType?: T;
+              customTitle?: T;
+              notes?: T;
+              id?: T;
+            };
+      };
+  saturday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              time?: T;
+              category?: T;
+              massType?: T;
+              customTitle?: T;
+              notes?: T;
+              id?: T;
+            };
+      };
+  sunday?:
+    | T
+    | {
+        services?:
+          | T
+          | {
+              time?: T;
+              category?: T;
+              massType?: T;
+              customTitle?: T;
+              notes?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }

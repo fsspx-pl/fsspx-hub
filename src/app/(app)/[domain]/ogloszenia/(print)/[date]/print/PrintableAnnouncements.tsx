@@ -102,7 +102,7 @@ export function PrintableAnnouncements({
   feastsWithMasses,
   tenant,
 }: PrintableAnnouncementsProps) {
-  const coverImage = tenant?.coverBackground as MediaType;
+  const coverImage = tenant?.general.coverBackground as MediaType;
 
   return (
     <div className="bg-white">
@@ -120,7 +120,7 @@ export function PrintableAnnouncements({
             <div className="relative z-10 text-center">
               <h1 className={`text-4xl font-extrabold mb-1 text-gray-900 ${garamond.className}`}>Plan nabożeństw</h1>
               <p className="text-lg font-medium text-gray-700">
-                {tenant?.city} - {tenant?.type} {tenant?.patron}
+                {tenant?.general.city} - {tenant?.general.type} {tenant?.general.patron}
               </p>
             </div>
           </div>
@@ -148,7 +148,7 @@ export function PrintableAnnouncements({
             <div className="relative z-10 text-center">
               <h1 className={`text-4xl font-extrabold mb-1 text-gray-900 ${garamond.className}`}>Ogłoszenia duszpasterskie</h1>
               <p className="text-lg font-medium text-gray-700">
-                {tenant?.city} - {tenant?.type} {tenant?.patron}
+                {tenant?.general.city} - {tenant?.general.type} {tenant?.general.patron}
               </p>
             </div>
           </div>
