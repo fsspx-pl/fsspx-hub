@@ -9,9 +9,6 @@ export const location: Field[] = [
     },
     type: 'text',
     required: true,
-    admin: {
-      width: '50%',
-    },
   },
   {
     name: 'type',
