@@ -47,14 +47,14 @@ export const generateMonthParams = async () => {
   const currentDate = new Date();
   const monthsToGenerate = 6; // ±6 months
   
-  for (const tenant of tenants.filter((tenant) => tenant.general.domain)) {
+  for (const tenant of tenants.filter((tenant) => tenant.domain)) {
     for (let i = -monthsToGenerate; i <= monthsToGenerate; i++) {
       const targetDate = i === 0 ? currentDate : addMonths(currentDate, i);
       const year = getYear(targetDate);
       const month = getMonth(targetDate) + 1;
       
       params.push({
-        domain: tenant.general.domain,
+        domain: tenant.domain,
         year: year.toString(),
         month: month.toString(),
       });

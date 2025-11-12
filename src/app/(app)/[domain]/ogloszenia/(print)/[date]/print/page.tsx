@@ -13,12 +13,12 @@ export async function generateStaticParams() {
   const tenants = await fetchTenants();
   const params = [];
 
-  for (const tenant of tenants.filter((tenant) => tenant.general.domain)) {
-    const latestPost = await fetchLatestPage(tenant.general.domain.split('.')[0]);
+  for (const tenant of tenants.filter((tenant) => tenant.domain)) {
+    const latestPost = await fetchLatestPage(tenant.domain.split('.')[0]);
     if (latestPost?.createdAt) {
       const date = format(new Date(latestPost.createdAt), 'dd-MM-yyyy');
       params.push({
-        domain: tenant.general.domain,
+        domain: tenant.domain,
         date: date,
       });
     }
@@ -45,7 +45,7 @@ export async function generateMetadata({
 
   if (!tenant) return null;
 
-  const location = `${tenant.general.city} - ${tenant.general.type} ${tenant.general.patron}`;
+  const location = `${tenant.city} - ${tenant.type} ${tenant.patron}`;
   const title = `Ogłoszenia do druku - ${location}`;
   
   return {

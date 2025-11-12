@@ -23,7 +23,7 @@ export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
 
     if (!tenant) return;
 
-    const dateTag = `tenant:${tenant.general.domain}:date:${format(parseISO(doc.period.start), 'dd-MM-yyyy')}`;
+    const dateTag = `tenant:${tenant.domain}:date:${format(parseISO(doc.period.start), 'dd-MM-yyyy')}`;
     await revalidateTag(dateTag);
     payload.logger.info(`Revalidated date tag: ${dateTag}`);
 
@@ -38,8 +38,8 @@ export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
     });
     const isNewestPage = newestPage.docs[0]?.id === doc.id;
     if (!isNewestPage) return;
-    await revalidateTag(`tenant:${tenant.general.domain}:latest`);
-    payload.logger.info(`Revalidated latest tag: tenant:${tenant.general.domain}:latest`);
+    await revalidateTag(`tenant:${tenant.domain}:latest`);
+    payload.logger.info(`Revalidated latest tag: tenant:${tenant.domain}:latest`);
   } catch (error: unknown) {
     if (error instanceof Error) {
       payload.logger.error(`Error in revalidateTenantPages: ${error.message}`);

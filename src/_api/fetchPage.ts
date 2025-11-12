@@ -16,7 +16,7 @@ export const fetchLatestPage = (domain: string): Promise<Page | undefined> => {
         const result = await payload.find({
           collection: 'pages',
           where: {
-            ['tenant.general.domain']: {
+            ['tenant.domain']: {
               contains: domain
             },
           },
@@ -51,7 +51,7 @@ export const fetchTenantPageByDate = (domain: string, isoDate: string): Promise<
         const result = await payload.find({
           collection: 'pages',
           where: {
-            ['tenant.general.domain']: {
+            ['tenant.domain']: {
               contains: domain
             },
             ['period.start']: {

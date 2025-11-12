@@ -8,7 +8,8 @@ export const adminsAndSelf: Access<User> = async ({ req: { user } }) => {
   }
   const isSuperAdmin = checkIfSuperAdmin(user);
 
-  if (isSuperAdmin) {
+  // allow super-admins through only if they have not scoped their user via `lastLoggedInTenant`
+  if (isSuperAdmin && !user?.lastLoggedInTenant) {
     return true;
   }
 

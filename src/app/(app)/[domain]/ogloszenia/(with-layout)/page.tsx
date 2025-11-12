@@ -40,7 +40,7 @@ export async function generateMetadata({
     year: 'numeric' 
   });
   
-  const location = `${tenant.general.city} - ${tenant.general.type} ${tenant.general.patron}`;
+  const location = `${tenant.city} - ${tenant.type} ${tenant.patron}`;
   const title = `Ogłoszenia duszpasterskie ${monthName} - ${location}`;
   const description = `Ogłoszenia duszpasterskie z ${monthName} z ${location}. Przeglądaj ogłoszenia parafialne i informacje duszpasterskie.`;
   
@@ -100,7 +100,7 @@ export default async function AnnouncementsListingPage({
       disabled: true,
     },
     {
-      label: tenant.general.city,
+      label: tenant.city,
       href: "..",
     },
     {
@@ -119,7 +119,7 @@ export default async function AnnouncementsListingPage({
         <div className="relative h-[200px] md:h-[348px]">
           <div className="absolute inset-0 rounded-lg overflow-hidden">
             <MediaComponent 
-              resource={tenant.general.coverBackground as Media}
+              resource={tenant.coverBackground as Media}
               fill
             />
           </div>

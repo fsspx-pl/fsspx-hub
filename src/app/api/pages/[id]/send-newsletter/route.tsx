@@ -99,8 +99,8 @@ async function sendNewsletter(page: Page, testEmail?: string) {
     .filter(Boolean)
     .join(" ");
 
-  const from_name = `${(page.tenant as Tenant).general.type} ${(page.tenant as Tenant).general.patron} - ${(page.tenant as Tenant).general.city} | FSSPX`;
-  const fromEmail = (page.tenant as Tenant).general.address.email;
+  const from_name = `${(page.tenant as Tenant).type} ${(page.tenant as Tenant).patron} - ${(page.tenant as Tenant).city} | FSSPX`;
+  const fromEmail = (page.tenant as Tenant).address.email;
 
   const footer = await fetchFooter();
   const settings = await fetchSettings();
@@ -124,12 +124,12 @@ async function sendNewsletter(page: Page, testEmail?: string) {
 
   const html = await minifyAndReplaceQuotes(rawHtml);
 
-  const contactListName = (page.tenant as Tenant).newsletterSettings?.mailingGroupId;
+  const contactListName = (page.tenant as Tenant).mailingGroupId;
   if (!contactListName) {
     throw new Error("Contact list name is not configured for this tenant.");
   }
 
-  const topicName = (page.tenant as Tenant).newsletterSettings?.topicName;
+  const topicName = (page.tenant as Tenant).topicName;
   if (!topicName) {
     throw new Error("Topic name is not configured for this tenant.");
   }

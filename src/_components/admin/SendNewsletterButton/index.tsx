@@ -1,8 +1,10 @@
-import { fetchTenantById } from '@/_api/fetchTenants'
 import { Page } from '@/payload-types'
+import { FieldLabel } from '@payloadcms/ui'
 import React from 'react'
 import { SendButton } from './SendButton'
 import classes from './index.module.scss'
+import { fetchTenantById } from '@/_api/fetchTenants'
+import { coerceBoolean } from '@/utilities/coerceBoolean'
 
 export const SendNewsletterButton: React.FC<{ data: Page }> = async ({ 
   data 
@@ -16,7 +18,7 @@ export const SendNewsletterButton: React.FC<{ data: Page }> = async ({
   if (!id) return null;
 
   const tenant = await fetchTenantById(tenantId);
-  if (!tenant?.newsletterSettings?.mailingGroupId) return null;
+  if (!tenant?.mailingGroupId) return null;
 
   return (
     <div className={classes.fieldType}>
@@ -24,8 +26,8 @@ export const SendNewsletterButton: React.FC<{ data: Page }> = async ({
         id={id} 
         newsletterSent={newsletterSent} 
         isDraft={isDraft} 
-        newsletterGroupId={tenant.newsletterSettings.mailingGroupId}
-        topicName={tenant.newsletterSettings?.topicName}
+        newsletterGroupId={tenant.mailingGroupId}
+        topicName={tenant.topicName}
       />
     </div>
   )

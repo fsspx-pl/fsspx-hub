@@ -25,7 +25,7 @@ export const fetchTenant = async (name: string) => {
     const result = await payload.find({
       collection: 'tenants',
       where: {
-        ['general.domain']: {
+        domain: {
           equals: name
         }
       }

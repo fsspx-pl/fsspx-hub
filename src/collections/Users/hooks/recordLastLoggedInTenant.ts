@@ -1,11 +1,7 @@
 import { CollectionAfterLoginHook } from "payload"
 import { getSubdomain } from "@/utilities/getSubdomain"
-import { isSuperAdmin } from "@/utilities/isSuperAdmin"
 export const recordLastLoggedInTenant: CollectionAfterLoginHook = async ({ req, user }) => {
   const domain = getSubdomain(req)
-  if (isSuperAdmin(user)) {
-    return user
-  }
   try {
     const relatedOrg = await req.payload
       .find({
