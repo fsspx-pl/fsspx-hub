@@ -7,6 +7,7 @@ import { Tenants } from './Tenants';
 import { Services } from './Services';
 import { FeastTemplates } from './FeastTemplates';
 import { ServiceWeeks } from './ServiceWeeks';
+import { NewsletterSubscriptions } from './NewsletterSubscriptions';
 
 export const collections: CollectionConfig[] = [
   Pages,
@@ -16,4 +17,5 @@ export const collections: CollectionConfig[] = [
   Services,
   FeastTemplates,
   ServiceWeeks,
+  NewsletterSubscriptions,
 ]; 

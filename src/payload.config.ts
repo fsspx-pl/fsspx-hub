@@ -14,6 +14,7 @@ import { ServiceWeeks } from './collections/ServiceWeeks'
 import { Services } from './collections/Services'
 import { Tenants } from './collections/Tenants'
 import { Users } from './collections/Users'
+import { NewsletterSubscriptions } from './collections/NewsletterSubscriptions'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
@@ -46,7 +47,7 @@ export default buildConfig({
     supportedLanguages: { pl, en },
   },
   globals: [Settings, Header, Footer],
-  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
+  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, NewsletterSubscriptions],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

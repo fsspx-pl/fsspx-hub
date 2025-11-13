@@ -1,4 +1,4 @@
-import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand } from '@aws-sdk/client-sesv2';
+import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand, ListContactsCommand, GetContactCommand } from '@aws-sdk/client-sesv2';
 
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
@@ -279,11 +279,45 @@ export async function createContactList(contactListName: string, description?: s
 }
 
 /**
+ * Check if a contact exists in AWS SES contact list
+ */
+export async function contactExistsInList(contactListName: string, email: string, topicName?: string): Promise<boolean> {
+  try {
+    const { GetContactCommand } = await import('@aws-sdk/client-sesv2');
+    const command = new GetContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+    });
+
+    const response = await sesClient.send(command);
+    
+    // If contact exists, check topic preference if topicName is provided
+    if (topicName && response.TopicPreferences) {
+      const hasTopic = response.TopicPreferences.some(
+        topic => topic.TopicName === topicName && topic.SubscriptionStatus === 'OPT_IN'
+      );
+      return hasTopic;
+    }
+    
+    // If no topic specified, just check if contact exists
+    return !!response.EmailAddress;
+  } catch (error) {
+    // If contact doesn't exist, AWS SES throws an error
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      return false;
+    }
+    // For other errors, log and return false
+    console.error('Error checking contact existence:', error);
+    return false;
+  }
+}
+
+/**
  * Add a single contact to a contact list
  */
-export async function addContactToList(contactListName: string, email: string, firstName?: string, lastName?: string) {
+export async function addContactToList(contactListName: string, email: string, topicName: string, firstName?: string, lastName?: string) {
   try {
-    console.info('Adding contact to list:', { contactListName, email });
+    console.info('Adding contact to list:', { contactListName, email, topicName });
 
     const command = new CreateContactCommand({
       ContactListName: contactListName,
@@ -291,7 +325,7 @@ export async function addContactToList(contactListName: string, email: string, f
       UnsubscribeAll: false,
       TopicPreferences: [
         {
-          TopicName: 'poznan', // Default topic
+          TopicName: topicName,
           SubscriptionStatus: 'OPT_IN'
         }
       ],
@@ -322,6 +356,7 @@ export async function addContactToList(contactListName: string, email: string, f
 export async function importSubscribersFromCSV(
   contactListName: string, 
   csvData: string, 
+  topicName: string,
   options: {
     hasHeader?: boolean;
     emailColumn?: number;
@@ -374,7 +409,7 @@ export async function importSubscribersFromCSV(
       }
 
       try {
-        await addContactToList(contactListName, email, firstName, lastName);
+        await addContactToList(contactListName, email, topicName, firstName, lastName);
         results.successful++;
       } catch (error) {
         results.failed++;
