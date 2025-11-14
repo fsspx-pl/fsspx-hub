@@ -19,6 +19,7 @@ import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { newsletterSignupTranslations } from './_components/NewsletterSignupForm/translations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -45,6 +46,16 @@ export default buildConfig({
   i18n: {
     fallbackLanguage: 'pl',
     supportedLanguages: { pl, en },
+    translations: {
+      pl: {
+        ...pl,
+        newsletterSignup: newsletterSignupTranslations,
+      },
+      en: {
+        ...en,
+        newsletterSignup: newsletterSignupTranslations,
+      },
+    },
   },
   globals: [Settings, Header, Footer],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, NewsletterSubscriptions],

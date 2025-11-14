@@ -5,12 +5,12 @@ export const NewsletterSubscriptions: CollectionConfig = {
   slug: 'newsletterSubscriptions',
   labels: {
     singular: {
-      pl: 'Subskrypcja newslettera',
-      en: 'Newsletter Subscription',
+      pl: 'Subskrypcja ogłoszeń duszpasterskich',
+      en: 'Pastoral Announcements Subscription',
     },
     plural: {
-      pl: 'Subskrypcje newslettera',
-      en: 'Newsletter Subscriptions',
+      pl: 'Subskrypcje ogłoszeń duszpasterskich',
+      en: 'Pastoral Announcements Subscriptions',
     },
   },
   access: {

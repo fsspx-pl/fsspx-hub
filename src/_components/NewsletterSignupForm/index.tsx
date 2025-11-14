@@ -2,10 +2,15 @@
 
 import React, { useState } from 'react';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { Input } from '@/_components/Input';
+import { Button } from '@/_components/Button';
+import { Alert } from '@/_components/Alert';
+import { getNewsletterTranslation } from './translations';
 
 type Props = {
   subdomain: string;
   className?: string;
+  locale?: 'pl' | 'en';
 };
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
@@ -13,17 +18,21 @@ type FormState = 'idle' | 'loading' | 'success' | 'error';
 export const NewsletterSignupForm: React.FC<Props> = ({
   subdomain,
   className = '',
+  locale = 'pl',
 }) => {
   const [email, setEmail] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
+  const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
+    getNewsletterTranslation(key, locale);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim()) {
-      setErrorMessage('Proszę podać adres email');
+      setErrorMessage(t('errorEmailRequired'));
       setFormState('error');
       return;
     }
@@ -32,7 +41,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
     
     // In production, require Turnstile token; in development, skip
     if (!isDevelopment && !turnstileToken) {
-      setErrorMessage('Proszę poczekać na weryfikację');
+      setErrorMessage(t('errorVerificationRequired'));
       setFormState('error');
       return;
     }
@@ -56,7 +65,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Wystąpił błąd podczas subskrypcji');
+        throw new Error(data.error || t('errorSubscriptionFailed'));
       }
 
       // If already exists, redirect to branded page
@@ -73,7 +82,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
       setErrorMessage(
         error instanceof Error
           ? error.message
-          : 'Wystąpił błąd podczas subskrypcji. Spróbuj ponownie później.'
+          : t('errorGeneric')
       );
     }
   };
@@ -86,76 +95,55 @@ export const NewsletterSignupForm: React.FC<Props> = ({
     setTurnstileToken(null);
     if (formState === 'loading') {
       setFormState('error');
-      setErrorMessage('Weryfikacja nie powiodła się. Spróbuj ponownie.');
+      setErrorMessage(t('errorVerificationFailed'));
     }
   };
 
   if (formState === 'success') {
     return (
-      <div className={`bg-green-50 border border-green-200 rounded-lg p-6 ${className}`}>
-        <div className="flex items-start">
-          <div className="flex-shrink-0">
-            <svg
-              className="h-5 w-5 text-green-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-green-800">
-              Dziękujemy za subskrypcję!
-            </h3>
-            <div className="mt-2 text-sm text-green-700">
-              <p>
-                Sprawdź swoją skrzynkę pocztową i potwierdź subskrypcję, klikając
-                link w wiadomości email.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Alert
+        variant="success"
+        title={t('successTitle')}
+        message={t('successMessage')}
+        className={className}
+      />
     );
   }
 
   return (
-    <div className={`bg-gray-50 border border-gray-200 rounded-lg p-6 ${className}`}>
+    <div className={`bg-[#f8f7f7] rounded-lg p-6 ${className}`}>
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
-        Zapisz się do newslettera
+        {t('title')}
       </h3>
       <p className="text-sm text-gray-600 mb-4">
-        Otrzymuj najnowsze ogłoszenia duszpasterskie na swoją skrzynkę pocztową.
+        {t('description')}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           <div className="flex-1">
             <label htmlFor="newsletter-email" className="sr-only">
-              Adres email
+              {t('emailLabel')}
             </label>
-            <input
+            <Input
               id="newsletter-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="twoj@email.pl"
+              placeholder={t('emailPlaceholder')}
               required
               disabled={formState === 'loading'}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-[#C81910] focus:border-[#C81910] disabled:bg-gray-100 disabled:cursor-not-allowed"
+              aria-label={t('emailLabel')}
             />
           </div>
-          <button
+          <Button
             type="submit"
+            variant="primary"
             disabled={formState === 'loading' || (process.env.NODE_ENV !== 'development' && !turnstileToken)}
-            className="px-6 py-2 bg-[#C81910] text-white font-medium rounded-md hover:bg-[#A0140D] focus:outline-none focus:ring-2 focus:ring-[#C81910] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+            className="w-full sm:w-auto"
           >
-            {formState === 'loading' ? 'Wysyłanie...' : 'Zapisz się'}
-          </button>
+            {formState === 'loading' ? t('submittingButton') : t('submitButton')}
+          </Button>
         </div>
 
         {process.env.NODE_ENV !== 'development' && (
@@ -174,9 +162,11 @@ export const NewsletterSignupForm: React.FC<Props> = ({
         )}
 
         {formState === 'error' && errorMessage && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3">
-            <p className="text-sm text-red-800">{errorMessage}</p>
-          </div>
+          <Alert
+            variant="error"
+            title={t('errorSubscriptionFailed')}
+            message={errorMessage}
+          />
         )}
       </form>
     </div>

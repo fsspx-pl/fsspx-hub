@@ -14,7 +14,7 @@ export default async function AlreadySubscribedPage({
     <NewsletterStatusPage
       subdomain={subdomain}
       title="Już jesteś zapisany"
-      message="Ten adres email jest już zapisany do newslettera. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
+      message="Ten adres email jest już zapisany do subskrypcji ogłoszeń duszpasterskich z tej kaplicy. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
     />
   );
 }

@@ -29,19 +29,3 @@ export const Default: Story = {
   },
 };
 
-export const WithCustomClassName: Story = {
-  args: {
-    subdomain: 'warszawa',
-    className: 'max-w-md',
-  },
-  parameters: {
-    layout: 'padded',
-  },
-};
-
-export const DifferentSubdomain: Story = {
-  args: {
-    subdomain: 'krakow',
-  },
-};
-

@@ -3,6 +3,7 @@ import { addContactToList } from '@/utilities/awsSes';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { redirect } from 'next/navigation';
+import { Tenant } from '@/payload-types';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,11 +40,10 @@ export default async function ConfirmNewsletterPage({
   }
 
   // Get tenant to get newsletter settings
-  const tenant = subscription.tenant;
-  if (typeof tenant === 'string') {
+  const tenant = subscription.tenant as Tenant;
     const tenantDoc = await payload.findByID({
       collection: 'tenants',
-      id: tenant,
+      id: tenant.id,
     });
     const contactListName = tenantDoc.mailingGroupId;
     const topicName = tenantDoc.topicName;
@@ -57,8 +57,8 @@ export default async function ConfirmNewsletterPage({
       return (
         <NewsletterStatusPage
           subdomain={subdomain}
-          title="Subskrypcja już potwierdzona"
-          message="Twoja subskrypcja newslettera została już wcześniej potwierdzona. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
+          title="Subskrypcja potwierdzona!"
+          message="Twoja subskrypcja ogłoszeń duszpasterskich została potwierdzona. Będziesz otrzymywać je na swój adres email po ich opublikowaniu."
         />
       );
     }
@@ -91,12 +91,9 @@ export default async function ConfirmNewsletterPage({
       <NewsletterStatusPage
         subdomain={subdomain}
         title="Subskrypcja potwierdzona!"
-        message="Dziękujemy! Twoja subskrypcja newslettera została potwierdzona. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
+        message="Dziękujemy! Twoja subskrypcja ogłoszeń duszpasterskich została potwierdzona. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
         showWarning={awsError}
       />
     );
   }
-
-  redirect(`/${subdomain}/newsletter/error`);
-}
 

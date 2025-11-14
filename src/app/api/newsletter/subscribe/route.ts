@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchTenant } from '@/_api/fetchTenants';
+import { fetchSettings } from '@/_api/fetchGlobals';
 import { addContactToList, contactExistsInList } from '@/utilities/awsSes';
 import { sendEmail } from '@/utilities/nodemailerSes';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
+import { render } from '@react-email/components';
+import NewsletterConfirmationEmail from '@/emails/newsletter-confirmation';
+import { newsletterSignupTranslations } from '@/_components/NewsletterSignupForm/translations';
+import React from 'react';
 
 /**
  * Verify Cloudflare Turnstile token
@@ -184,75 +189,70 @@ export async function POST(request: NextRequest) {
     const fromName = process.env.FROM_NAME || 'FSSPX';
     const chapelInfo = `${tenant.type} ${tenant.patron || ''} - ${tenant.city}`;
 
-    const confirmationEmailHtml = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      </head>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #C81910;">Potwierdź subskrypcję newslettera</h2>
-        <p>Dziękujemy za zainteresowanie newsletterem z <strong>${chapelInfo}</strong>!</p>
-        <p>Aby potwierdzić subskrypcję i rozpocząć otrzymywanie ogłoszeń duszpasterskich z tej kaplicy, kliknij poniższy link:</p>
-        <p style="margin: 30px 0;">
-          <a href="${confirmationUrl}" style="background-color: #C81910; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">Potwierdź subskrypcję</a>
-        </p>
-        <p>Jeśli przycisk nie działa, skopiuj i wklej poniższy link do przeglądarki:</p>
-        <p style="word-break: break-all; color: #666; font-size: 12px;">${confirmationUrl}</p>
-        <p style="margin-top: 30px; font-size: 12px; color: #666;">Jeśli nie zapisywałeś się do newslettera z ${chapelInfo}, możesz zignorować tę wiadomość.</p>
-      </body>
-      </html>
-    `;
+    const settings = await fetchSettings();
+    const copyright = (settings?.copyright as string) || 'city.fsspx.pl';
+
+    const locale: 'pl' | 'en' = 'pl';
+    const t = (key: keyof typeof newsletterSignupTranslations.pl) => 
+      newsletterSignupTranslations[locale]?.[key] || newsletterSignupTranslations.pl[key];
+
+    const confirmationEmailHtml = await render(
+      React.createElement(NewsletterConfirmationEmail, {
+        confirmationUrl,
+        chapelInfo,
+        copyright,
+        locale,
+      }),
+      {
+        htmlToTextOptions: {
+          baseElements: {
+            selectors: ['body'],
+          },
+        },
+      }
+    );
 
     const confirmationEmailText = `
-Potwierdź subskrypcję newslettera
+${t('emailConfirmationTitle')}
 
-Dziękujemy za zainteresowanie newsletterem z ${chapelInfo}!
+${t('emailConfirmationGreeting')} ${chapelInfo}!
 
-Aby potwierdzić subskrypcję i rozpocząć otrzymywanie ogłoszeń duszpasterskich z tej kaplicy, kliknij poniższy link:
+${t('emailConfirmationInstructions')}
 
 ${confirmationUrl}
 
-Jeśli nie zapisywałeś się do newslettera z ${chapelInfo}, możesz zignorować tę wiadomość.
-    `;
+${t('emailConfirmationDisclaimer')} ${chapelInfo}, ${t('emailConfirmationIgnore')}
+    `.trim();
 
     await sendEmail({
       to: email,
       from: `${fromName} <${fromEmail}>`,
-      subject: `Potwierdź subskrypcję newslettera - ${chapelInfo}`,
+      subject: `${t('emailConfirmationTitle')} - ${chapelInfo}`,
       html: confirmationEmailHtml,
       text: confirmationEmailText,
     });
 
-      console.log('Confirmation email sent successfully to:', email);
-      
-      return NextResponse.json({
-        success: true,
-        message: 'Subscription request received. Please check your email to confirm.',
-      });
-    } catch (error) {
-      console.error('Error processing subscription:', error);
-      
-      if (error instanceof Error) {
-        console.error('Error details:', {
-          message: error.message,
-          stack: error.stack,
-          name: error.name,
-        });
-      }
-
-      return NextResponse.json(
-        { error: 'Failed to process subscription. Please try again later.' },
-        { status: 500 }
-      );
-    }
+    console.log('Confirmation email sent successfully to:', email);
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Subscription request received. Please check your email to confirm.',
+    });
   } catch (error) {
     console.error('Error in newsletter subscription API:', error);
+    
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to process subscription. Please try again later.' },
       { status: 500 }
     );
-  };
-};
+  }
+}
 
