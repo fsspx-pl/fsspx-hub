@@ -17,7 +17,7 @@ import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
 
 import { CMSLink } from "@/_components/Link";
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
-import { NewsletterSignupForm } from "@/_components/NewsletterSignupForm";
+import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
 
 export async function generateStaticParams() {
   // Pre-warm the liturgical calendar cache at build time

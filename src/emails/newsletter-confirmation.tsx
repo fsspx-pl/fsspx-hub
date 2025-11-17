@@ -11,7 +11,7 @@ import {
   Text,
 } from "@react-email/components";
 import React from 'react';
-import { newsletterSignupTranslations } from "@/_components/NewsletterSignupForm/translations";
+import { newsletterTranslations } from "@/_components/Newsletter/translations";
 
 type NewsletterConfirmationEmailProps = {
   confirmationUrl: string;
@@ -26,8 +26,8 @@ export default function NewsletterConfirmationEmail({
   copyright = "city.fsspx.pl",
   locale = 'pl',
 }: NewsletterConfirmationEmailProps) {
-  const t = (key: keyof typeof newsletterSignupTranslations.pl) => 
-    newsletterSignupTranslations[locale]?.[key] || newsletterSignupTranslations.pl[key];
+  const t = (key: keyof typeof newsletterTranslations.pl) => 
+    newsletterTranslations[locale]?.[key] || newsletterTranslations.pl[key];
 
   return (
     <Html>

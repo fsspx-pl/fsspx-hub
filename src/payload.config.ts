@@ -19,7 +19,7 @@ import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
-import { newsletterSignupTranslations } from './_components/NewsletterSignupForm/translations'
+import { newsletterTranslations } from './_components/Newsletter/translations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -49,11 +49,11 @@ export default buildConfig({
     translations: {
       pl: {
         ...pl,
-        newsletterSignup: newsletterSignupTranslations,
+        newsletterSignup: newsletterTranslations,
       },
       en: {
         ...en,
-        newsletterSignup: newsletterSignupTranslations,
+        newsletterSignup: newsletterTranslations,
       },
     },
   },

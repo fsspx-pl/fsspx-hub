@@ -1,4 +1,4 @@
-import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand, ListContactsCommand, GetContactCommand } from '@aws-sdk/client-sesv2';
+import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand, ListContactsCommand, GetContactCommand, DeleteContactCommand, UpdateContactCommand } from '@aws-sdk/client-sesv2';
 
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
@@ -37,6 +37,8 @@ export async function sendBulkEmail(emailData: {
   htmlContent: string;
   contactListName: string;
   topicName?: string;
+  unsubscribeBaseUrl?: string;
+  getSubscriptionId?: (email: string) => Promise<string | null>;
 }) {
   try {
     console.info('Sending bulk email with data:', {
@@ -102,6 +104,16 @@ export async function sendBulkEmail(emailData: {
       
       const sendPromises = batch.map(async (contact) => {
         try {
+          // Personalize unsubscribe URL for each recipient using subscription ID
+          let personalizedHtml = emailData.htmlContent;
+          if (emailData.unsubscribeBaseUrl && contact.EmailAddress && emailData.getSubscriptionId) {
+            const subscriptionId = await emailData.getSubscriptionId(contact.EmailAddress);
+            if (subscriptionId) {
+              const unsubscribeUrl = `${emailData.unsubscribeBaseUrl}/${subscriptionId}`;
+              personalizedHtml = personalizedHtml.replace(/\{\{UNSUBSCRIBE_URL\}\}/g, unsubscribeUrl);
+            }
+          }
+
           const sendCommand = new SendEmailCommand({
             Destination: {
               ToAddresses: [contact.EmailAddress!],
@@ -114,7 +126,7 @@ export async function sendBulkEmail(emailData: {
                 },
                 Body: {
                   Html: {
-                    Data: emailData.htmlContent,
+                    Data: personalizedHtml,
                     Charset: 'UTF-8',
                   },
                 },
@@ -350,77 +362,36 @@ export async function addContactToList(contactListName: string, email: string, t
 }
 
 /**
- * Import subscribers from CSV data
- * CSV format: email,firstName,lastName (header row optional)
+ * Remove a contact from AWS SES contact list
  */
-export async function importSubscribersFromCSV(
-  contactListName: string, 
-  csvData: string, 
-  topicName: string,
-  options: {
-    hasHeader?: boolean;
-    emailColumn?: number;
-    firstNameColumn?: number;
-    lastNameColumn?: number;
-  } = {}
-) {
+export async function removeContactFromList(contactListName: string, email: string) {
   try {
-    console.info('Importing subscribers from CSV to contact list:', contactListName);
+    console.info('Removing contact from list:', { contactListName, email });
 
-    const {
-      hasHeader = true,
-      emailColumn = 0,
-      firstNameColumn = 1,
-      lastNameColumn = 2
-    } = options;
+    const command = new DeleteContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+    });
 
-    // Parse CSV data
-    const lines = csvData.trim().split('\n');
-    const dataLines = hasHeader ? lines.slice(1) : lines;
+    const response = await sesClient.send(command);
+    console.info('Contact removed successfully:', email);
     
-    const results = {
-      total: dataLines.length,
-      successful: 0,
-      failed: 0,
-      errors: [] as string[]
+    return {
+      email,
+      success: true,
+      data: response
     };
-
-    // Process each line
-    for (let i = 0; i < dataLines.length; i++) {
-      const line = dataLines[i].trim();
-      if (!line) continue;
-
-      const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
-      
-      if (columns.length <= emailColumn) {
-        results.failed++;
-        results.errors.push(`Line ${i + 1}: Not enough columns`);
-        continue;
-      }
-
-      const email = columns[emailColumn];
-      const firstName = columns[firstNameColumn] || '';
-      const lastName = columns[lastNameColumn] || '';
-
-      if (!email || !email.includes('@')) {
-        results.failed++;
-        results.errors.push(`Line ${i + 1}: Invalid email format`);
-        continue;
-      }
-
-      try {
-        await addContactToList(contactListName, email, topicName, firstName, lastName);
-        results.successful++;
-      } catch (error) {
-        results.failed++;
-        results.errors.push(`Line ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      }
-    }
-
-    console.info('CSV import completed:', results);
-    return results;
   } catch (error) {
-    console.error('Failed to import subscribers from CSV:', error);
-    throw new Error(`CSV import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('Failed to remove contact:', error);
+    // If contact doesn't exist, that's okay - consider it already removed
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      console.info('Contact not found in SES, considering it already removed:', email);
+      return {
+        email,
+        success: true,
+        alreadyRemoved: true
+      };
+    }
+    throw new Error(`Contact removal failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

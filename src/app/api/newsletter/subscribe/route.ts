@@ -7,7 +7,7 @@ import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { render } from '@react-email/components';
 import NewsletterConfirmationEmail from '@/emails/newsletter-confirmation';
-import { newsletterSignupTranslations } from '@/_components/NewsletterSignupForm/translations';
+import { newsletterTranslations } from '@/_components/Newsletter/translations';
 import React from 'react';
 
 /**
@@ -193,8 +193,8 @@ export async function POST(request: NextRequest) {
     const copyright = (settings?.copyright as string) || 'city.fsspx.pl';
 
     const locale: 'pl' | 'en' = 'pl';
-    const t = (key: keyof typeof newsletterSignupTranslations.pl) => 
-      newsletterSignupTranslations[locale]?.[key] || newsletterSignupTranslations.pl[key];
+    const t = (key: keyof typeof newsletterTranslations.pl) => 
+      newsletterTranslations[locale]?.[key] || newsletterTranslations.pl[key];
 
     const confirmationEmailHtml = await render(
       React.createElement(NewsletterConfirmationEmail, {

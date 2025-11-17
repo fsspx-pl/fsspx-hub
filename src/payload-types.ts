@@ -367,7 +367,7 @@ export interface NewsletterSubscription {
   email: string;
   subdomain: string;
   tenant: string | Tenant;
-  status: 'pending' | 'confirmed';
+  status: 'pending' | 'confirmed' | 'unsubscribed';
   confirmedAt?: string | null;
   updatedAt: string;
   createdAt: string;

@@ -105,6 +105,34 @@ async function sendNewsletter(page: Page, testEmail?: string) {
   const footer = await fetchFooter();
   const settings = await fetchSettings();
 
+  const tenantDomain = (page.tenant as Tenant).domain;
+  const subdomain = tenantDomain.split('.')[0];
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const tenantId = (page.tenant as Tenant).id;
+
+  const payload = await getPayload({ config });
+
+  // Create function to get subscription ID for an email
+  const getSubscriptionId = async (email: string): Promise<string | null> => {
+    try {
+      const subscription = await payload.find({
+        collection: 'newsletterSubscriptions',
+        where: {
+          and: [
+            { email: { equals: email } },
+            { subdomain: { equals: subdomain } },
+            { status: { equals: 'confirmed' } },
+          ],
+        },
+        limit: 1,
+      });
+      return subscription.docs[0]?.id || null;
+    } catch (error) {
+      console.error('Error finding subscription ID:', error);
+      return null;
+    }
+  };
+
   const rawHtml = await render(
     <Email
       title={titleWithDateSuffix}
@@ -146,6 +174,8 @@ async function sendNewsletter(page: Page, testEmail?: string) {
     htmlContent: html,
     contactListName,
     topicName,
+    unsubscribeBaseUrl: `${baseUrl}/${subdomain}/newsletter/unsubscribe`,
+    getSubscriptionId,
   };
 
   if(testEmail) {
@@ -173,6 +203,8 @@ async function sendNewsletter(page: Page, testEmail?: string) {
       html,
       from: emailData.fromName,
       replyTo: fromEmail,
+      unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
+      getSubscriptionId,
     });
 
     return {

@@ -250,12 +250,14 @@ export default function Email({
   slogan = "Ad maiorem Dei gloriam!",
   copyright = "city.fsspx.pl",
   feastsWithMasses = testFeasts,
+  unsubscribeUrl,
 }: {
   title: string;
   content_html: string;
   copyright: string;
   slogan: string;
   feastsWithMasses: FeastWithMasses[];
+  unsubscribeUrl?: string;
 }) {
   const currentYear = now.getFullYear();
 
@@ -348,8 +350,8 @@ export default function Email({
                     }}
                   >
                     Otrzymujesz ogłoszenia drogą mailową, ponieważ twój adres email jest zapisany w naszej liście subskrybentów.
-                    Jeśli nie chcesz ich otrzymywać,&nbsp;
-                    <a href="{{amazonSESUnsubscribeUrl}}" style={{ color: "#9CA3AF", textDecoration: "underline" }}>
+                    {' '}Jeśli nie chcesz ich otrzymywać,&nbsp;
+                    <a href="{{UNSUBSCRIBE_URL}}" style={{ color: "#9CA3AF", textDecoration: "underline" }}>
                       wypisz się z listy klikając w ten link.
                     </a>
                   </Text>

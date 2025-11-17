@@ -2,7 +2,7 @@ import { Page } from '@/payload-types';
 import { format } from 'date-fns';
 import React from 'react';
 import { AnnouncementCard } from '../AnnouncementCard';
-import { NewsletterSignupForm } from '../NewsletterSignupForm';
+import { NewsletterSignupForm } from '../Newsletter/NewsletterSignupForm';
 
 type Props = {
   announcements: Page[];

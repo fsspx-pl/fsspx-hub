@@ -5,7 +5,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import { Input } from '@/_components/Input';
 import { Button } from '@/_components/Button';
 import { Alert } from '@/_components/Alert';
-import { getNewsletterTranslation } from './translations';
+import { getNewsletterTranslation } from '../translations';
 
 type Props = {
   subdomain: string;
@@ -26,7 +26,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
   const [errorMessage, setErrorMessage] = useState('');
 
   const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
-    getNewsletterTranslation(key, locale);
+    getNewsletterTranslation(key, locale, 'subscribe');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -76,6 +76,13 @@ export const NewsletterSubscriptions: CollectionConfig = {
           },
           value: 'confirmed',
         },
+        {
+          label: {
+            en: 'Unsubscribed',
+            pl: 'Rezygnacja',
+          },
+          value: 'unsubscribed',
+        },
       ],
       defaultValue: 'pending',
       required: true,

@@ -1,9 +1,10 @@
-import { NewsletterStatusPage } from '@/_components/NewsletterStatusPage';
+import { NewsletterStatusPage } from '@/_components/Newsletter/NewsletterStatusPage';
 import { addContactToList } from '@/utilities/awsSes';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { redirect } from 'next/navigation';
 import { Tenant } from '@/payload-types';
+import { getNewsletterTranslation } from '@/_components/Newsletter/translations';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,11 +55,16 @@ export default async function ConfirmNewsletterPage({
 
     // If already confirmed, show confirmed page
     if (subscription.status === 'confirmed') {
+      const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
+        getNewsletterTranslation(key, 'pl', 'subscribe');
+      
       return (
         <NewsletterStatusPage
+          variant="success"
+          title={t('confirmationTitle')}
+          message={t('confirmationMessageAlready')}
           subdomain={subdomain}
-          title="Subskrypcja potwierdzona!"
-          message="Twoja subskrypcja ogłoszeń duszpasterskich została potwierdzona. Będziesz otrzymywać je na swój adres email po ich opublikowaniu."
+          locale="pl"
         />
       );
     }
@@ -86,13 +92,17 @@ export default async function ConfirmNewsletterPage({
 
     console.log('Newsletter subscription confirmed:', { email: subscription.email, subdomain });
 
+    const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
+      getNewsletterTranslation(key, 'pl', 'subscribe');
+
     // Show success page
     return (
       <NewsletterStatusPage
+        variant={awsError ? 'warning' : 'success'}
+        title={t('confirmationTitle')}
+        message={t('confirmationMessage')}
         subdomain={subdomain}
-        title="Subskrypcja potwierdzona!"
-        message="Dziękujemy! Twoja subskrypcja ogłoszeń duszpasterskich została potwierdzona. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
-        showWarning={awsError}
+        locale="pl"
       />
     );
   }
