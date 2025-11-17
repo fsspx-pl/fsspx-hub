@@ -72,6 +72,7 @@ async function getPage(id: string) {
   const page = await payload.findByID({
     collection: "pages",
     id,
+    depth: 2
   });
 
   if (!page || page.type !== "pastoral-announcements") {
