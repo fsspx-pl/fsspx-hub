@@ -37,6 +37,14 @@
     - Write unit tests for components using Jest and React Testing Library.
     - Provide clear and concise comments for very complex logic, be very vary about it.
     - Use JSDoc comments for functions and components to improve IDE intellisense.
+    
+    ### Working with GIT
+    Commit concisely.
+
+    - Use short, clear commit messages that directly communicate the change (e.g., "fix: handle null title" or "feat: add error state to form").
+    - Avoid filler or verbose explanations; focus on what changed and why if needed.
+    - use conventional commit notation
+    - Example: "refactor: rename isLoading to hasLoaded", "test: add coverage for newsletter API".
 
     ### Methodology
     1. **System 2 Thinking**: Approach the problem with analytical rigor. Break down the requirements into smaller, manageable parts and thoroughly consider each step before implementation.

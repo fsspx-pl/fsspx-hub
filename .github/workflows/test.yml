@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   pull_request:
@@ -6,12 +6,28 @@ on:
     branches: [main, develop]
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x]
+
+    env:
+      CI: true
+      DATABASE_URI: ${{ secrets.DATABASE_URI }}
+      DATABASE_DIRECT_CONNECTION: ${{ secrets.DATABASE_DIRECT_CONNECTION }}
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      NEXT_PUBLIC_ROOT_DOMAIN: ${{ secrets.NEXT_PUBLIC_ROOT_DOMAIN }}
+      NEXT_PUBLIC_IS_LIVE: ${{ secrets.NEXT_PUBLIC_IS_LIVE }}
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      FROM_ADDRESS: ${{ secrets.FROM_ADDRESS }}
+      FROM_NAME: ${{ secrets.FROM_NAME }}
+      SMTP_HOST: ${{ secrets.SMTP_HOST }}
+      SMTP_PORT: ${{ secrets.SMTP_PORT }}
+      SMTP_USER: ${{ secrets.SMTP_USER }}
+      SMTP_PASS: ${{ secrets.SMTP_PASS }}
 
     steps:
       - name: Checkout code
@@ -31,6 +47,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
+      - name: Build
+        run: pnpm build
+
+      - name: Run unit tests
         run: pnpm test
 
