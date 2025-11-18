@@ -1,4 +1,6 @@
 import { withPayload } from "@payloadcms/next/withPayload";
+import { withPostHogConfig } from "@posthog/nextjs-config";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
@@ -56,4 +58,16 @@ const nextConfig = {
   compress: true,
 };
 
-export default withPayload(nextConfig);
+export default withPostHogConfig(
+  withPayload(nextConfig),
+  {
+    personalApiKey: process.env.POSTHOG_ERROR_TRACKING_APIKEY,
+    envId: process.env.POSTHOG_ENV_ID,
+    host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com',
+    sourcemaps: {
+      enabled: process.env.POSTHOG_UPLOAD_SOURCEMAPS === 'true',
+      project: "fsspx-hub",
+      deleteAfterUpload: true,
+    },
+  }
+);
