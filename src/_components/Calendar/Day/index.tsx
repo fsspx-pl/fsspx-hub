@@ -1,8 +1,9 @@
 'use client'
 
 import { garamond } from '@/fonts'
-import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import React from 'react'
+import { POLISH_TIMEZONE } from '../../../common/timezone'
 import { polishLocale } from '../utils/polishLocale'
 
 type Props = {
@@ -27,7 +28,7 @@ export const Day: React.FC<Props> = ({
   const isSunday = date.getDay() === 0;
   const textColor = isSunday ? 'text-[#c81910]' : 'text-[#4a4b4f]';
   const dayNumber = date.getDate();
-  const dayName = format(date, 'EEE', { locale: polishLocale }).replace('.', '');
+  const dayName = formatInTimeZone(date, POLISH_TIMEZONE, 'EEE', { locale: polishLocale }).replace('.', '')
   
   return (
     <div 
