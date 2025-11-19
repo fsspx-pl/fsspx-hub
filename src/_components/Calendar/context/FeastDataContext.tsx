@@ -82,7 +82,7 @@ export const FeastDataProvider: React.FC<{
       const monthEnd = endOfMonth(date)
       
       const response = await fetch(
-        `/api/services?tenant=${tenantId}&start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}`
+        `/api/services-range?tenant=${tenantId}&start=${monthStart.toISOString()}&end=${monthEnd.toISOString()}`
       )
       
       if (response.ok) {

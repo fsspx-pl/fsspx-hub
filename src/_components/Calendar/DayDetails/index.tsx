@@ -1,11 +1,12 @@
 'use client'
 
 import { VestmentColor } from '@/feast'
-import { format } from 'date-fns'
+import { formatInTimeZone } from 'date-fns-tz'
 import { NO_MASSES_MESSAGE } from '../const'
 import { FeastWithMasses } from '../index'
 import { getServiceTitle } from '../utils/getServiceTitle'
 import { romanize } from '../utils/romanize'
+import { POLISH_TIMEZONE } from '../../../common/timezone'
 
 interface SelectedDayDetailsProps {
   selectedDay: FeastWithMasses
@@ -46,7 +47,9 @@ export const DayDetails: React.FC<SelectedDayDetailsProps> = ({
         {selectedDay.masses.length > 0 ? (
           selectedDay.masses.map((mass, idx) => (
             <div key={idx} className="grid grid-cols-[auto_1fr] gap-x-4">
-              <span className="font-semibold">{format(mass.date, 'HH:mm')}</span>
+              <span className="font-semibold">
+                {formatInTimeZone(mass.date, POLISH_TIMEZONE, 'HH:mm')}
+              </span>
               <div>{getServiceTitle(mass)}</div>
               {mass.notes && <div></div>}
               {mass.notes && (

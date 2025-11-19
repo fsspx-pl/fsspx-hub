@@ -37,12 +37,19 @@
     - Write unit tests for components using Jest and React Testing Library.
     - Provide clear and concise comments for very complex logic, be very vary about it.
     - Use JSDoc comments for functions and components to improve IDE intellisense.
+
     - **Storybook Stories**: 
       - ALWAYS create or update Storybook stories (`*.stories.tsx`) when creating or modifying components in `src/_components/`.
       - When creating a new component, create a corresponding story file in the same directory with the naming pattern `index.stories.tsx`.
       - When modifying an existing component (props, variants, behavior), update the corresponding story file to reflect the changes.
       - Stories should showcase different states, variants, and use cases of the component.
       - Follow the existing story patterns in the codebase (use `Meta` and `StoryObj` types from `@storybook/react`).
+    
+    ### Working with GIT
+    - Use short, concise and clear commit messages that directly communicate the change (e.g., "fix: handle null title" or "feat: add error state to form").
+    - Avoid filler or verbose explanations; focus on what changed and why if needed.
+    - use conventional commit notation
+    - Example: "refactor: rename isLoading to hasLoaded", "test: add coverage for newsletter API".
 
     ### Methodology
     1. **System 2 Thinking**: Approach the problem with analytical rigor. Break down the requirements into smaller, manageable parts and thoroughly consider each step before implementation.

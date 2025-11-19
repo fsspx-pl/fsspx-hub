@@ -1,7 +1,11 @@
 import { withPayload } from "@payloadcms/next/withPayload";
+import { withPostHogConfig } from "@posthog/nextjs-config";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  // This is required to support PostHog trailing slash API requests
+  skipTrailingSlashRedirect: true,
   async headers() {
     const headers = [];
 
@@ -16,6 +20,20 @@ const nextConfig = {
         source: "/:path*",
       });
     }
+
+    return headers;
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/static/:path*",
+        destination: "https://eu-assets.i.posthog.com/static/:path*",
+      },
+      {
+        source: "/ingest/:path*",
+        destination: "https://eu.i.posthog.com/:path*",
+      },
+    ];
   },
   images: {
     remotePatterns: [
@@ -40,4 +58,16 @@ const nextConfig = {
   compress: true,
 };
 
-export default withPayload(nextConfig);
+export default withPostHogConfig(
+  withPayload(nextConfig),
+  {
+    personalApiKey: process.env.POSTHOG_ERROR_TRACKING_APIKEY,
+    envId: process.env.POSTHOG_ENV_ID,
+    host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.i.posthog.com',
+    sourcemaps: {
+      enabled: process.env.POSTHOG_UPLOAD_SOURCEMAPS === 'true',
+      project: "fsspx-hub",
+      deleteAfterUpload: true,
+    },
+  }
+);

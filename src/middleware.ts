@@ -7,8 +7,9 @@ export const config = {
      * Match all paths except for:
      * 1. /api routes
      * 2. /_next (Next.js internals)
+     * 3. /ingest (PostHog proxy routes)
      */
-    "/((?!api/|_next/|admin).*)"
+    "/((?!api/|_next/|admin|ingest/).*)"
   ]
 };
 
