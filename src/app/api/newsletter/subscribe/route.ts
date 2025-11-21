@@ -138,26 +138,23 @@ export async function POST(request: NextRequest) {
     // Check if contact already exists in AWS SES
     const existsInAwsSes = await contactExistsInList(contactListName, email, topicName);
 
+    const baseUrl = request.headers.get('host') 
+      ? `https://${request.headers.get('host')}` 
+      : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     // If exists in Payload as confirmed OR in AWS SES, return already exists page
     if (existingSubscription.docs.length > 0 && existingSubscription.docs[0].status === 'confirmed') {
-      const baseUrl = request.headers.get('host') 
-        ? `https://${request.headers.get('host')}` 
-        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
       return NextResponse.json({
         success: false,
         alreadyExists: true,
-        redirectUrl: `${baseUrl}/${subdomain}/newsletter/already-subscribed`,
+        redirectUrl: `${baseUrl}/newsletter/already-subscribed`,
       });
     }
 
     if (existsInAwsSes) {
-      const baseUrl = request.headers.get('host') 
-        ? `https://${request.headers.get('host')}` 
-        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
       return NextResponse.json({
         success: false,
         alreadyExists: true,
-        redirectUrl: `${baseUrl}/${subdomain}/newsletter/already-subscribed`,
+        redirectUrl: `${baseUrl}/newsletter/already-subscribed`,
       });
     }
 
@@ -180,10 +177,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send confirmation email with subscription ID
-    const baseUrl = request.headers.get('host') 
-      ? `https://${request.headers.get('host')}` 
-      : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    const confirmationUrl = `${baseUrl}/${subdomain}/newsletter/confirm/${subscription.id}`;
+    const confirmationUrl = `${baseUrl}/newsletter/confirm/${subscription.id}`;
       
     const fromEmail = process.env.FROM_ADDRESS || 'noreply@example.com';
     const fromName = process.env.FROM_NAME || 'FSSPX';

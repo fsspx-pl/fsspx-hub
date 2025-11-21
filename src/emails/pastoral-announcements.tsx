@@ -250,14 +250,12 @@ export default function Email({
   slogan = "Ad maiorem Dei gloriam!",
   copyright = "city.fsspx.pl",
   feastsWithMasses = testFeasts,
-  unsubscribeUrl,
 }: {
   title: string;
   content_html: string;
   copyright: string;
   slogan: string;
   feastsWithMasses: FeastWithMasses[];
-  unsubscribeUrl?: string;
 }) {
   const currentYear = now.getFullYear();
 

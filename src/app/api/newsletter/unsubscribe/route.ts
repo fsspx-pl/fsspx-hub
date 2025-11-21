@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchTenant } from '@/_api/fetchTenants';
-import { removeContactFromList } from '@/utilities/awsSes';
+import { unsubscribeFromTopic } from '@/utilities/awsSes';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { Tenant } from '@/payload-types';
@@ -69,14 +69,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Remove contact from AWS SES
     let awsError = false;
     try {
-      console.log('Removing contact from AWS SES:', { contactListName, email });
-      await removeContactFromList(contactListName, email);
-      console.log('Contact removed from AWS SES successfully');
+      console.log('Unsubscribing contact from topic in AWS SES:', { contactListName, email, topicName });
+      await unsubscribeFromTopic(contactListName, email, topicName);
+      console.log('Contact unsubscribed from topic in AWS SES successfully');
     } catch (error) {
-      console.error('Error removing contact from AWS SES:', error);
+      console.error('Error unsubscribing contact from topic in AWS SES:', error);
       awsError = true;
     }
 
@@ -113,4 +112,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -219,14 +219,13 @@ export async function sendNewsletterToContactList(emailData: {
     const personalizedEmails = await Promise.all(
       recipients.map(async (email) => {
         let personalizedHtml = emailData.html;
-        if (emailData.unsubscribeBaseUrl && emailData.getSubscriptionId) {
-          const subscriptionId = await emailData.getSubscriptionId(email);
-          if (subscriptionId) {
-            const unsubscribeUrl = `${emailData.unsubscribeBaseUrl}/${subscriptionId}`;
-            personalizedHtml = personalizedHtml.replace(/\{\{UNSUBSCRIBE_URL\}\}/g, unsubscribeUrl);
-          }
-        }
-        return { email, html: personalizedHtml };
+        if(!emailData.unsubscribeBaseUrl) return { email, html: personalizedHtml }
+        if(!emailData.getSubscriptionId) return { email, html: personalizedHtml }
+        const subscriptionId = await emailData.getSubscriptionId(email);
+        if (!subscriptionId) return { email, html: personalizedHtml }
+        const unsubscribeUrl = `${emailData.unsubscribeBaseUrl}/${subscriptionId}`;
+        personalizedHtml = personalizedHtml.replace(/\{\{UNSUBSCRIBE_URL\}\}/g, unsubscribeUrl);
+        return { email, html: personalizedHtml }
       })
     );
 

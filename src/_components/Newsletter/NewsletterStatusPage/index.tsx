@@ -2,6 +2,7 @@ import { garamond } from '@/fonts';
 import { getNewsletterTranslation } from '../translations';
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import { Button } from '@/_components/Button';
 
 type NewsletterStatusPageVariant = 'success' | 'warning' | 'info';
 
@@ -133,11 +134,10 @@ export function NewsletterStatusPage({
 
             {showBackButton && !action && (
               <div className="mt-8">
-                <Link
-                  href={backButtonHref || defaultBackHref}
-                  className="inline-block bg-[#C81910] text-white px-6 py-3 rounded-md font-medium hover:bg-[#A0150D] transition-colors"
-                >
-                  {backButtonText || defaultBackText}
+                <Link href={backButtonHref || defaultBackHref}>
+                  <Button variant="primary">
+                    {backButtonText || defaultBackText}
+                  </Button>
                 </Link>
               </div>
             )}

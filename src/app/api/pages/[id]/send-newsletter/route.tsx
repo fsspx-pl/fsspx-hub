@@ -85,7 +85,15 @@ async function getPage(id: string) {
   return page;
 }
 
-async function sendNewsletter(page: Page, testEmail?: string) {
+async function sendNewsletter({
+  page,
+  testEmail,
+  baseUrl,
+}: {
+  page: Page;
+  testEmail?: string;
+  baseUrl: string;
+}) {
   if (!page.period) {
     throw new Error("Page has no period");
   }
@@ -108,9 +116,7 @@ async function sendNewsletter(page: Page, testEmail?: string) {
 
   const tenantDomain = (page.tenant as Tenant).domain;
   const subdomain = tenantDomain.split('.')[0];
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const tenantId = (page.tenant as Tenant).id;
-
+  
   const payload = await getPayload({ config });
 
   // Create function to get subscription ID for an email
@@ -175,7 +181,7 @@ async function sendNewsletter(page: Page, testEmail?: string) {
     htmlContent: html,
     contactListName,
     topicName,
-    unsubscribeBaseUrl: `${baseUrl}/${subdomain}/newsletter/unsubscribe`,
+    unsubscribeBaseUrl: `${baseUrl}/newsletter/unsubscribe`,
     getSubscriptionId,
   };
 
@@ -249,7 +255,13 @@ export async function POST(
       );
     }
 
-    const newsletterResponse = await sendNewsletter(page as Page, testEmail ?? undefined);
+    const newsletterResponse = await sendNewsletter({
+      page: page as Page,
+      testEmail: testEmail ?? undefined,
+      baseUrl: request.headers.get('host') 
+        ? `https://${request.headers.get('host')}` 
+        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    });
     if(!testEmail) await markNewsletterAsSent(id);
 
     return NextResponse.json({

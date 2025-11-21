@@ -12,7 +12,7 @@
     - Favor iteration and modularization over code duplication.
     - Use descriptive variable names with auxiliary verbs (e.g., `isLoading`, `hasError`).
     - Structure files according to how PayloadCMS structuress its projects.
-    - use early-return notation wherever possible
+    - always use early-return notation wherever possible, avoid if-else nesting
 
     ### Optimization and Best Practices
     - Minimize the use of `'use client'`, `useEffect`, and `setState`; favor React Server Components (RSC) and Next.js SSR features.

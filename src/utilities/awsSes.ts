@@ -1,4 +1,4 @@
-import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand, ListContactsCommand, GetContactCommand, DeleteContactCommand, UpdateContactCommand } from '@aws-sdk/client-sesv2';
+import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand, ListContactsCommand, GetContactCommand, DeleteContactCommand, UpdateContactCommand, PutSuppressedDestinationCommand, GetSuppressedDestinationCommand, ListSuppressedDestinationsCommand } from '@aws-sdk/client-sesv2';
 
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
@@ -362,7 +362,77 @@ export async function addContactToList(contactListName: string, email: string, t
 }
 
 /**
+ * Update a contact's topic preference to OPT_OUT
+ * This unsubscribes them from a specific topic while keeping them in the contact list
+ * (so they can remain subscribed to other topics)
+ */
+export async function unsubscribeFromTopic(contactListName: string, email: string, topicName: string) {
+  try {
+    console.info('Unsubscribing contact from topic:', { contactListName, email, topicName });
+
+    // First, get the contact to preserve existing topic preferences
+    const { GetContactCommand } = await import('@aws-sdk/client-sesv2');
+    const getCommand = new GetContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+    });
+
+    let existingTopicPreferences: Array<{ TopicName: string; SubscriptionStatus: 'OPT_IN' | 'OPT_OUT' }> = [];
+    
+    try {
+      const contactResponse = await sesClient.send(getCommand);
+      existingTopicPreferences = (contactResponse.TopicPreferences || []).map(topic => ({
+        TopicName: topic.TopicName!,
+        SubscriptionStatus: topic.SubscriptionStatus as 'OPT_IN' | 'OPT_OUT',
+      }));
+    } catch (error) {
+      // If contact doesn't exist, that's okay - we'll just set this topic to OPT_OUT
+      console.info('Contact not found, will create with OPT_OUT for this topic');
+    }
+
+    // Update topic preferences: set the specified topic to OPT_OUT, keep others as-is
+    const updatedTopicPreferences = existingTopicPreferences
+      .filter(topic => topic.TopicName !== topicName)
+      .concat([{
+        TopicName: topicName,
+        SubscriptionStatus: 'OPT_OUT' as const,
+      }]);
+
+    const command = new UpdateContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+      TopicPreferences: updatedTopicPreferences,
+      UnsubscribeAll: false, // Don't unsubscribe from all topics, just this one
+    });
+
+    const response = await sesClient.send(command);
+    console.info('Contact unsubscribed from topic successfully:', { email, topicName });
+    
+    return {
+      email,
+      topicName,
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    console.error('Failed to unsubscribe contact from topic:', error);
+    // If contact doesn't exist, that's okay - consider it already unsubscribed
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      console.info('Contact not found in SES, considering it already unsubscribed:', email);
+      return {
+        email,
+        topicName,
+        success: true,
+        alreadyUnsubscribed: true
+      };
+    }
+    throw new Error(`Topic unsubscribe failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Remove a contact from AWS SES contact list
+ * Use this only when you want to completely remove a contact from all topics
  */
 export async function removeContactFromList(contactListName: string, email: string) {
   try {
@@ -393,5 +463,63 @@ export async function removeContactFromList(contactListName: string, email: stri
       };
     }
     throw new Error(`Contact removal failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Add an email address to SES suppression list
+ * This prevents SES from sending emails to bounced/complained addresses
+ */
+export async function addToSuppressionList(email: string, reason: 'BOUNCE' | 'COMPLAINT') {
+  try {
+    console.info('Adding email to suppression list:', { email, reason });
+
+    const command = new PutSuppressedDestinationCommand({
+      EmailAddress: email,
+      Reason: reason,
+    });
+
+    const response = await sesClient.send(command);
+    console.info('Email added to suppression list successfully:', email);
+    
+    return {
+      email,
+      reason,
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    console.error('Failed to add email to suppression list:', error);
+    // If already suppressed, that's okay
+    if (error instanceof Error && error.message.includes('already exists')) {
+      console.info('Email already in suppression list:', email);
+      return {
+        email,
+        reason,
+        success: true,
+        alreadySuppressed: true
+      };
+    }
+    throw new Error(`Suppression list addition failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Check if an email is in the suppression list
+ */
+export async function isSuppressed(email: string): Promise<boolean> {
+  try {
+    const command = new GetSuppressedDestinationCommand({
+      EmailAddress: email,
+    });
+
+    await sesClient.send(command);
+    return true;
+  } catch (error) {
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      return false;
+    }
+    console.error('Error checking suppression status:', error);
+    return false;
   }
 }
