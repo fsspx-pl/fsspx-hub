@@ -26,6 +26,7 @@ export interface Config {
     media: Media;
     services: Service;
     serviceWeeks: ServiceWeek;
+    newsletterSubscriptions: NewsletterSubscription;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -43,6 +44,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     serviceWeeks: ServiceWeeksSelect<false> | ServiceWeeksSelect<true>;
+    newsletterSubscriptions: NewsletterSubscriptionsSelect<false> | NewsletterSubscriptionsSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -358,6 +360,18 @@ export interface ServiceWeek {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletterSubscriptions".
+ */
+export interface NewsletterSubscription {
+  id: string;
+  email: string;
+  tenant: string | Tenant;
+  status: 'pending' | 'confirmed' | 'unsubscribed';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
@@ -478,6 +492,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'serviceWeeks';
         value: string | ServiceWeek;
+      } | null)
+    | ({
+        relationTo: 'newsletterSubscriptions';
+        value: string | NewsletterSubscription;
       } | null)
     | ({
         relationTo: 'payload-jobs';
@@ -692,6 +710,17 @@ export interface ServiceWeeksSelect<T extends boolean = true> {
   start?: T;
   end?: T;
   yearWeek?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletterSubscriptions_select".
+ */
+export interface NewsletterSubscriptionsSelect<T extends boolean = true> {
+  email?: T;
+  tenant?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }

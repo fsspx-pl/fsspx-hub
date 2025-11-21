@@ -1,0 +1,22 @@
+import { NewsletterStatusPage } from '@/_components/Newsletter/NewsletterStatusPage';
+
+export const dynamic = 'force-dynamic';
+
+export default async function AlreadySubscribedPage({
+  params,
+}: {
+  params: Promise<{ domain: string }>;
+}) {
+  const { domain } = await params;
+  const subdomain = domain.split('.')[0];
+
+  return (
+    <NewsletterStatusPage
+      variant="info"
+      title="Już jesteś zapisany"
+      message="Ten adres email jest już zapisany do subskrypcji ogłoszeń duszpasterskich z tej kaplicy. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
+      locale="pl"
+    />
+  );
+}
+

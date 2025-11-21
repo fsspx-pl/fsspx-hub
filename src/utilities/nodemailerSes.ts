@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { personalizeUnsubscribeUrl } from './personalizeUnsubscribe';
 
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
@@ -162,6 +163,8 @@ export async function sendNewsletterToContactList(emailData: {
   text?: string;
   from?: string;
   replyTo?: string;
+  unsubscribeBaseUrl?: string;
+  getSubscriptionId?: (email: string) => Promise<string | null>;
 }) {
   try {
     console.info('Sending newsletter to contact list:', {
@@ -213,16 +216,47 @@ export async function sendNewsletterToContactList(emailData: {
     
     console.info(`Found ${recipients.length} contacts to send newsletter to`);
 
-    // Send bulk emails
-    return await sendBulkEmails({
-      recipients,
-      subject: emailData.subject,
-      html: emailData.html,
-      text: emailData.text,
-      from: emailData.from,
-      replyTo: emailData.replyTo,
-      batchSize: 10 // Conservative batch size for SES
-    });
+    // Personalize HTML for each recipient with unsubscribe URL using subscription ID
+    const personalizedEmails = await Promise.all(
+      recipients.map(async (email) => ({
+        email,
+        html: await personalizeUnsubscribeUrl({
+          html: emailData.html,
+          email,
+          unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
+          getSubscriptionId: emailData.getSubscriptionId,
+        }),
+      }))
+    );
+
+    // Send emails individually with personalized content
+    const results = await Promise.all(
+      personalizedEmails.map(({ email, html }) =>
+        sendEmail({
+          to: email,
+          subject: emailData.subject,
+          html,
+          text: emailData.text,
+          from: emailData.from,
+          replyTo: emailData.replyTo,
+        }).catch((error) => {
+          console.error(`Failed to send to ${email}:`, error);
+          return { success: false, email, error: error instanceof Error ? error.message : 'Unknown error' };
+        })
+      )
+    );
+
+    const successful = results.filter(r => r && 'success' in r && r.success).length;
+    const failed = results.length - successful;
+
+    return {
+      total: recipients.length,
+      successful,
+      failed,
+      errors: results
+        .filter(r => r && 'error' in r)
+        .map(r => (r as any).error || 'Unknown error'),
+    };
 
   } catch (error) {
     console.error('Failed to send newsletter to contact list:', error);

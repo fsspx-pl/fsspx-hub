@@ -11,6 +11,7 @@ import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
 import { serialize } from "@/_components/RichText/serialize";
 import { sendBulkEmail } from "@/utilities/awsSes";
 import { sendEmail, sendNewsletterToContactList } from "@/utilities/nodemailerSes";
+import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
 import React from "react";
 import { minify } from "html-minifier-terser";
 
@@ -85,7 +86,15 @@ async function getPage(id: string) {
   return page;
 }
 
-async function sendNewsletter(page: Page, testEmail?: string) {
+async function sendNewsletter({
+  page,
+  testEmail,
+  baseUrl,
+}: {
+  page: Page;
+  testEmail?: string;
+  baseUrl: string;
+}) {
   if (!page.period) {
     throw new Error("Page has no period");
   }
@@ -105,6 +114,30 @@ async function sendNewsletter(page: Page, testEmail?: string) {
 
   const footer = await fetchFooter();
   const settings = await fetchSettings();
+
+  
+  const payload = await getPayload({ config });
+
+  // Create function to get subscription ID for an email
+  const getSubscriptionId = async (email: string): Promise<string | null> => {
+    try {
+      const subscription = await payload.find({
+        collection: 'newsletterSubscriptions',
+        where: {
+          and: [
+            { email: { equals: email } },
+            { tenant: { equals: (page.tenant as Tenant).id } },
+            { status: { equals: 'confirmed' } },
+          ],
+        },
+        limit: 1,
+      });
+      return subscription.docs[0]?.id || null;
+    } catch (error) {
+      console.error('Error finding subscription ID:', error);
+      return null;
+    }
+  };
 
   const rawHtml = await render(
     <Email
@@ -147,18 +180,30 @@ async function sendNewsletter(page: Page, testEmail?: string) {
     htmlContent: html,
     contactListName,
     topicName,
+    unsubscribeBaseUrl: `${baseUrl}/newsletter/unsubscribe`,
+    getSubscriptionId,
   };
 
-  if(testEmail) {
+  if (testEmail) {
     console.info('Sending test email to:', testEmail);
+
+    const personalizedHtml = await personalizeUnsubscribeUrl({
+      html,
+      email: testEmail,
+      unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
+      getSubscriptionId: emailData.getSubscriptionId,
+      onMissingSubscription: (email) =>
+        console.warn(`No subscription found for test email ${email}, UNSUBSCRIBE_URL will not be replaced`),
+    });
+
     const response = await sendEmail({
       from: emailData.fromName,
       to: testEmail,
       subject: `[TEST] ${titleWithDateSuffix}`,
-      html,
+      html: personalizedHtml,
     });
-  return response;
-}
+    return response;
+  }
 
   try {
     const response = await sendBulkEmail(emailData);
@@ -174,6 +219,8 @@ async function sendNewsletter(page: Page, testEmail?: string) {
       html,
       from: emailData.fromName,
       replyTo: fromEmail,
+      unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
+      getSubscriptionId,
     });
 
     return {
@@ -217,7 +264,13 @@ export async function POST(
       );
     }
 
-    const newsletterResponse = await sendNewsletter(page as Page, testEmail ?? undefined);
+    const newsletterResponse = await sendNewsletter({
+      page: page as Page,
+      testEmail: testEmail ?? undefined,
+      baseUrl: request.headers.get('host') 
+        ? `https://${request.headers.get('host')}` 
+        : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+    });
     if(!testEmail) await markNewsletterAsSent(id);
 
     return NextResponse.json({

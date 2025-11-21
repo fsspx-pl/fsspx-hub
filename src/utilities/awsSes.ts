@@ -1,4 +1,4 @@
-import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand } from '@aws-sdk/client-sesv2';
+import { SESv2Client, SendBulkEmailCommand, GetContactListCommand, CreateContactListCommand, CreateContactCommand, ListContactsCommand, GetContactCommand, DeleteContactCommand, UpdateContactCommand, PutSuppressedDestinationCommand, GetSuppressedDestinationCommand, ListSuppressedDestinationsCommand } from '@aws-sdk/client-sesv2';
 
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
@@ -37,6 +37,8 @@ export async function sendBulkEmail(emailData: {
   htmlContent: string;
   contactListName: string;
   topicName?: string;
+  unsubscribeBaseUrl?: string;
+  getSubscriptionId?: (email: string) => Promise<string | null>;
 }) {
   try {
     console.info('Sending bulk email with data:', {
@@ -102,6 +104,16 @@ export async function sendBulkEmail(emailData: {
       
       const sendPromises = batch.map(async (contact) => {
         try {
+          // Personalize unsubscribe URL for each recipient using subscription ID
+          let personalizedHtml = emailData.htmlContent;
+          if (emailData.unsubscribeBaseUrl && contact.EmailAddress && emailData.getSubscriptionId) {
+            const subscriptionId = await emailData.getSubscriptionId(contact.EmailAddress);
+            if (subscriptionId) {
+              const unsubscribeUrl = `${emailData.unsubscribeBaseUrl}/${subscriptionId}`;
+              personalizedHtml = personalizedHtml.replace(/\{\{UNSUBSCRIBE_URL\}\}/g, unsubscribeUrl);
+            }
+          }
+
           const sendCommand = new SendEmailCommand({
             Destination: {
               ToAddresses: [contact.EmailAddress!],
@@ -114,7 +126,7 @@ export async function sendBulkEmail(emailData: {
                 },
                 Body: {
                   Html: {
-                    Data: emailData.htmlContent,
+                    Data: personalizedHtml,
                     Charset: 'UTF-8',
                   },
                 },
@@ -279,11 +291,45 @@ export async function createContactList(contactListName: string, description?: s
 }
 
 /**
+ * Check if a contact exists in AWS SES contact list
+ */
+export async function contactExistsInList(contactListName: string, email: string, topicName?: string): Promise<boolean> {
+  try {
+    const { GetContactCommand } = await import('@aws-sdk/client-sesv2');
+    const command = new GetContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+    });
+
+    const response = await sesClient.send(command);
+    
+    // If contact exists, check topic preference if topicName is provided
+    if (topicName && response.TopicPreferences) {
+      const hasTopic = response.TopicPreferences.some(
+        topic => topic.TopicName === topicName && topic.SubscriptionStatus === 'OPT_IN'
+      );
+      return hasTopic;
+    }
+    
+    // If no topic specified, just check if contact exists
+    return !!response.EmailAddress;
+  } catch (error) {
+    // If contact doesn't exist, AWS SES throws an error
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      return false;
+    }
+    // For other errors, log and return false
+    console.error('Error checking contact existence:', error);
+    return false;
+  }
+}
+
+/**
  * Add a single contact to a contact list
  */
-export async function addContactToList(contactListName: string, email: string, firstName?: string, lastName?: string) {
+export async function addContactToList(contactListName: string, email: string, topicName: string, firstName?: string, lastName?: string) {
   try {
-    console.info('Adding contact to list:', { contactListName, email });
+    console.info('Adding contact to list:', { contactListName, email, topicName });
 
     const command = new CreateContactCommand({
       ContactListName: contactListName,
@@ -291,7 +337,7 @@ export async function addContactToList(contactListName: string, email: string, f
       UnsubscribeAll: false,
       TopicPreferences: [
         {
-          TopicName: 'poznan', // Default topic
+          TopicName: topicName,
           SubscriptionStatus: 'OPT_IN'
         }
       ],
@@ -316,76 +362,164 @@ export async function addContactToList(contactListName: string, email: string, f
 }
 
 /**
- * Import subscribers from CSV data
- * CSV format: email,firstName,lastName (header row optional)
+ * Update a contact's topic preference to OPT_OUT
+ * This unsubscribes them from a specific topic while keeping them in the contact list
+ * (so they can remain subscribed to other topics)
  */
-export async function importSubscribersFromCSV(
-  contactListName: string, 
-  csvData: string, 
-  options: {
-    hasHeader?: boolean;
-    emailColumn?: number;
-    firstNameColumn?: number;
-    lastNameColumn?: number;
-  } = {}
-) {
+export async function unsubscribeFromTopic(contactListName: string, email: string, topicName: string) {
   try {
-    console.info('Importing subscribers from CSV to contact list:', contactListName);
+    console.info('Unsubscribing contact from topic:', { contactListName, email, topicName });
 
-    const {
-      hasHeader = true,
-      emailColumn = 0,
-      firstNameColumn = 1,
-      lastNameColumn = 2
-    } = options;
+    // First, get the contact to preserve existing topic preferences
+    const { GetContactCommand } = await import('@aws-sdk/client-sesv2');
+    const getCommand = new GetContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+    });
 
-    // Parse CSV data
-    const lines = csvData.trim().split('\n');
-    const dataLines = hasHeader ? lines.slice(1) : lines;
+    let existingTopicPreferences: Array<{ TopicName: string; SubscriptionStatus: 'OPT_IN' | 'OPT_OUT' }> = [];
     
-    const results = {
-      total: dataLines.length,
-      successful: 0,
-      failed: 0,
-      errors: [] as string[]
-    };
-
-    // Process each line
-    for (let i = 0; i < dataLines.length; i++) {
-      const line = dataLines[i].trim();
-      if (!line) continue;
-
-      const columns = line.split(',').map(col => col.trim().replace(/"/g, ''));
-      
-      if (columns.length <= emailColumn) {
-        results.failed++;
-        results.errors.push(`Line ${i + 1}: Not enough columns`);
-        continue;
-      }
-
-      const email = columns[emailColumn];
-      const firstName = columns[firstNameColumn] || '';
-      const lastName = columns[lastNameColumn] || '';
-
-      if (!email || !email.includes('@')) {
-        results.failed++;
-        results.errors.push(`Line ${i + 1}: Invalid email format`);
-        continue;
-      }
-
-      try {
-        await addContactToList(contactListName, email, firstName, lastName);
-        results.successful++;
-      } catch (error) {
-        results.failed++;
-        results.errors.push(`Line ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-      }
+    try {
+      const contactResponse = await sesClient.send(getCommand);
+      existingTopicPreferences = (contactResponse.TopicPreferences || []).map(topic => ({
+        TopicName: topic.TopicName!,
+        SubscriptionStatus: topic.SubscriptionStatus as 'OPT_IN' | 'OPT_OUT',
+      }));
+    } catch (error) {
+      // If contact doesn't exist, that's okay - we'll just set this topic to OPT_OUT
+      console.info('Contact not found, will create with OPT_OUT for this topic');
     }
 
-    console.info('CSV import completed:', results);
-    return results;
+    // Update topic preferences: set the specified topic to OPT_OUT, keep others as-is
+    const updatedTopicPreferences = existingTopicPreferences
+      .filter(topic => topic.TopicName !== topicName)
+      .concat([{
+        TopicName: topicName,
+        SubscriptionStatus: 'OPT_OUT' as const,
+      }]);
+
+    const command = new UpdateContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+      TopicPreferences: updatedTopicPreferences,
+      UnsubscribeAll: false, // Don't unsubscribe from all topics, just this one
+    });
+
+    const response = await sesClient.send(command);
+    console.info('Contact unsubscribed from topic successfully:', { email, topicName });
+    
+    return {
+      email,
+      topicName,
+      success: true,
+      data: response
+    };
   } catch (error) {
-    console.error('Failed to import subscribers from CSV:', error);
-    throw new Error(`CSV import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('Failed to unsubscribe contact from topic:', error);
+    // If contact doesn't exist, that's okay - consider it already unsubscribed
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      console.info('Contact not found in SES, considering it already unsubscribed:', email);
+      return {
+        email,
+        topicName,
+        success: true,
+        alreadyUnsubscribed: true
+      };
+    }
+    throw new Error(`Topic unsubscribe failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Remove a contact from AWS SES contact list
+ * Use this only when you want to completely remove a contact from all topics
+ */
+export async function removeContactFromList(contactListName: string, email: string) {
+  try {
+    console.info('Removing contact from list:', { contactListName, email });
+
+    const command = new DeleteContactCommand({
+      ContactListName: contactListName,
+      EmailAddress: email,
+    });
+
+    const response = await sesClient.send(command);
+    console.info('Contact removed successfully:', email);
+    
+    return {
+      email,
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    console.error('Failed to remove contact:', error);
+    // If contact doesn't exist, that's okay - consider it already removed
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      console.info('Contact not found in SES, considering it already removed:', email);
+      return {
+        email,
+        success: true,
+        alreadyRemoved: true
+      };
+    }
+    throw new Error(`Contact removal failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Add an email address to SES suppression list
+ * This prevents SES from sending emails to bounced/complained addresses
+ */
+export async function addToSuppressionList(email: string, reason: 'BOUNCE' | 'COMPLAINT') {
+  try {
+    console.info('Adding email to suppression list:', { email, reason });
+
+    const command = new PutSuppressedDestinationCommand({
+      EmailAddress: email,
+      Reason: reason,
+    });
+
+    const response = await sesClient.send(command);
+    console.info('Email added to suppression list successfully:', email);
+    
+    return {
+      email,
+      reason,
+      success: true,
+      data: response
+    };
+  } catch (error) {
+    console.error('Failed to add email to suppression list:', error);
+    // If already suppressed, that's okay
+    if (error instanceof Error && error.message.includes('already exists')) {
+      console.info('Email already in suppression list:', email);
+      return {
+        email,
+        reason,
+        success: true,
+        alreadySuppressed: true
+      };
+    }
+    throw new Error(`Suppression list addition failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Check if an email is in the suppression list
+ */
+export async function isSuppressed(email: string): Promise<boolean> {
+  try {
+    const command = new GetSuppressedDestinationCommand({
+      EmailAddress: email,
+    });
+
+    await sesClient.send(command);
+    return true;
+  } catch (error) {
+    if (error instanceof Error && (error.name === 'NotFoundException' || error.name === 'BadRequestException')) {
+      return false;
+    }
+    console.error('Error checking suppression status:', error);
+    return false;
   }
 }

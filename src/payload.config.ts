@@ -14,10 +14,12 @@ import { ServiceWeeks } from './collections/ServiceWeeks'
 import { Services } from './collections/Services'
 import { Tenants } from './collections/Tenants'
 import { Users } from './collections/Users'
+import { NewsletterSubscriptions } from './collections/NewsletterSubscriptions'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { newsletterTranslations } from './_components/Newsletter/translations'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -44,9 +46,19 @@ export default buildConfig({
   i18n: {
     fallbackLanguage: 'pl',
     supportedLanguages: { pl, en },
+    translations: {
+      pl: {
+        ...pl,
+        newsletterSignup: newsletterTranslations,
+      },
+      en: {
+        ...en,
+        newsletterSignup: newsletterTranslations,
+      },
+    },
   },
   globals: [Settings, Header, Footer],
-  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks],
+  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, NewsletterSubscriptions],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

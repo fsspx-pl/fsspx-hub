@@ -17,6 +17,7 @@ import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
 
 import { CMSLink } from "@/_components/Link";
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
+import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
 
 export async function generateStaticParams() {
   // Pre-warm the liturgical calendar cache at build time
@@ -150,6 +151,7 @@ export default async function AnnouncementPage({
         </div>
         <div className="flex flex-col gap-4">
           <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0"/>
+          <NewsletterSignupForm subdomain={domain.split('.')[0]} className="mt-4" />
           <CMSLink url={'/ogloszenia'}
             className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910]"
           >

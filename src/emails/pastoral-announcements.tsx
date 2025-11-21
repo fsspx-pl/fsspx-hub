@@ -4,6 +4,7 @@ import { romanize } from '@/_components/Calendar/utils/romanize';
 import { vestmentColorToTailwind } from '@/_components/Calendar/utils/vestmentColorToHex';
 import {
   Column,
+  Container,
   Font,
   Head,
   Heading,
@@ -161,7 +162,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
 
     return (
       <Section className="p-4">
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <tbody>
             <tr>
               <td style={{ verticalAlign: "top", paddingRight: "12px" }}>
@@ -177,7 +178,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                 )}
                 
                 <Text style={{ fontSize: "14px", color: "#555", margin: "0", paddingBottom: "12px" }}>
-                  {romanize(feast.rank)} klasy · kolor szat: 
+                  {romanize(feast.rank)} klasy · kolor dnia:&nbsp;
                   <span className={`${vestmentColor}`}>{feast.color}</span>
                 </Text>
                 
@@ -186,7 +187,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                     {NO_MASSES_MESSAGE}
                   </Text>
                 ) : (
-                  <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 0.5em" }}>
+                  <table style={{ borderCollapse: "separate", borderSpacing: "0 0.5em" }}>
                     <tbody>
                       {feast.masses.map((service, idx) => (
                         <tr key={idx}>
@@ -229,7 +230,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
       {feastsWithMasses.map((feast, index) => (
         <Row key={index} style={{ marginBottom: "10px" }}>
           <Column style={{ 
-            width: "100%", 
+            width: "50%", 
             verticalAlign: "top", 
             backgroundColor: "#f8f9fa", 
             borderRadius: "8px",
@@ -275,98 +276,95 @@ export default function Email({
         </style>
       </Head>
       <Tailwind>
-        <Section style={{ marginTop: "40px", width: "100%" }}>
-          <Img
-            style={{ margin: "0 auto" }}
-            src="https://poznan.fsspx.pl/api/media/file/long-1.png"
-            width="342"
-            height="50"
-            alt={`${copyright} - logo`}
-          />
-          <Text
-            style={{
-              fontSize: "24px",
-              fontWeight: 600,
-              paddingTop: "12px",
-              textAlign: "center",
-            }}
-          >
-            {title ?? "Pastoral Announcements (DD.MM.YYYY)"}
-          </Text>
-        </Section>
-        <Section
-          style={{
-            paddingLeft: "16px",
-            paddingRight: "16px",
-          }}
-        >
-          <div dangerouslySetInnerHTML={{ __html: content_html }} />
-        </Section>
-
-        <Section className="px-4">
-          <Heading as="h2" style={{ fontSize: "24px", color: "#333", fontWeight: 400 }}>
-            Plan nabożeństw
-          </Heading>
-          <MassesList feastsWithMasses={feastsWithMasses} />
-        </Section>
-
-        <Section style={{ marginTop: "40px" }}>
-          <Section style={{ backgroundColor: "#f3f4f6", padding: "24px" }}>
-            <Row>
-              <Img
-                src="https://poznan.fsspx.pl/api/media/file/short.png"
-                width="163"
-                height="50"
-                alt="FSSPX Logo"
-              />
-            </Row>
-            <Row>
-              <Text
-                style={{
-                  fontSize: "14px",
-                  color: "#4B5563",
-                }}
-              >
-                {slogan}
-              </Text>
-            </Row>
+        <Container className="mx-auto w-full max-w-[600px]">
+          <Section style={{ marginTop: "40px" }} className="p-1">
+            <Img
+              style={{ margin: "0 auto" }}
+              src="https://poznan.fsspx.pl/api/media/file/long-1.png"
+              width="342"
+              height="50"
+              alt={`${copyright} - logo`}
+            />
+            <Text
+              style={{
+                fontSize: "24px",
+                fontWeight: 600,
+                paddingTop: "12px",
+                textAlign: "center",
+              }}
+            >
+              {title ?? "Pastoral Announcements (DD.MM.YYYY)"}
+            </Text>
           </Section>
-          <Section style={{ backgroundColor: "#e5e7eb", padding: "12px 0" }}>
-            <Row>
-              <Column style={{ textAlign: "center" }}>
+          <Section>
+            <div dangerouslySetInnerHTML={{ __html: content_html }} />
+          </Section>
+
+          <Section>
+            <Heading as="h2" style={{ fontSize: "24px", color: "#333", fontWeight: 400 }}>
+              Plan nabożeństw
+            </Heading>
+            <MassesList feastsWithMasses={feastsWithMasses} />
+          </Section>
+
+          <Section style={{ marginTop: "40px" }} className="p-1">
+            <Section style={{ backgroundColor: "#f3f4f6", padding: "24px" }}>
+              <Row>
+                <Img
+                  src="https://poznan.fsspx.pl/api/media/file/short.png"
+                  width="163"
+                  height="50"
+                  alt="FSSPX Logo"
+                />
+              </Row>
+              <Row>
                 <Text
                   style={{
                     fontSize: "14px",
-                    color: "#6B7280",
-                    marginBottom: "4px",
+                    color: "#4B5563",
                   }}
                 >
-                  © {currentYear} - {copyright}
+                  {slogan}
                 </Text>
-                <Text
-                  style={{
-                    fontSize: "12px",
-                    color: "#9CA3AF",
-                    marginBottom: "8px",
-                  }}
-                >
-                  Otrzymujesz ogłoszenia drogą mailową, ponieważ twój adres email jest zapisany w naszej liście subskrybentów.
-                  Jeśli nie chcesz ich otrzymywać,&nbsp;
-                  <a href="{{amazonSESUnsubscribeUrl}}" style={{ color: "#9CA3AF", textDecoration: "underline" }}>
-                    wypisz się z listy klikając w ten link.
-                  </a>
-                </Text>
-                <Img
-                  src="https://poznan.fsspx.pl/api/media/file/favicon.png"
-                  width="16"
-                  height="25"
-                  alt="Heart with Cross"
-                  style={{ margin: "0 auto" }}
-                />
-              </Column>
-            </Row>
+              </Row>
+            </Section>
+            <Section style={{ backgroundColor: "#e5e7eb" }} className="p-5">
+              <Row>
+                <Column style={{ textAlign: "center" }}>
+                  <Text
+                    style={{
+                      fontSize: "14px",
+                      color: "#6B7280",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    © {currentYear} - {copyright}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: "12px",
+                      color: "#9CA3AF",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    Otrzymujesz ogłoszenia drogą mailową, ponieważ twój adres email jest zapisany w naszej liście subskrybentów.
+                    {' '}Jeśli nie chcesz ich otrzymywać,&nbsp;
+                    <a href="{{UNSUBSCRIBE_URL}}" style={{ color: "#9CA3AF", textDecoration: "underline" }}>
+                      wypisz się z listy klikając w ten link.
+                    </a>
+                  </Text>
+                  <Img
+                    src="https://poznan.fsspx.pl/api/media/file/favicon.png"
+                    width="16"
+                    height="25"
+                    alt="Heart with Cross"
+                    style={{ margin: "0 auto" }}
+                  />
+                </Column>
+              </Row>
+            </Section>
           </Section>
-        </Section>
+        </Container>
       </Tailwind>
     </Html>
   );

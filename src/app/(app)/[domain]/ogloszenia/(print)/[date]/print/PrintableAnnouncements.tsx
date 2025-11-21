@@ -53,7 +53,7 @@ const PrintableMassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = (
             )}
             
             <p className="text-sm text-gray-600 pb-2 m-0">
-              {romanize(feast.rank)} klasy · kolor szat:&nbsp;
+              {romanize(feast.rank)} klasy · kolor dnia:&nbsp;
               <span className={`${vestmentColor}`}>{feast.color}</span>
             </p>
             

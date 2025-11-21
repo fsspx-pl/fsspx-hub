@@ -1,10 +1,8 @@
 import { Page } from '@/payload-types'
-import { FieldLabel } from '@payloadcms/ui'
 import React from 'react'
 import { SendButton } from './SendButton'
 import classes from './index.module.scss'
 import { fetchTenantById } from '@/_api/fetchTenants'
-import { coerceBoolean } from '@/utilities/coerceBoolean'
 
 export const SendNewsletterButton: React.FC<{ data: Page }> = async ({ 
   data 
