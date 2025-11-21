@@ -1,5 +1,4 @@
 import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb';
-import { ObjectId } from 'mongodb';
 
 const SUBSCRIPTIONS_COLLECTION = 'newsletterSubscriptions';
 const TENANTS_COLLECTION = 'tenants';
@@ -34,25 +33,9 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
     const tenantId = subscription.tenant;
     if (!tenantId) continue;
 
-    let tenantObjectId: ObjectId | undefined;
-    if (tenantId instanceof ObjectId) {
-      tenantObjectId = tenantId;
-    } else if (typeof tenantId === 'string') {
-      if (ObjectId.isValid(tenantId)) {
-        tenantObjectId = new ObjectId(tenantId);
-      }
-    } else if (tenantId && typeof tenantId === 'object' && 'value' in tenantId) {
-      const value = (tenantId as { value: unknown }).value;
-      if (typeof value === 'string' && ObjectId.isValid(value)) {
-        tenantObjectId = new ObjectId(value);
-      } else if (value instanceof ObjectId) {
-        tenantObjectId = value;
-      }
-    }
+    if (typeof tenantId !== 'string') continue;
 
-    if (!tenantObjectId) continue;
-
-    const tenant = await tenantsCollection.findOne({ _id: tenantObjectId });
+    const tenant = await tenantsCollection.findOne({ _id: tenantId });
     if (!tenant?.domain) continue;
 
     const subdomain = tenant.domain.includes('.')
@@ -65,4 +48,3 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
     );
   }
 }
-
