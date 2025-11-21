@@ -32,7 +32,7 @@ export const DayDetails: React.FC<SelectedDayDetailsProps> = ({
               </span>
               {selectedDay.color !== undefined && (
                 <>
-                  <span className="leading-[14px]">  ·  kolor szat:  </span>
+                  <span className="leading-[14px]">  ·  kolor dnia:  </span>
                   <span className={`${selectedDay.color === VestmentColor.WHITE ? 'bg-white px-2 py-1 rounded-lg' : null} ${selectedDayColor} leading-[14px]`}>
                     {selectedDay.color}
                   </span>

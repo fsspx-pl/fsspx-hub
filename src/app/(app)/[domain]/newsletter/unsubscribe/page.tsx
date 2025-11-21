@@ -56,7 +56,6 @@ export default async function UnsubscribePage({
           variant="info"
           message="Jesteś już wypisany z subskrypcji ogłoszeń duszpasterskich."
           chapelInfo={chapelInfo}
-          subdomain={subdomain}
           locale="pl"
         />
       );
@@ -76,7 +75,6 @@ export default async function UnsubscribePage({
         <NewsletterStatusPage
           variant="warning"
           message="Ustawienia newslettera nie są skonfigurowane dla tej lokalizacji."
-          subdomain={subdomain}
           locale="pl"
         />
       );
@@ -90,7 +88,6 @@ export default async function UnsubscribePage({
         variant="info"
         title={t('unsubscribeInfoTitle')}
         message="Jeśli chcesz wypisać się z subskrypcji ogłoszeń duszpasterskich, kliknij przycisk poniżej."
-        subdomain={subdomain}
         locale="pl"
         showBackButton={false}
       >

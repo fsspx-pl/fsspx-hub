@@ -178,7 +178,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
                 )}
                 
                 <Text style={{ fontSize: "14px", color: "#555", margin: "0", paddingBottom: "12px" }}>
-                  {romanize(feast.rank)} klasy · kolor szat:&nbsp;
+                  {romanize(feast.rank)} klasy · kolor dnia:&nbsp;
                   <span className={`${vestmentColor}`}>{feast.color}</span>
                 </Text>
                 

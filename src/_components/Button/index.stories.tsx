@@ -20,3 +20,11 @@ export const Default: Story = {
   },
 };
 
+export const AsLink: Story = {
+  args: {
+    variant: 'primary',
+    children: 'Button as Link',
+    href: '/',
+  },
+};
+

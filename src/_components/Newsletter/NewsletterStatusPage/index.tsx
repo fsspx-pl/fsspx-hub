@@ -1,6 +1,5 @@
 import { garamond } from '@/fonts';
 import { getNewsletterTranslation } from '../translations';
-import Link from 'next/link';
 import { ReactNode } from 'react';
 import { Button } from '@/_components/Button';
 
@@ -11,7 +10,6 @@ interface NewsletterStatusPageProps {
   title?: string;
   message: string;
   chapelInfo?: string;
-  subdomain: string;
   locale?: 'pl' | 'en';
   showBackButton?: boolean;
   backButtonText?: string;
@@ -25,7 +23,6 @@ export function NewsletterStatusPage({
   title,
   message,
   chapelInfo,
-  subdomain,
   locale = 'pl',
   showBackButton = true,
   backButtonText,
@@ -96,7 +93,7 @@ export function NewsletterStatusPage({
     }
   };
 
-  const defaultBackHref = `/${subdomain}`;
+  const defaultBackHref = `/`;
   const defaultBackText = locale === 'pl' 
     ? 'Przejdź do najnowszych ogłoszeń' 
     : 'Go to latest announcements';
@@ -134,11 +131,9 @@ export function NewsletterStatusPage({
 
             {showBackButton && !action && (
               <div className="mt-8">
-                <Link href={backButtonHref || defaultBackHref}>
-                  <Button variant="primary">
-                    {backButtonText || defaultBackText}
-                  </Button>
-                </Link>
+                <Button variant="primary" href={backButtonHref || defaultBackHref}>
+                  {backButtonText || defaultBackText}
+                </Button>
               </div>
             )}
           </div>

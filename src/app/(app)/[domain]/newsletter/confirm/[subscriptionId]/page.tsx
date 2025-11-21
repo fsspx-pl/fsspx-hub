@@ -63,7 +63,6 @@ export default async function ConfirmNewsletterPage({
           variant="success"
           title={t('confirmationTitle')}
           message={t('confirmationMessageAlready')}
-          subdomain={subdomain}
           locale="pl"
         />
       );
@@ -101,7 +100,6 @@ export default async function ConfirmNewsletterPage({
         variant={awsError ? 'warning' : 'success'}
         title={t('confirmationTitle')}
         message={t('confirmationMessage')}
-        subdomain={subdomain}
         locale="pl"
       />
     );

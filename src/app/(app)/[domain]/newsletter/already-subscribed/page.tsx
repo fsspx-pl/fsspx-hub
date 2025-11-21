@@ -15,7 +15,6 @@ export default async function AlreadySubscribedPage({
       variant="info"
       title="Już jesteś zapisany"
       message="Ten adres email jest już zapisany do subskrypcji ogłoszeń duszpasterskich z tej kaplicy. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email."
-      subdomain={subdomain}
       locale="pl"
     />
   );

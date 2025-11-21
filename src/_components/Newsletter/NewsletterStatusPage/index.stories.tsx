@@ -22,10 +22,6 @@ const meta: Meta<typeof NewsletterStatusPage> = {
       control: 'text',
       description: 'Main message text',
     },
-    subdomain: {
-      control: 'text',
-      description: 'Subdomain of the tenant',
-    },
     locale: {
       control: 'select',
       options: ['pl', 'en'],
@@ -50,7 +46,6 @@ export const Success: Story = {
     variant: 'success',
     title: 'Subskrypcja potwierdzona!',
     message: 'Dziękujemy! Twoja subskrypcja ogłoszeń duszpasterskich została potwierdzona. Będziesz otrzymywać ogłoszenia duszpasterskie na swój adres email.',
-    subdomain: 'poznan',
     locale: 'pl',
   },
 };
@@ -60,7 +55,6 @@ export const UnsubscribeSuccess: Story = {
     variant: 'success',
     message: 'Zostałeś wypisany z subskrypcji ogłoszeń duszpasterskich.',
     chapelInfo: 'Kaplica św. Jana Chrzciciela - Gdańsk',
-    subdomain: 'gdansk',
     locale: 'pl',
   },
 };
