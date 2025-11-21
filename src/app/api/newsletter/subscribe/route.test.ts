@@ -77,8 +77,8 @@ function createMockSubscription(overrides: Partial<any> = {}) {
   return {
     id: 'sub-id',
     email: 'test@example.com',
-    subdomain: 'test',
     status: 'pending',
+    tenant: 'tenant-id',
     ...overrides,
   };
 }
@@ -272,7 +272,6 @@ describe('POST /api/newsletter/subscribe', () => {
         collection: 'newsletterSubscriptions',
         data: {
           email: 'new@example.com',
-          subdomain: 'test',
           tenant: 'tenant-id',
           status: 'pending',
         },

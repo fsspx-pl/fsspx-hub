@@ -40,18 +40,30 @@ export default async function UnsubscribePage({
       redirect(`/${subdomain}/newsletter/error`);
     }
 
-    // Verify subdomain matches
-    if (subscription.subdomain !== subdomain) {
+    const tenantRef = subscription.tenant as Tenant | string | undefined;
+    const tenantId =
+      typeof tenantRef === 'string'
+        ? tenantRef
+        : tenantRef && typeof tenantRef === 'object'
+          ? tenantRef.id
+          : undefined;
+
+    if (!tenantId) {
+      redirect(`/${subdomain}/newsletter/error`);
+    }
+
+    const tenantDoc = (await payload.findByID({
+      collection: 'tenants',
+      id: tenantId,
+    })) as Tenant;
+
+    const tenantSubdomain = tenantDoc.domain;
+    if (!tenantSubdomain || tenantSubdomain !== subdomain) {
       redirect(`/${subdomain}/newsletter/error`);
     }
 
     // Check if already unsubscribed or success query param is present
     if (subscription.status === 'unsubscribed' || success === 'true') {
-      const tenant = subscription.tenant as Tenant;
-      const tenantDoc = await payload.findByID({
-        collection: 'tenants',
-        id: tenant.id,
-      });
       const topicName = tenantDoc.topicName;
       const chapelInfo = `${tenantDoc.type} ${tenantDoc.patron || ''} - ${tenantDoc.city}`;
       
@@ -68,12 +80,6 @@ export default async function UnsubscribePage({
       );
     }
 
-    // Get tenant to get newsletter settings
-    const tenant = subscription.tenant as Tenant;
-    const tenantDoc = await payload.findByID({
-      collection: 'tenants',
-      id: tenant.id,
-    });
     const contactListName = tenantDoc.mailingGroupId;
     const topicName = tenantDoc.topicName;
 

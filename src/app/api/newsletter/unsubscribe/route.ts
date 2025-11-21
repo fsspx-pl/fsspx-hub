@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchTenant } from '@/_api/fetchTenants';
 import { unsubscribeFromTopic } from '@/utilities/awsSes';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
@@ -36,8 +35,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify email and subdomain match
-    if (subscription.email !== email || subscription.subdomain !== subdomain) {
+    const tenantRef = subscription.tenant as Tenant | string | undefined;
+    const tenantId =
+      typeof tenantRef === 'string'
+        ? tenantRef
+        : tenantRef && typeof tenantRef === 'object'
+          ? tenantRef.id
+          : undefined;
+
+    if (!tenantId) {
+      return NextResponse.json(
+        { error: 'Subscription tenant data is missing' },
+        { status: 400 }
+      );
+    }
+
+    const tenantDoc = (await payload.findByID({
+      collection: 'tenants',
+      id: tenantId,
+    })) as Tenant;
+
+    const tenantSubdomain = tenantDoc.domain;
+    if (!tenantSubdomain) {
+      return NextResponse.json(
+        { error: 'Tenant domain is not configured correctly' },
+        { status: 400 }
+      );
+    }
+    if (subscription.email !== email || tenantSubdomain !== subdomain) {
       return NextResponse.json(
         { error: 'Subscription details do not match' },
         { status: 400 }
@@ -53,12 +78,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Get tenant to get newsletter settings
-    const tenant = subscription.tenant as Tenant;
-    const tenantDoc = await payload.findByID({
-      collection: 'tenants',
-      id: tenant.id,
-    });
     const contactListName = tenantDoc.mailingGroupId;
     const topicName = tenantDoc.topicName;
 

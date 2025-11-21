@@ -21,7 +21,7 @@ export const NewsletterSubscriptions: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'subdomain', 'status', 'createdAt', 'confirmedAt'],
+    defaultColumns: ['email', 'tenant', 'status', 'createdAt', 'confirmedAt'],
   },
   fields: [
     {
@@ -31,16 +31,6 @@ export const NewsletterSubscriptions: CollectionConfig = {
         pl: 'Email',
       },
       type: 'email',
-      required: true,
-      index: true,
-    },
-    {
-      name: 'subdomain',
-      label: {
-        en: 'Subdomain',
-        pl: 'Subdomena',
-      },
-      type: 'text',
       required: true,
       index: true,
     },

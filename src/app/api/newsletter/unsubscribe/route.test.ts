@@ -45,7 +45,6 @@ function createMockSubscription(overrides: Partial<any> = {}) {
   return {
     id: 'sub-id',
     email: 'test@example.com',
-    subdomain: 'test',
     status: 'confirmed',
     tenant: { id: 'tenant-id' },
     ...overrides,
@@ -56,6 +55,7 @@ function createMockSubscription(overrides: Partial<any> = {}) {
 function createMockTenant(overrides: Partial<any> = {}) {
   return {
     id: 'tenant-id',
+    domain: 'test',
     mailingGroupId: 'test-group',
     topicName: 'test-topic',
     ...overrides,
@@ -141,7 +141,10 @@ describe('POST /api/newsletter/unsubscribe', () => {
 
       const subscription = createMockSubscription();
       const mockPayload = {
-        findByID: jest.fn().mockResolvedValue(subscription),
+        findByID: jest
+          .fn()
+          .mockResolvedValueOnce(subscription)
+          .mockResolvedValueOnce(createMockTenant()),
       };
 
       mockGetPayload.mockResolvedValue(mockPayload as any);
@@ -162,7 +165,10 @@ describe('POST /api/newsletter/unsubscribe', () => {
 
       const subscription = createMockSubscription();
       const mockPayload = {
-        findByID: jest.fn().mockResolvedValue(subscription),
+        findByID: jest
+          .fn()
+          .mockResolvedValueOnce(subscription)
+          .mockResolvedValueOnce(createMockTenant()),
       };
 
       mockGetPayload.mockResolvedValue(mockPayload as any);
@@ -185,7 +191,10 @@ describe('POST /api/newsletter/unsubscribe', () => {
 
       const subscription = createMockSubscription({ status: 'unsubscribed' });
       const mockPayload = {
-        findByID: jest.fn().mockResolvedValue(subscription),
+        findByID: jest
+          .fn()
+          .mockResolvedValueOnce(subscription)
+          .mockResolvedValueOnce(createMockTenant()),
       };
 
       mockGetPayload.mockResolvedValue(mockPayload as any);

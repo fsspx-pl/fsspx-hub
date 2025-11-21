@@ -35,38 +35,49 @@ export default async function ConfirmNewsletterPage({
     redirect(`/${subdomain}/newsletter/error`);
   }
 
-  // Verify subdomain matches
-  if (subscription.subdomain !== subdomain) {
+  const tenantRef = subscription.tenant as Tenant | string | undefined;
+  const tenantId =
+    typeof tenantRef === 'string'
+      ? tenantRef
+      : tenantRef && typeof tenantRef === 'object'
+        ? tenantRef.id
+        : undefined;
+
+  if (!tenantId) {
     redirect(`/${subdomain}/newsletter/error`);
   }
 
-  // Get tenant to get newsletter settings
-  const tenant = subscription.tenant as Tenant;
-    const tenantDoc = await payload.findByID({
-      collection: 'tenants',
-      id: tenant.id,
-    });
-    const contactListName = tenantDoc.mailingGroupId;
-    const topicName = tenantDoc.topicName;
+  const tenantDoc = (await payload.findByID({
+    collection: 'tenants',
+    id: tenantId,
+  })) as Tenant;
 
-    if (!contactListName || !topicName) {
-      redirect(`/${subdomain}/newsletter/error`);
-    }
+  const tenantSubdomain = tenantDoc.domain;
+  if (!tenantSubdomain || tenantSubdomain !== subdomain) {
+    redirect(`/${subdomain}/newsletter/error`);
+  }
 
-    // If already confirmed, show confirmed page
-    if (subscription.status === 'confirmed') {
-      const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
-        getNewsletterTranslation(key, 'pl', 'subscribe');
-      
-      return (
-        <NewsletterStatusPage
-          variant="success"
-          title={t('confirmationTitle')}
-          message={t('confirmationMessageAlready')}
-          locale="pl"
-        />
-      );
-    }
+  const contactListName = tenantDoc.mailingGroupId;
+  const topicName = tenantDoc.topicName;
+
+  if (!contactListName || !topicName) {
+    redirect(`/${subdomain}/newsletter/error`);
+  }
+
+  // If already confirmed, show confirmed page
+  if (subscription.status === 'confirmed') {
+    const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
+      getNewsletterTranslation(key, 'pl', 'subscribe');
+    
+    return (
+      <NewsletterStatusPage
+        variant="success"
+        title={t('confirmationTitle')}
+        message={t('confirmationMessageAlready')}
+        locale="pl"
+      />
+    );
+  }
 
     // Add contact to AWS SES
     let awsError = false;

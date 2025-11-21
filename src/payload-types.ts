@@ -365,7 +365,6 @@ export interface ServiceWeek {
 export interface NewsletterSubscription {
   id: string;
   email: string;
-  subdomain: string;
   tenant: string | Tenant;
   status: 'pending' | 'confirmed' | 'unsubscribed';
   confirmedAt?: string | null;
@@ -721,7 +720,6 @@ export interface ServiceWeeksSelect<T extends boolean = true> {
  */
 export interface NewsletterSubscriptionsSelect<T extends boolean = true> {
   email?: T;
-  subdomain?: T;
   tenant?: T;
   status?: T;
   confirmedAt?: T;

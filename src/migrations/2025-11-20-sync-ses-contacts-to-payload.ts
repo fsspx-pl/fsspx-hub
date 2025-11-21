@@ -40,13 +40,6 @@ function getSESClient(): SESv2Client {
 }
 
 /**
- * Extract subdomain from domain (e.g., "poznan.fsspx.pl" -> "poznan")
- */
-function extractSubdomain(domain: string): string {
-  return domain.split('.')[0];
-}
-
-/**
  * Fetch all contacts from a SES contact list
  */
 async function fetchAllContactsFromSES(
@@ -120,7 +113,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
     const contactListName = tenant.mailingGroupId;
     const topicName = tenant.topicName;
     const domain = tenant.domain;
-    const subdomain = extractSubdomain(domain);
+    const subdomain = domain;
 
     if (!contactListName || !topicName) {
       console.log(`⏭️  Skipping tenant ${tenant.name} (${domain}) - missing mailingGroupId or topicName`);
@@ -156,7 +149,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
             where: {
               and: [
                 { email: { equals: contact.email } },
-                { subdomain: { equals: subdomain } },
+                { tenant: { equals: tenant.id } },
               ],
             },
             limit: 1,
@@ -188,7 +181,6 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
             collection: 'newsletterSubscriptions',
             data: {
               email: contact.email,
-              subdomain,
               tenant: tenant.id,
               status: 'confirmed',
               confirmedAt: new Date().toISOString(),
@@ -243,7 +235,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
 
   for (const tenant of tenants.docs as Tenant[]) {
     const domain = tenant.domain;
-    const subdomain = extractSubdomain(domain);
+    const subdomain = domain;
 
     console.log(`\n📧 Processing tenant: ${tenant.name} (${domain})`);
     console.log(`   Subdomain: ${subdomain}`);
@@ -256,7 +248,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
         collection: 'newsletterSubscriptions',
         where: {
           and: [
-            { subdomain: { equals: subdomain } },
+            { tenant: { equals: tenant.id } },
             { status: { equals: 'confirmed' } },
             { confirmedAt: { exists: true } },
           ],

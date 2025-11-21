@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { personalizeUnsubscribeUrl } from './personalizeUnsubscribe';
 
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
@@ -217,16 +218,15 @@ export async function sendNewsletterToContactList(emailData: {
 
     // Personalize HTML for each recipient with unsubscribe URL using subscription ID
     const personalizedEmails = await Promise.all(
-      recipients.map(async (email) => {
-        let personalizedHtml = emailData.html;
-        if(!emailData.unsubscribeBaseUrl) return { email, html: personalizedHtml }
-        if(!emailData.getSubscriptionId) return { email, html: personalizedHtml }
-        const subscriptionId = await emailData.getSubscriptionId(email);
-        if (!subscriptionId) return { email, html: personalizedHtml }
-        const unsubscribeUrl = `${emailData.unsubscribeBaseUrl}/${subscriptionId}`;
-        personalizedHtml = personalizedHtml.replace(/\{\{UNSUBSCRIBE_URL\}\}/g, unsubscribeUrl);
-        return { email, html: personalizedHtml }
-      })
+      recipients.map(async (email) => ({
+        email,
+        html: await personalizeUnsubscribeUrl({
+          html: emailData.html,
+          email,
+          unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
+          getSubscriptionId: emailData.getSubscriptionId,
+        }),
+      }))
     );
 
     // Send emails individually with personalized content

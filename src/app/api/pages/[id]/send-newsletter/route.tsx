@@ -11,6 +11,7 @@ import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
 import { serialize } from "@/_components/RichText/serialize";
 import { sendBulkEmail } from "@/utilities/awsSes";
 import { sendEmail, sendNewsletterToContactList } from "@/utilities/nodemailerSes";
+import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
 import React from "react";
 import { minify } from "html-minifier-terser";
 
@@ -114,8 +115,6 @@ async function sendNewsletter({
   const footer = await fetchFooter();
   const settings = await fetchSettings();
 
-  const tenantDomain = (page.tenant as Tenant).domain;
-  const subdomain = tenantDomain.split('.')[0];
   
   const payload = await getPayload({ config });
 
@@ -127,7 +126,7 @@ async function sendNewsletter({
         where: {
           and: [
             { email: { equals: email } },
-            { subdomain: { equals: subdomain } },
+            { tenant: { equals: (page.tenant as Tenant).id } },
             { status: { equals: 'confirmed' } },
           ],
         },
@@ -185,16 +184,26 @@ async function sendNewsletter({
     getSubscriptionId,
   };
 
-  if(testEmail) {
+  if (testEmail) {
     console.info('Sending test email to:', testEmail);
+
+    const personalizedHtml = await personalizeUnsubscribeUrl({
+      html,
+      email: testEmail,
+      unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
+      getSubscriptionId: emailData.getSubscriptionId,
+      onMissingSubscription: (email) =>
+        console.warn(`No subscription found for test email ${email}, UNSUBSCRIBE_URL will not be replaced`),
+    });
+
     const response = await sendEmail({
       from: emailData.fromName,
       to: testEmail,
       subject: `[TEST] ${titleWithDateSuffix}`,
-      html,
+      html: personalizedHtml,
     });
-  return response;
-}
+    return response;
+  }
 
   try {
     const response = await sendBulkEmail(emailData);

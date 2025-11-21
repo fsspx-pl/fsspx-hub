@@ -115,6 +115,8 @@ export async function POST(request: NextRequest) {
       config: configPromise,
     });
 
+    const tenantId = tenant.id;
+
     // Check if subscription already exists in Payload
     const existingSubscription = await payload.find({
       collection: 'newsletterSubscriptions',
@@ -126,8 +128,8 @@ export async function POST(request: NextRequest) {
             },
           },
           {
-            subdomain: {
-              equals: subdomain,
+            tenant: {
+              equals: tenantId,
             },
           },
         ],
@@ -169,8 +171,7 @@ export async function POST(request: NextRequest) {
         collection: 'newsletterSubscriptions',
         data: {
           email,
-          subdomain,
-          tenant: tenant.id,
+          tenant: tenantId,
           status: 'pending',
         },
       });
