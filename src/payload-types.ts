@@ -367,7 +367,6 @@ export interface NewsletterSubscription {
   email: string;
   tenant: string | Tenant;
   status: 'pending' | 'confirmed' | 'unsubscribed';
-  confirmedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -722,7 +721,6 @@ export interface NewsletterSubscriptionsSelect<T extends boolean = true> {
   email?: T;
   tenant?: T;
   status?: T;
-  confirmedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

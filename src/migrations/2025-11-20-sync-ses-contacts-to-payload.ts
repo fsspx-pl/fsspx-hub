@@ -165,7 +165,6 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
                 id: existingSubscription.id,
                 data: {
                   status: 'confirmed',
-                  confirmedAt: new Date().toISOString(),
                 },
               });
               console.log(`   ✅ Updated subscription for ${contact.email} (pending → confirmed)`);
@@ -183,7 +182,6 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
               email: contact.email,
               tenant: tenant.id,
               status: 'confirmed',
-              confirmedAt: new Date().toISOString(),
             },
           });
 
@@ -241,7 +239,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
     console.log(`   Subdomain: ${subdomain}`);
 
     try {
-      // Find all confirmed subscriptions for this subdomain
+      // Find all confirmed subscriptions for this tenant
       // Note: This is best-effort - we remove confirmed subscriptions that match the pattern
       // It may not perfectly reverse the migration if subscriptions were created through other means
       const subscriptions = await payload.find({
@@ -250,7 +248,6 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
           and: [
             { tenant: { equals: tenant.id } },
             { status: { equals: 'confirmed' } },
-            { confirmedAt: { exists: true } },
           ],
         },
         limit: 1000,

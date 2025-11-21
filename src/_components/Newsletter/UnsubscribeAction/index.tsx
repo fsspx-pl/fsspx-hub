@@ -53,7 +53,7 @@ export function UnsubscribeAction({
       setFormState('success');
       
       setTimeout(() => {
-        window.location.href = `/${subdomain}/newsletter/unsubscribe/${subscriptionId}?success=true`;
+        window.location.href = `/newsletter/unsubscribe/${subscriptionId}?success=true`;
       }, 1500);
     } catch (error) {
       setFormState('error');

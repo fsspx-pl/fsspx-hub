@@ -1,6 +1,5 @@
 import { NewsletterStatusPage } from '@/_components/Newsletter/NewsletterStatusPage';
-import { UnsubscribeAction } from '@/_components/Newsletter/UnsubscribeAction';
-import { fetchTenant } from '@/_api/fetchTenants';
+import { unsubscribeFromTopic } from '@/utilities/awsSes';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { redirect } from 'next/navigation';
@@ -11,17 +10,14 @@ export const dynamic = 'force-dynamic';
 
 export default async function UnsubscribePage({
   params,
-  searchParams,
 }: {
   params: Promise<{ domain: string; subscriptionId: string }>;
-  searchParams: Promise<{ success?: string }>;
 }) {
   const { domain, subscriptionId } = await params;
-  const { success } = await searchParams;
   const subdomain = domain.split('.')[0];
 
   if (!subscriptionId) {
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 
   try {
@@ -37,7 +33,7 @@ export default async function UnsubscribePage({
         id: subscriptionId,
       });
     } catch (error) {
-      redirect(`/${subdomain}/newsletter/error`);
+      redirect(`/newsletter/error`);
     }
 
     const tenantRef = subscription.tenant as Tenant | string | undefined;
@@ -49,7 +45,7 @@ export default async function UnsubscribePage({
           : undefined;
 
     if (!tenantId) {
-      redirect(`/${subdomain}/newsletter/error`);
+      redirect(`/newsletter/error`);
     }
 
     const tenantDoc = (await payload.findByID({
@@ -59,12 +55,11 @@ export default async function UnsubscribePage({
 
     const tenantSubdomain = tenantDoc.domain;
     if (!tenantSubdomain || tenantSubdomain !== subdomain) {
-      redirect(`/${subdomain}/newsletter/error`);
+      redirect(`/newsletter/error`);
     }
 
-    // Check if already unsubscribed or success query param is present
-    if (subscription.status === 'unsubscribed' || success === 'true') {
-      const topicName = tenantDoc.topicName;
+    // Check if already unsubscribed
+    if (subscription.status === 'unsubscribed') {
       const chapelInfo = `${tenantDoc.type} ${tenantDoc.patron || ''} - ${tenantDoc.city}`;
       
       const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
@@ -76,6 +71,7 @@ export default async function UnsubscribePage({
           message={t('unsubscribeSuccessMessage')}
           chapelInfo={chapelInfo}
           locale="pl"
+          showBackButton={false}
         />
       );
     }
@@ -93,29 +89,44 @@ export default async function UnsubscribePage({
       );
     }
 
+    // Immediately unsubscribe
+    let awsError = false;
+    try {
+      console.log('Unsubscribing contact from topic in AWS SES:', { contactListName, email: subscription.email, topicName });
+      await unsubscribeFromTopic(contactListName, subscription.email, topicName);
+      console.log('Contact unsubscribed from topic in AWS SES successfully');
+    } catch (error) {
+      console.error('Error unsubscribing contact from topic in AWS SES:', error);
+      awsError = true;
+    }
+
+    // Update subscription status to unsubscribed in Payload
+    await payload.update({
+      collection: 'newsletterSubscriptions',
+      id: subscription.id,
+      data: {
+        status: 'unsubscribed',
+      },
+    });
+
+    console.log('Newsletter subscription unsubscribed:', { email: subscription.email, subdomain, subscriptionId: subscription.id });
+
+    const chapelInfo = `${tenantDoc.type} ${tenantDoc.patron || ''} - ${tenantDoc.city}`;
     const t = (key: Parameters<typeof getNewsletterTranslation>[0]) => 
       getNewsletterTranslation(key, 'pl', 'unsubscribe');
 
     return (
       <NewsletterStatusPage
-        variant="info"
-        title={t('unsubscribeInfoTitle')}
-        message="Jeśli chcesz wypisać się z subskrypcji ogłoszeń duszpasterskich, kliknij przycisk poniżej."
+        variant={awsError ? 'warning' : 'success'}
+        message={t('unsubscribeSuccessMessage')}
+        chapelInfo={chapelInfo}
         locale="pl"
         showBackButton={false}
-      >
-        <UnsubscribeAction
-          subscriptionId={subscription.id}
-          email={subscription.email}
-          topicName={topicName}
-          subdomain={subdomain}
-          locale="pl"
-        />
-      </NewsletterStatusPage>
+      />
     );
   } catch (error) {
     console.error('Error loading unsubscribe page:', error);
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 }
 

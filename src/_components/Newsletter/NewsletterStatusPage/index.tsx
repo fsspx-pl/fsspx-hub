@@ -117,7 +117,7 @@ export function NewsletterStatusPage({
 
             {chapelInfo && (
               <p className="text-sm text-gray-600 mb-4">
-                {locale === 'pl' ? 'Ogłoszenia duszpasterskie z:' : 'Pastoral announcements from:'} <strong>{chapelInfo}</strong>
+                <strong>{chapelInfo}</strong>
               </p>
             )}
 

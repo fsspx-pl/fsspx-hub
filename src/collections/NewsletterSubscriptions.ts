@@ -21,7 +21,7 @@ export const NewsletterSubscriptions: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'tenant', 'status', 'createdAt', 'confirmedAt'],
+    defaultColumns: ['email', 'tenant', 'status', 'updatedAt'],
   },
   fields: [
     {
@@ -77,19 +77,6 @@ export const NewsletterSubscriptions: CollectionConfig = {
       defaultValue: 'pending',
       required: true,
       index: true,
-    },
-    {
-      name: 'confirmedAt',
-      label: {
-        en: 'Confirmed At',
-        pl: 'Potwierdzono',
-      },
-      type: 'date',
-      admin: {
-        date: {
-          pickerAppearance: 'dayAndTime',
-        },
-      },
     },
   ],
 };

@@ -17,7 +17,7 @@ export default async function ConfirmNewsletterPage({
   const subdomain = domain.split('.')[0];
 
   if (!subscriptionId) {
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 
   // Find the subscription in Payload by ID
@@ -32,7 +32,7 @@ export default async function ConfirmNewsletterPage({
       id: subscriptionId,
     });
   } catch (error) {
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 
   const tenantRef = subscription.tenant as Tenant | string | undefined;
@@ -44,7 +44,7 @@ export default async function ConfirmNewsletterPage({
         : undefined;
 
   if (!tenantId) {
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 
   const tenantDoc = (await payload.findByID({
@@ -54,14 +54,14 @@ export default async function ConfirmNewsletterPage({
 
   const tenantSubdomain = tenantDoc.domain;
   if (!tenantSubdomain || tenantSubdomain !== subdomain) {
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 
   const contactListName = tenantDoc.mailingGroupId;
   const topicName = tenantDoc.topicName;
 
   if (!contactListName || !topicName) {
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 
   // If already confirmed, show confirmed page
@@ -96,7 +96,6 @@ export default async function ConfirmNewsletterPage({
       id: subscription.id,
       data: {
         status: 'confirmed',
-        confirmedAt: new Date().toISOString(),
       },
     });
 

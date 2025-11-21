@@ -7,12 +7,12 @@ const TENANTS_COLLECTION = 'tenants';
 export async function up({ payload }: MigrateUpArgs): Promise<void> {
   const connection = (payload.db as any)?.connection;
   if (!connection) {
-    console.warn('⚠️  MongoDB connection not available. Skipping subdomain removal.');
+    console.warn('⚠️  MongoDB connection not available. Skipping field removal.');
     return;
   }
 
   const collection = connection.collection(SUBSCRIPTIONS_COLLECTION);
-  await collection.updateMany({}, { $unset: { subdomain: '' } });
+  await collection.updateMany({}, { $unset: { subdomain: '', confirmedAt: '' } });
 }
 
 export async function down({ payload }: MigrateDownArgs): Promise<void> {

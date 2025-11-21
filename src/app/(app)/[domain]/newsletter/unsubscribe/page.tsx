@@ -17,7 +17,7 @@ export default async function UnsubscribePage({
   const subdomain = domain.split('.')[0];
 
   if (!subscriptionId) {
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 
   try {
@@ -33,7 +33,7 @@ export default async function UnsubscribePage({
         id: subscriptionId,
       });
     } catch (error) {
-      redirect(`/${subdomain}/newsletter/error`);
+      redirect(`/newsletter/error`);
     }
 
     const tenantRef = subscription.tenant as Tenant | string | undefined;
@@ -45,7 +45,7 @@ export default async function UnsubscribePage({
           : undefined;
 
     if (!tenantId) {
-      redirect(`/${subdomain}/newsletter/error`);
+      redirect(`/newsletter/error`);
     }
 
     const tenantDoc = (await payload.findByID({
@@ -55,7 +55,7 @@ export default async function UnsubscribePage({
 
     const tenantSubdomain = tenantDoc.domain;
     if (!tenantSubdomain || tenantSubdomain !== subdomain) {
-      redirect(`/${subdomain}/newsletter/error`);
+      redirect(`/newsletter/error`);
     }
 
     // Check if already unsubscribed
@@ -108,7 +108,7 @@ export default async function UnsubscribePage({
     );
   } catch (error) {
     console.error('Error loading unsubscribe page:', error);
-    redirect(`/${subdomain}/newsletter/error`);
+    redirect(`/newsletter/error`);
   }
 }
 
