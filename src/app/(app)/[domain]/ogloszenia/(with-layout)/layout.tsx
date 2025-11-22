@@ -1,16 +1,13 @@
-import { Footer } from "@/_components/Footer";
-import { Header } from "@/_components/Header";
+import { PageLayout } from "@/_components/PageLayout";
 
-export default function AnnouncementLayout({
+export default async function AnnouncementLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <>
-      <Header />
+    <PageLayout>
       {children}
-      <Footer />
-    </>
+    </PageLayout>
   );
 } 

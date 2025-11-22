@@ -135,7 +135,11 @@ export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | n
         )
       }
 
+      case 'linebreak': {
+        return <br key={i} />
+      }
+
       default:
-        return <p key={i}>{serializedChildren}</p>
+        return <React.Fragment key={i}>{serializedChildren}</React.Fragment>
     }
   }) || null
