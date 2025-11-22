@@ -2,13 +2,11 @@ import { Page } from '@/payload-types';
 import { format } from 'date-fns';
 import React from 'react';
 import { AnnouncementCard } from '../AnnouncementCard';
-import { NewsletterSignupForm } from '../Newsletter/NewsletterSignupForm';
 
 type Props = {
   announcements: Page[];
   className?: string;
   currentMonth?: Date;
-  subdomain?: string;
 };
 
 type GroupedAnnouncements = {
@@ -19,7 +17,6 @@ export const AnnouncementList: React.FC<Props> = ({
   announcements,
   className = '',
   currentMonth,
-  subdomain,
 }) => {
   const monthToUse = currentMonth || new Date();
   const monthKey = format(monthToUse, 'yyyy-MM');
@@ -49,16 +46,12 @@ export const AnnouncementList: React.FC<Props> = ({
         return (
           <section key={monthKey}>
             <div className="grid grid-cols-1 gap-10 auto-rows-fr mx-auto">
-              {monthAnnouncements.map((announcement, index) => (
-                <React.Fragment key={announcement.id}>
-                  <AnnouncementCard
-                    announcement={announcement}
-                    currentMonth={monthToUse}
-                  />
-                  {index === 0 && subdomain && (
-                    <NewsletterSignupForm subdomain={subdomain} className="mt-4" />
-                  )}
-                </React.Fragment>
+              {monthAnnouncements.map((announcement) => (
+                <AnnouncementCard
+                  key={announcement.id}
+                  announcement={announcement}
+                  currentMonth={monthToUse}
+                />
               ))}
             </div>
           </section>

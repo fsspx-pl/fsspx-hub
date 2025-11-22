@@ -8,7 +8,7 @@ import Email from "@/emails/pastoral-announcements";
 import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
-import { serialize } from "@/_components/RichText/serialize";
+import { serializeForEmail } from "@/_components/RichText/serialize";
 import { sendBulkEmail } from "@/utilities/awsSes";
 import { sendEmail, sendNewsletterToContactList } from "@/utilities/nodemailerSes";
 import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
@@ -37,7 +37,7 @@ async function convertContentToHtml(content: any): Promise<string> {
     return "";
   }
   
-  const serializedContent = serialize(content.root.children);
+  const serializedContent = serializeForEmail(content.root.children);
   const html = await render(React.createElement('div', {}, serializedContent));
   return html;
 }

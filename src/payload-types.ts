@@ -198,6 +198,30 @@ export interface Tenant {
    * The topic name in AWS SES (e.g. poznan, warszawa). NOTE: changing the topic name will affect the newsletter recipients for this location.
    */
   topicName?: string | null;
+  pastoralAnnouncements?: {
+    /**
+     * When disabled, pastoral announcements will not be publicly available. Pages can still be published internally.
+     */
+    displayPastoralAnnouncements?: boolean | null;
+    /**
+     * Text displayed on the root page when pastoral announcements are disabled.
+     */
+    infoNote?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
   feastTemplates?: {
     /**
      * Template for Sunday services. These services will be automatically created for new Week Order.
@@ -600,6 +624,12 @@ export interface TenantsSelect<T extends boolean = true> {
       };
   mailingGroupId?: T;
   topicName?: T;
+  pastoralAnnouncements?:
+    | T
+    | {
+        displayPastoralAnnouncements?: T;
+        infoNote?: T;
+      };
   feastTemplates?:
     | T
     | {

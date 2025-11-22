@@ -78,7 +78,7 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
           <p className="mt-2 text-gray-600">Ładowanie ogłoszeń...</p>
         </div>
       ) : (
-        <AnnouncementList announcements={announcements} currentMonth={currentDate} subdomain={domain} />
+        <AnnouncementList announcements={announcements} currentMonth={currentDate} />
       )}
     </div>
   );

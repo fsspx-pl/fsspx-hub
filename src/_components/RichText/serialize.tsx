@@ -69,7 +69,21 @@ const serializeText = (node: TextNode): React.ReactNode => {
   return text
 }
 
-export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | null =>
+type LinkRenderer = (props: {
+  key: string | number
+  href: string
+  newTab?: boolean | null
+  children: React.ReactNode
+  reference?: {
+    value: string | Page
+    relationTo: 'pages'
+  } | null
+}) => React.ReactNode
+
+const serializeInternal = (
+  children?: (Node | TextNode)[],
+  linkRenderer?: LinkRenderer
+): React.ReactNode[] | null =>
   children?.map((node, i) => {
     if (isText(node)) {
       return <Fragment key={i}>{serializeText(node)}</Fragment>
@@ -80,7 +94,9 @@ export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | n
     }
 
     const typedNode = node as Node
-    const serializedChildren = typedNode.children ? serialize(typedNode.children) : undefined
+    const serializedChildren = typedNode.children 
+      ? serializeInternal(typedNode.children, linkRenderer) 
+      : undefined
 
     switch (typedNode.type) {
       case 'heading': {
@@ -118,6 +134,21 @@ export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | n
         return <blockquote key={i}>{serializedChildren}</blockquote>
       }
       case 'link': {
+        if (linkRenderer) {
+          const href = typedNode.fields?.url || '#'
+          return linkRenderer({
+            key: i,
+            href,
+            newTab: typedNode.fields?.newTab,
+            children: serializedChildren,
+            reference: typedNode.fields?.doc ? {
+              value: typedNode.fields.doc.value as Page,
+              relationTo: typedNode.fields.doc.relationTo,
+            } : null,
+          })
+        }
+        
+        // Default: use CMSLink for web
         return (
           <CMSLink
             key={i}
@@ -135,7 +166,24 @@ export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | n
         )
       }
 
+      case 'linebreak': {
+        return <br key={i} />
+      }
+
       default:
-        return <p key={i}>{serializedChildren}</p>
+        return <React.Fragment key={i}>{serializedChildren}</React.Fragment>
     }
   }) || null
+
+export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | null =>
+  serializeInternal(children)
+
+export const serializeForEmail = (children?: (Node | TextNode)[]): React.ReactNode[] | null =>
+  serializeInternal(children, ({ key, href, newTab, children: linkChildren }) => {
+    const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+    return (
+      <a key={key} href={href} {...newTabProps} style={{ color: '#C81910', textDecoration: 'none' }}>
+        {linkChildren}
+      </a>
+    )
+  })

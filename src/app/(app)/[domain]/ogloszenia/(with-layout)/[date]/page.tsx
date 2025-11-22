@@ -61,6 +61,9 @@ export async function generateMetadata({
   if (!tenant) return null;
   if (!settings?.copyright) return null;
 
+  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  if (!displayPastoralAnnouncements) return null;
+
   const copyright = settings?.copyright || "";
   const location = tenant
     ? `${tenant.city} - ${tenant.type} ${tenant.patron}`
@@ -79,13 +82,26 @@ export default async function AnnouncementPage({
 }) {
   const now = new Date(); 
   const { domain, date } = await params;
+  
+  const tenant = await fetchTenant(domain);
+  if (!tenant) {
+    const { notFound } = await import('next/navigation');
+    notFound();
+  }
+
+  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  if (!displayPastoralAnnouncements) {
+    const { notFound } = await import('next/navigation');
+    notFound();
+  }
+
   const isoDate = parse(date, 'dd-MM-yyyy', now).toISOString();
   const page = await fetchTenantPageByDate(domain, isoDate);
   const serverNow = now.toISOString();
 
   if (!page?.content) return null;
 
-  const tenant = page.tenant ? page.tenant as Tenant : null;
+  const pageTenant = page.tenant ? page.tenant as Tenant : null;
   const period = page?.period ? page.period as PageType['period'] : null;
 
   // Calculate the date range for initial data fetch
@@ -94,13 +110,13 @@ export default async function AnnouncementPage({
   const nextMonth = endOfMonth(addMonths(currentDate, 1));
 
   // Fetch feasts for the entire year
-  const feastsWithMasses: FeastWithMasses[] = tenant 
+  const feastsWithMasses: FeastWithMasses[] = pageTenant 
     ? await getFeastsWithMasses(
         {
           start: new Date(currentDate.getFullYear(), 0, 1).toISOString(), // Start of year
           end: new Date(currentDate.getFullYear(), 11, 31).toISOString(), // End of year
         },
-        tenant,
+        pageTenant,
         now,
         {
           servicesStart: prevMonth.toISOString(),
@@ -118,7 +134,7 @@ export default async function AnnouncementPage({
   });
 
   // Regular page rendering
-  const breadcrumbs: BreadcrumbItem[] = tenant ? getBreadcrumbs(tenant, page.title, period?.start as string) : [];
+  const breadcrumbs: BreadcrumbItem[] = pageTenant ? getBreadcrumbs(pageTenant, page.title, period?.start as string) : [];
 
   const user = page.author ? page.author as User : null;
   const author = formatAuthorName(user);
@@ -132,7 +148,7 @@ export default async function AnnouncementPage({
         <Breadcrumbs items={breadcrumbs} />
       </Gutter>
       <NewMediumImpact
-        image={tenant?.coverBackground as Media}
+        image={pageTenant?.coverBackground as Media}
         title={page.title}
         author={author}
         authorAvatar={authorAvatar}
@@ -144,7 +160,7 @@ export default async function AnnouncementPage({
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
             initialDate={feastsWithMasses.length > 0 ? now.toISOString() : serverNow}
-            tenantId={tenant?.id ?? ''}
+            tenantId={pageTenant?.id ?? ''}
           >
             <Calendar />
           </FeastDataProvider>
