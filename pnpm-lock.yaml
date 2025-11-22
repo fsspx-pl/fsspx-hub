@@ -23,6 +23,9 @@ importers:
       '@payloadcms/next':
         specifier: 3.60.0
         version: 3.60.0(@types/react@19.1.6)(graphql@16.11.0)(monaco-editor@0.38.0)(next@15.5.4(@babel/core@7.26.7)(@playwright/test@1.56.0)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.60.0(graphql@16.11.0)(typescript@5.4.5))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.4.5)
+      '@payloadcms/plugin-form-builder':
+        specifier: 3.60.0
+        version: 3.60.0(@types/react@19.1.6)(monaco-editor@0.38.0)(next@15.5.4(@babel/core@7.26.7)(@playwright/test@1.56.0)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.60.0(graphql@16.11.0)(typescript@5.4.5))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.4.5)
       '@payloadcms/richtext-lexical':
         specifier: 3.60.0
         version: 3.60.0(@faceless-ui/modal@3.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@faceless-ui/scroll-info@2.0.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@payloadcms/next@3.60.0(@types/react@19.1.6)(graphql@16.11.0)(monaco-editor@0.38.0)(next@15.5.4(@babel/core@7.26.7)(@playwright/test@1.56.0)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.60.0(graphql@16.11.0)(typescript@5.4.5))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.4.5))(@types/react@19.1.6)(monaco-editor@0.38.0)(next@15.5.4(@babel/core@7.26.7)(@playwright/test@1.56.0)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.60.0(graphql@16.11.0)(typescript@5.4.5))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.4.5)(yjs@13.6.18)
@@ -2126,6 +2129,13 @@ packages:
       graphql: ^16.8.1
       next: ^15.2.3
       payload: 3.60.0
+
+  '@payloadcms/plugin-form-builder@3.60.0':
+    resolution: {integrity: sha512-/AiBvoh+kcslfKJ5ZueJrAF+Va9dK2mZ9M4T2TOBtq9U+txKEbixj2yIW8wrJ5m0JjNDJIJHliN6ELamijznQQ==}
+    peerDependencies:
+      payload: 3.60.0
+      react: ^19.0.0 || ^19.0.0-rc-65a56d0e-20241020
+      react-dom: ^19.0.0 || ^19.0.0-rc-65a56d0e-20241020
 
   '@payloadcms/richtext-lexical@3.60.0':
     resolution: {integrity: sha512-KmEEB0lhC7W1X+lD0jdNMrrY8LkXZOsajbMfImqKaYcJ9t++Z7rxaorWD3KXRWKGSp2nZ8IX97w9wzn9yP1VSg==}
@@ -10308,6 +10318,20 @@ snapshots:
       - monaco-editor
       - react
       - react-dom
+      - supports-color
+      - typescript
+
+  '@payloadcms/plugin-form-builder@3.60.0(@types/react@19.1.6)(monaco-editor@0.38.0)(next@15.5.4(@babel/core@7.26.7)(@playwright/test@1.56.0)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.60.0(graphql@16.11.0)(typescript@5.4.5))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.4.5)':
+    dependencies:
+      '@payloadcms/ui': 3.60.0(@types/react@19.1.6)(monaco-editor@0.38.0)(next@15.5.4(@babel/core@7.26.7)(@playwright/test@1.56.0)(babel-plugin-macros@3.1.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.60.0(graphql@16.11.0)(typescript@5.4.5))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.4.5)
+      escape-html: 1.0.3
+      payload: 3.60.0(graphql@16.11.0)(typescript@5.4.5)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - monaco-editor
+      - next
       - supports-color
       - typescript
 

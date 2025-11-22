@@ -40,10 +40,10 @@ export const Input: React.FC<InputProps> = ({
         w-full px-4 py-2 
         border border-gray-300 
         rounded-md
-        focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-400 
+        focus:outline-none focus:ring-2 
         disabled:bg-gray-100 disabled:cursor-not-allowed
         transition-colors
-        ${className}
+        ${className || 'focus:ring-gray-200 focus:border-gray-400'}
       `}
     />
   );

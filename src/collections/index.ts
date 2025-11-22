@@ -8,6 +8,7 @@ import { Services } from './Services';
 import { FeastTemplates } from './FeastTemplates';
 import { ServiceWeeks } from './ServiceWeeks';
 import { NewsletterSubscriptions } from './NewsletterSubscriptions';
+import { Events } from './Events';
 
 export const collections: CollectionConfig[] = [
   Pages,
@@ -18,4 +19,5 @@ export const collections: CollectionConfig[] = [
   FeastTemplates,
   ServiceWeeks,
   NewsletterSubscriptions,
+  Events,
 ]; 
