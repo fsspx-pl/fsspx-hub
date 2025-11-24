@@ -170,8 +170,19 @@ const serializeInternal = (
         return <br key={i} />
       }
 
+      case 'paragraph': {
+        return <React.Fragment key={i}>
+          <React.Fragment key={i}>{serializedChildren}</React.Fragment>
+          <br />
+        </React.Fragment>
+      }
+
+      case 'horizontalrule': {
+        return <hr key={i} />
+      }
+
       default:
-        return <React.Fragment key={i}>{serializedChildren}</React.Fragment>
+        return <p key={i}>{serializedChildren}</p>
     }
   }) || null
 
