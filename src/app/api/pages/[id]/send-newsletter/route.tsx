@@ -9,8 +9,8 @@ import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
 import { serializeForEmail } from "@/_components/RichText/serialize";
-import { sendBulkEmail } from "@/utilities/awsSes";
-import { sendEmail, sendNewsletterToContactList } from "@/utilities/nodemailerSes";
+import { sendBulkEmailToRecipients } from "@/utilities/awsSes";
+import { sendEmail, sendNewsletterToRecipients } from "@/utilities/nodemailerSes";
 import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
 import React from "react";
 import { minify } from "html-minifier-terser";
@@ -158,19 +158,30 @@ async function sendNewsletter({
 
   const html = await minifyAndReplaceQuotes(rawHtml);
 
-  const contactListName = (page.tenant as Tenant).mailingGroupId;
-  if (!contactListName) {
-    throw new Error("Contact list name is not configured for this tenant.");
-  }
-
-  const topicName = (page.tenant as Tenant).topicName;
-  if (!topicName) {
-    throw new Error("Topic name is not configured for this tenant.");
-  }
-
+  const tenantId = (page.tenant as Tenant).id;
   if (!fromEmail) {
     throw new Error("Sender email is not configured for this tenant.");
   }
+
+  // Get confirmed subscribers from Payload (source of truth)
+  const subscriptions = await payload.find({
+    collection: 'newsletterSubscriptions',
+    where: {
+      and: [
+        { tenant: { equals: tenantId } },
+        { status: { equals: 'confirmed' } },
+      ],
+    },
+    limit: 10000, // Adjust if you have more subscribers
+  });
+
+  const recipients = subscriptions.docs.map(sub => sub.email);
+
+  if (recipients.length === 0) {
+    throw new Error("No confirmed subscribers found for this tenant.");
+  }
+
+  console.info(`Found ${recipients.length} confirmed subscribers from Payload`);
 
   const emailData = {
     subject: titleWithDateSuffix,
@@ -178,8 +189,7 @@ async function sendNewsletter({
     fromEmail,
     replyTo: fromEmail,
     htmlContent: html,
-    contactListName,
-    topicName,
+    recipients,
     unsubscribeBaseUrl: `${baseUrl}/newsletter/unsubscribe`,
     getSubscriptionId,
   };
@@ -206,15 +216,14 @@ async function sendNewsletter({
   }
 
   try {
-    const response = await sendBulkEmail(emailData);
+    const response = await sendBulkEmailToRecipients(emailData);
     return response;
   } catch (error) {
     console.warn('AWS SES bulk email failed, trying Nodemailer:', error);
     
     // Fallback to Nodemailer
-    const result = await sendNewsletterToContactList({
-      contactListName,
-      topicName,
+    const result = await sendNewsletterToRecipients({
+      recipients: emailData.recipients,
       subject: titleWithDateSuffix,
       html,
       from: emailData.fromName,

@@ -152,8 +152,87 @@ export async function sendBulkEmails(emailData: {
 }
 
 /**
+ * Send newsletter to a list of recipients using Nodemailer
+ * This function accepts a list of email addresses directly (from Payload)
+ */
+export async function sendNewsletterToRecipients(emailData: {
+  recipients: string[];
+  subject: string;
+  html: string;
+  text?: string;
+  from?: string;
+  replyTo?: string;
+  unsubscribeBaseUrl?: string;
+  getSubscriptionId?: (email: string) => Promise<string | null>;
+}) {
+  try {
+    console.info('Sending newsletter to recipients:', {
+      recipientCount: emailData.recipients.length,
+      subject: emailData.subject
+    });
+
+    if (emailData.recipients.length === 0) {
+      console.warn('No recipients provided');
+      return {
+        total: 0,
+        successful: 0,
+        failed: 0,
+        errors: ['No recipients provided']
+      };
+    }
+
+    // Personalize HTML for each recipient with unsubscribe URL using subscription ID
+    const personalizedEmails = await Promise.all(
+      emailData.recipients.map(async (email) => ({
+        email,
+        html: await personalizeUnsubscribeUrl({
+          html: emailData.html,
+          email,
+          unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
+          getSubscriptionId: emailData.getSubscriptionId,
+        }),
+      }))
+    );
+
+    // Send emails individually with personalized content
+    const results = await Promise.all(
+      personalizedEmails.map(({ email, html }) =>
+        sendEmail({
+          to: email,
+          subject: emailData.subject,
+          html,
+          text: emailData.text,
+          from: emailData.from,
+          replyTo: emailData.replyTo,
+        }).catch((error) => {
+          console.error(`Failed to send to ${email}:`, error);
+          return { success: false, email, error: error instanceof Error ? error.message : 'Unknown error' };
+        })
+      )
+    );
+
+    const successful = results.filter(r => r && 'success' in r && r.success).length;
+    const failed = results.length - successful;
+
+    return {
+      total: emailData.recipients.length,
+      successful,
+      failed,
+      errors: results
+        .filter(r => r && 'error' in r)
+        .map(r => (r as any).error || 'Unknown error'),
+    };
+
+  } catch (error) {
+    console.error('Failed to send newsletter to recipients:', error);
+    throw new Error(`Newsletter sending failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
  * Send newsletter to contact list using Nodemailer
  * This function fetches contacts from SES and sends emails
+ * @deprecated Use sendNewsletterToRecipients with Payload data instead
  */
 export async function sendNewsletterToContactList(emailData: {
   contactListName: string;

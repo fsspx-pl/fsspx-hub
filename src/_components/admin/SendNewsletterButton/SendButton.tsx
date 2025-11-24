@@ -10,19 +10,18 @@ export const SendButton: React.FC<{
   id: string, 
   newsletterSent?: boolean | null, 
   isDraft: boolean, 
-  newsletterGroupId: string,
-  topicName?: string | null
+  tenantId: string
 }> = ({
   id,
   newsletterSent,
   isDraft,
-  newsletterGroupId,
-  topicName
+  tenantId
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isNewsletterSent, setIsNewsletterSent] = useState(Boolean(newsletterSent) ?? false)
-  const { openModal } = useModal()
+  const { openModal, closeModal } = useModal()
   const [modalMessage, setModalMessage] = useState('Are you sure you want to send this newsletter? This action cannot be undone.')
+  const [subscriberCount, setSubscriberCount] = useState<number | null>(null)
 
   const handleSendNewsletter = async () => {
     if (isLoading) return
@@ -55,11 +54,10 @@ export const SendButton: React.FC<{
     }
   }
 
-  const fetchNewsletterGroup = useCallback(async (groupId: string, topic?: string | null) => {
-    const url = topic ? `/api/newsletter-group/${groupId}?topic=${topic}` : `/api/newsletter-group/${groupId}`;
-    const response = await fetch(url);
+  const fetchSubscriberCount = useCallback(async (tenantId: string) => {
+    const response = await fetch(`/api/newsletter-group/${tenantId}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch newsletter group');
+      throw new Error('Failed to fetch subscriber count');
     }
     return response.json();
   }, []);
@@ -67,20 +65,27 @@ export const SendButton: React.FC<{
   const openConfirmModal = useCallback(async () => {
     setIsLoading(true)
     try {
-      const newsletterGroup = await fetchNewsletterGroup(newsletterGroupId, topicName);
+      const newsletterGroup = await fetchSubscriberCount(tenantId);
       
-      const subscriberCount = newsletterGroup.subscribersCount;
-      const subscriberText = subscriberCount === 1 ? 'subscriber' : 'subscribers';
-      const message = `The newsletter will be sent to ${subscriberCount} ${subscriberText}. This action cannot be undone.`;
+      const count = newsletterGroup.subscribersCount;
+      setSubscriberCount(count);
       
-      setModalMessage(message);
+      if (count === 0) {
+        const message = 'There are no confirmed subscribers for this tenant. The newsletter cannot be sent.';
+        setModalMessage(message);
+      } else {
+        const subscriberText = count === 1 ? 'subscriber' : 'subscribers';
+        const message = `The newsletter will be sent to ${count} ${subscriberText}. This action cannot be undone.`;
+        setModalMessage(message);
+      }
+      
       openModal(sendNewsletterModalSlug)
     } catch (error) {
-      toast.error('Failed to fetch newsletter group information. Please try again later.');
+      toast.error('Failed to fetch subscriber count. Please try again later.');
     } finally {
       setIsLoading(false)
     }
-  }, [openModal, newsletterGroupId, topicName, fetchNewsletterGroup])
+  }, [openModal, tenantId, fetchSubscriberCount])
 
   const disabled = isLoading || isNewsletterSent || isDraft
 
@@ -104,7 +109,8 @@ export const SendButton: React.FC<{
       </Button>
 
       <ConfirmationModal
-        onConfirm={handleSendNewsletter}
+        onConfirm={subscriberCount === 0 ? () => closeModal(sendNewsletterModalSlug) : handleSendNewsletter}
+        confirmLabel={subscriberCount === 0 ? 'Close' : undefined}
         heading="Send Newsletter"
         body={modalMessage}
         modalSlug={sendNewsletterModalSlug}
