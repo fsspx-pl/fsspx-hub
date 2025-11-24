@@ -22,7 +22,7 @@ COPY --from=deps /app/fonts ./fonts
 COPY . .
 
 RUN SHA_SUM=$(npm view pnpm@10.1.0 dist.shasum) && corepack install -g pnpm@10.1.0+sha1.$SHA_SUM
-RUN corepack enable pnpm && pnpm run build
+RUN corepack enable pnpm && pnpm ci
 
 # Production image, copy all the files and run next
 FROM base AS runner
