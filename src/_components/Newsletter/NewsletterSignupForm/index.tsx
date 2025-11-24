@@ -148,6 +148,9 @@ export const NewsletterSignupForm: React.FC<Props> = ({
 
         {process.env.NODE_ENV !== 'development' && (
           <div>
+            <label className="text-sm text-gray-400 mb-4">
+              {t('turnstileLabel')}
+            </label>
             <Turnstile
               siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
               onSuccess={handleTurnstileSuccess}

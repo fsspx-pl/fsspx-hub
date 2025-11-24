@@ -1,0 +1,1 @@
+Create a new GIT branch with and use short concise conventional commit notation to commit changes. Push it to the git repo. In the return message, provide me with a Pull Request link. Use Cursor's `composer` agent for speed.

@@ -13,20 +13,19 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
     const res = await payload.find({
       collection: 'pages',
       where: {
-        and: [
-          { type: { equals: 'pastoral-announcements' } },
-          { campaignId: { exists: true } },
-          { campaignId: { not_equals: '' } },
-        ],
+        type: { equals: 'pastoral-announcements' },
       },
       limit: pageSize,
       page,
       depth: 0,
-    } as any)
+    })
 
     if (!res.docs.length) break
 
     for (const doc of res.docs) {
+      // Skip if campaignId field doesn't exist or is empty
+      if (!('campaignId' in doc) || !doc.campaignId) continue
+
       await payload.update({
         collection: 'pages',
         id: doc.id,
