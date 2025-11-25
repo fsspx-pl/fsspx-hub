@@ -60,3 +60,47 @@ export const LongTitle: Story = {
     title: 'The Sources of the New Synodal Doctrine and Its Impact on Modern Catholic Church',
   },
 }
+
+export const WithGallery: Story = {
+  args: {
+    ...defaultArgs,
+    images: [
+      {
+        id: '1',
+        url: 'https://placehold.co/1200x800',
+        filename: 'hero-1',
+        mimeType: 'image/jpeg',
+        filesize: 1024,
+        width: 1200,
+        height: 800,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        alt: 'Article hero image 1',
+      },
+      {
+        id: '2',
+        url: 'https://placehold.co/1200x800/ff0000/fff',
+        filename: 'hero-2',
+        mimeType: 'image/jpeg',
+        filesize: 1024,
+        width: 1200,
+        height: 800,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        alt: 'Article hero image 2',
+      },
+      {
+        id: '3',
+        url: 'https://placehold.co/1200x800/0000ff/fff',
+        filename: 'hero-3',
+        mimeType: 'image/jpeg',
+        filesize: 1024,
+        width: 1200,
+        height: 800,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        alt: 'Article hero image 3',
+      },
+    ],
+  },
+}
