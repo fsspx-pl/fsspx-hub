@@ -6,6 +6,7 @@ import { Gutter } from "@/_components/Gutter";
 import { RichText } from "@/_components/RichText";
 import { BreadcrumbItem } from "@/_components/Breadcrumbs";
 import { PageLayout } from "@/_components/PageLayout";
+import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -40,6 +41,7 @@ export default async function RedirectToNewestPage({
   
   if (!displayPastoralAnnouncements) {
     const infoNote = tenant.pastoralAnnouncements?.infoNote;
+    const canRenderNewsletterSignup = Boolean(tenant.domain);
     
     const breadcrumbs: BreadcrumbItem[] = [
       {
@@ -54,16 +56,23 @@ export default async function RedirectToNewestPage({
     
     return (
       <PageLayout breadcrumbs={breadcrumbs}>
-        <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 lg:flex-row">
-          {infoNote ? (
-            <RichText 
-              data={infoNote} 
-              className="prose prose-lg max-w-none text-left prose-a:no-underline m-0"
+        <Gutter className="mt-4 py-6 flex flex-wrap gap-8">
+            {infoNote ? (
+              <RichText 
+                data={infoNote} 
+                className="prose prose-lg max-w-none text-left prose-a:no-underline m-0"
+              />
+            ) : (
+              <div className="prose prose-lg max-w-none">
+                <p>Ogłoszenia duszpasterskie nie są obecnie dostępne.</p>
+              </div>
+            )}
+
+          {canRenderNewsletterSignup && (
+            <NewsletterSignupForm
+              className="flex-1"
+              subdomain={tenant.domain as string}
             />
-          ) : (
-            <div className="prose prose-lg max-w-none">
-              <p>Ogłoszenia duszpasterskie nie są obecnie dostępne.</p>
-            </div>
           )}
         </Gutter>
       </PageLayout>
