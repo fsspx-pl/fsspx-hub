@@ -45,6 +45,9 @@ export async function generateMetadata({
 
   if (!tenant) return null;
 
+  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  if (!displayPastoralAnnouncements) return null;
+
   const location = `${tenant.city} - ${tenant.type} ${tenant.patron}`;
   const title = `Ogłoszenia do druku - ${location}`;
   
@@ -60,13 +63,27 @@ export default async function PrintPage({
   params: Promise<{ domain: string; date: string }>;
 }) {
   const { domain, date } = await params;
+  const [subdomain] = domain.split(".");
+  
+  const tenant = await fetchTenant(subdomain);
+  if (!tenant) {
+    const { notFound } = await import('next/navigation');
+    notFound();
+  }
+
+  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  if (!displayPastoralAnnouncements) {
+    const { notFound } = await import('next/navigation');
+    notFound();
+  }
+
   const parsedDate = parse(date, 'dd-MM-yyyy', new Date());
   const isoDate = parsedDate.toISOString();
   const page = await fetchTenantPageByDate(domain, isoDate);
 
   if (!page?.content) return null;
 
-  const tenant = page.tenant ? page.tenant as Tenant : null;
+  const pageTenant = page.tenant ? page.tenant as Tenant : null;
   const period = page?.period ? page.period as PageType['period'] : null;
 
   if(!period?.start) return null;
@@ -74,13 +91,13 @@ export default async function PrintPage({
 
 
   // Fetch feasts only for the pastoral announcement period
-  const periodFeasts: FeastWithMasses[] = tenant 
+  const periodFeasts: FeastWithMasses[] = pageTenant 
     ? await getFeastsWithMasses(
         {
           start: period?.start,
           end: period?.end,
         },
-        tenant,
+        pageTenant,
         parsedDate,
         {
           servicesStart: period?.start,
@@ -94,7 +111,7 @@ export default async function PrintPage({
       title={page.title}
       content={page.content}
       feastsWithMasses={periodFeasts}
-      tenant={tenant}
+      tenant={pageTenant}
     />
   );
 } 

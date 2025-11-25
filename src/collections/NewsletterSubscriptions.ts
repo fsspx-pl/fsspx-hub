@@ -1,5 +1,6 @@
+import { tenantOnlyAccess } from '@/access/byTenant';
+import { superAndTenantAdmins } from '@/access/superAndTenantAdmins';
 import { CollectionConfig } from 'payload';
-import { superAdmins } from '@/access/superAdmins';
 
 export const NewsletterSubscriptions: CollectionConfig = {
   slug: 'newsletterSubscriptions',
@@ -14,10 +15,10 @@ export const NewsletterSubscriptions: CollectionConfig = {
     },
   },
   access: {
-    read: superAdmins,
+    read: tenantOnlyAccess,
     create: () => true, // Allow API to create subscriptions
-    update: superAdmins,
-    delete: superAdmins,
+    update: tenantOnlyAccess,
+    delete: tenantOnlyAccess,
   },
   admin: {
     useAsTitle: 'email',

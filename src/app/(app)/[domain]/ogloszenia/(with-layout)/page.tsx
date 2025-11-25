@@ -33,6 +33,9 @@ export async function generateMetadata({
 
   if (!tenant) return null;
 
+  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  if (!displayPastoralAnnouncements) return null;
+
   const searchParamsData = await searchParams;
   const { year, month } = getMonthFromParams(searchParamsData);
   const monthName = new Date(year, month - 1, 1).toLocaleDateString('pl-PL', { 
@@ -80,6 +83,12 @@ export default async function AnnouncementsListingPage({
         </div>
       </div>
     );
+  }
+
+  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  if (!displayPastoralAnnouncements) {
+    const { notFound } = await import('next/navigation');
+    notFound();
   }
 
   const searchParamsData = await searchParams;

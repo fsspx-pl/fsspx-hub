@@ -45,6 +45,7 @@ export const newsletterTranslations = {
     emailConfirmationFallback: 'Jeśli przycisk nie działa, skopiuj i wklej poniższy link do przeglądarki:',
     emailConfirmationDisclaimer: 'Jeśli nie zapisywałeś się do subskrypcji ogłoszeń duszpasterskich z',
     emailConfirmationIgnore: 'możesz zignorować tę wiadomość.',
+    turnstileLabel: 'Weryfikacja antyspamowa',
   },
   en: {
     // Subscribe mode
@@ -87,6 +88,7 @@ export const newsletterTranslations = {
     emailConfirmationFallback: 'If the button does not work, copy and paste the following link into your browser:',
     emailConfirmationDisclaimer: 'If you did not subscribe to the newsletter from',
     emailConfirmationIgnore: 'you can ignore this message.',
+    turnstileLabel: 'Anti-spam verification',
   },
 } as const;
 

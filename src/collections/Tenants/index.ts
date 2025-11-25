@@ -130,6 +130,46 @@ export const Tenants: CollectionConfig = {
       }
     },
     {
+      name: 'pastoralAnnouncements',
+      label: {
+        en: 'Pastoral Announcements',
+        pl: 'Ogłoszenia duszpasterskie',
+      },
+      type: 'group',
+      fields: [
+        {
+          name: 'displayPastoralAnnouncements',
+          type: 'checkbox',
+          label: {
+            en: 'Display pastoral announcements',
+            pl: 'Wyświetlaj ogłoszenia duszpasterskie',
+          },
+          defaultValue: true,
+          admin: {
+            description: {
+              pl: 'Gdy wyłączone, ogłoszenia duszpasterskie nie będą dostępne publicznie. Strony nadal mogą być publikowane wewnętrznie.',
+              en: 'When disabled, pastoral announcements will not be publicly available. Pages can still be published internally.'
+            }
+          }
+        },
+        {
+          name: 'infoNote',
+          type: 'richText',
+          label: {
+            en: 'Info note',
+            pl: 'Notatka informacyjna',
+          },
+          admin: {
+            description: {
+              pl: 'Tekst wyświetlany na stronie głównej, gdy ogłoszenia duszpasterskie są wyłączone.',
+              en: 'Text displayed on the root page when pastoral announcements are disabled.'
+            },
+            condition: (_, siblingData) => !siblingData.displayPastoralAnnouncements,
+          }
+        },
+      ]
+    },
+    {
       name: 'feastTemplates',
       label: {
         en: 'Feast Templates',
