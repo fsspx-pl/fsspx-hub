@@ -59,4 +59,48 @@ export const LongTitle: Story = {
     ...defaultArgs,
     title: 'Ogłoszenia duszpasterskie na Uroczystość Niepokalanego Poczęcia Najświętszej Maryi Panny',
   },
+}
+
+export const WithGallery: Story = {
+  args: {
+    ...defaultArgs,
+    images: [
+      {
+        id: '2',
+        url: 'https://placehold.co/1200x800/234/fff',
+        filename: 'background-1',
+        mimeType: 'image/jpeg',
+        filesize: 1024,
+        width: 1200,
+        height: 800,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        alt: 'Background image 1',
+      },
+      {
+        id: '3',
+        url: 'https://placehold.co/1200x800/ff0000/fff',
+        filename: 'background-2',
+        mimeType: 'image/jpeg',
+        filesize: 1024,
+        width: 1200,
+        height: 800,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        alt: 'Background image 2',
+      },
+      {
+        id: '4',
+        url: 'https://placehold.co/1200x800/0000ff/fff',
+        filename: 'background-3',
+        mimeType: 'image/jpeg',
+        filesize: 1024,
+        width: 1200,
+        height: 800,
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        alt: 'Background image 3',
+      },
+    ],
+  },
 } 
