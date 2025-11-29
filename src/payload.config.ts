@@ -1,4 +1,6 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import {
   HeadingFeature,
   defaultEditorFeatures,
@@ -7,27 +9,23 @@ import {
 import { en } from '@payloadcms/translations/languages/en'
 import { pl } from '@payloadcms/translations/languages/pl'
 import path from 'path'
-import { Field, buildConfig } from 'payload'
+import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
+import { newsletterTranslations } from './_components/Newsletter/translations'
+import { tenantOnlyAccess } from './access/byTenant'
+import { Events } from './collections/Events'
+import { revalidateEventPages } from './collections/Events/hooks/revalidateEventPages'
 import { Media } from './collections/Media'
+import { NewsletterSubscriptions } from './collections/NewsletterSubscriptions'
 import { Pages } from './collections/Pages'
 import { ServiceWeeks } from './collections/ServiceWeeks'
 import { Services } from './collections/Services'
 import { Tenants } from './collections/Tenants'
 import { Users } from './collections/Users'
-import { NewsletterSubscriptions } from './collections/NewsletterSubscriptions'
-import { Events } from './collections/Events'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
-import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
-import { newsletterTranslations } from './_components/Newsletter/translations'
-import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { tenantOnlyAccess } from './access/byTenant'
-import { revalidateEventPages } from './collections/Events/hooks/revalidateEventPages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -104,8 +102,6 @@ export default buildConfig({
           read: tenantOnlyAccess,
           update: tenantOnlyAccess,
           delete: tenantOnlyAccess,
-        },
-        hooks: {
         },
       },
     }),
