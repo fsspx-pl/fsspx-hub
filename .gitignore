@@ -21,7 +21,9 @@ next-env.d.ts
 # payload
 /media
 
+# storybook
 *storybook.log
+storybook-static
 
 src/collections/media
 fonts

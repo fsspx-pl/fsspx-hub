@@ -1,41 +1,41 @@
 import React from 'react';
 
-type InputProps = {
+type TextareaProps = {
   id?: string;
-  type?: 'text' | 'email' | 'password' | 'tel' | 'url' | 'search';
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
+  rows?: number;
   className?: string;
   'aria-label'?: string;
 };
 
 /**
- * Atomic Input component for form fields
+ * Atomic Textarea component matching Input styles
  */
-export const Input: React.FC<InputProps> = ({
+export const Textarea: React.FC<TextareaProps> = ({
   id,
-  type = 'text',
   value,
   onChange,
   placeholder,
   required = false,
   disabled = false,
+  rows = 4,
   className = '',
   'aria-label': ariaLabel,
 }) => {
   return (
-    <input
+    <textarea
       id={id}
-      type={type}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
       required={required}
       disabled={disabled}
       aria-label={ariaLabel}
+      rows={rows}
       className={`
         w-full px-4 py-2 
         border border-gray-300 
@@ -48,4 +48,5 @@ export const Input: React.FC<InputProps> = ({
     />
   );
 };
+
 
