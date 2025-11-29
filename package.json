@@ -21,7 +21,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "ci": "payload migrate && pnpm build && pnpm build-storybook",
+    "ci": "payload migrate && pnpm build",
     "generate:types": "payload generate:types",
     "generate:schema": "payload-graphql generate:schema",
     "storybook": "storybook dev -p 6006",
