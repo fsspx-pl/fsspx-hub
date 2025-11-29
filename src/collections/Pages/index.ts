@@ -172,6 +172,24 @@ export const Pages: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'relatedEvents',
+      label: {
+        en: 'Related Events',
+        pl: 'Powiązane wydarzenia',
+      },
+      type: 'relationship',
+      relationTo: 'events',
+      hasMany: true,
+      maxRows: 5,
+      admin: {
+        position: 'sidebar',
+        description: {
+          pl: 'Wybierz maksymalnie 5 powiązanych wydarzeń. Upewnij się, że wybrane wydarzenia należą do tej samej lokalizacji.',
+          en: 'Select up to 5 related events. Ensure selected events belong to the same tenant.',
+        },
+      },
+    },
   ],
   hooks: {
     beforeChange: [

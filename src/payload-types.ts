@@ -335,70 +335,13 @@ export interface Page {
     sent?: boolean | null;
   };
   printActions?: {};
+  /**
+   * Select up to 5 related events. Ensure selected events belong to the same tenant.
+   */
+  relatedEvents?: (string | Event)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * List of all services, which are automatically generated based on the Week Order. Each service can be edited individually.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "services".
- */
-export interface Service {
-  id: string;
-  date: string;
-  tenant: string | Tenant;
-  dayName?: string | null;
-  serviceTitle?: string | null;
-  category: 'mass' | 'rosary' | 'lamentations' | 'other';
-  /**
-   * Holy Mass type, visible in the calendar and newsletter
-   */
-  massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
-  /**
-   * Service title, visible in the calendar and newsletter
-   */
-  customTitle?: string | null;
-  /**
-   * Additional information about the service, visible below the service title in the calendar and newsletter
-   */
-  notes?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Adding a new week automatically generates services based on the service template for that day, available in the Tenant settings.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "serviceWeeks".
- */
-export interface ServiceWeek {
-  id: string;
-  /**
-   * Tenant to which this service week order is assigned
-   */
-  tenant: string | Tenant;
-  /**
-   * First day of the week (must be Sunday)
-   */
-  start: string;
-  end?: string | null;
-  yearWeek?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "newsletterSubscriptions".
- */
-export interface NewsletterSubscription {
-  id: string;
-  email: string;
-  tenant: string | Tenant;
-  status: 'pending' | 'confirmed' | 'unsubscribed';
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -611,6 +554,67 @@ export interface Form {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * List of all services, which are automatically generated based on the Week Order. Each service can be edited individually.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: string;
+  date: string;
+  tenant: string | Tenant;
+  dayName?: string | null;
+  serviceTitle?: string | null;
+  category: 'mass' | 'rosary' | 'lamentations' | 'other';
+  /**
+   * Holy Mass type, visible in the calendar and newsletter
+   */
+  massType?: ('sung' | 'read' | 'silent' | 'solemn') | null;
+  /**
+   * Service title, visible in the calendar and newsletter
+   */
+  customTitle?: string | null;
+  /**
+   * Additional information about the service, visible below the service title in the calendar and newsletter
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Adding a new week automatically generates services based on the service template for that day, available in the Tenant settings.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "serviceWeeks".
+ */
+export interface ServiceWeek {
+  id: string;
+  /**
+   * Tenant to which this service week order is assigned
+   */
+  tenant: string | Tenant;
+  /**
+   * First day of the week (must be Sunday)
+   */
+  start: string;
+  end?: string | null;
+  yearWeek?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletterSubscriptions".
+ */
+export interface NewsletterSubscription {
+  id: string;
+  email: string;
+  tenant: string | Tenant;
+  status: 'pending' | 'confirmed' | 'unsubscribed';
   updatedAt: string;
   createdAt: string;
 }
@@ -941,6 +945,7 @@ export interface PagesSelect<T extends boolean = true> {
         sent?: T;
       };
   printActions?: T | {};
+  relatedEvents?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
