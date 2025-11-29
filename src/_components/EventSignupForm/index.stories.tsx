@@ -42,13 +42,6 @@ const mockForm: Form = {
       required: true,
     },
     {
-      id: 'field-3',
-      blockType: 'date',
-      name: 'preferredDate',
-      label: 'Preferowana data',
-      required: true,
-    },
-    {
       id: 'field-4',
       blockType: 'textarea',
       name: 'familyMembers',
@@ -58,7 +51,16 @@ const mockForm: Form = {
   ],
   submitButtonLabel: 'Wyślij',
   confirmationType: 'message',
-  confirmationMessage: 'Dziękujemy za zgłoszenie!',
+  confirmationMessage: {
+    root: {
+      type: 'paragraph',
+      children: [{ type: 'text', text: 'Dziękujemy za zgłoszenie!', version: 1 }],
+      direction: 'ltr',
+      format: '',
+      indent: 0,
+      version: 1,
+    },
+  },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };

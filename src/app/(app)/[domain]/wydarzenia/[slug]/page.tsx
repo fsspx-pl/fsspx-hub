@@ -60,14 +60,14 @@ export default async function EventPage({
             fill
             className="relative w-full h-[200px] md:h-[300px]"
             imgClassName="object-cover w-full h-full"
-            sizes="100vw"
+            size="100vw"
           />
         </div>
       )}
 
       <Gutter className="py-8">
         <div className="max-w-4xl mx-auto space-y-8">
-          <EventDetails event={event} tenant={tenant} showHeroImage={false} />
+          <EventDetails event={event} tenant={tenant as Tenant} showHeroImage={false} />
           <EventSignupForm event={event} form={form} />
         </div>
       </Gutter>

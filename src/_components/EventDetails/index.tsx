@@ -28,7 +28,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({
           <MediaComponent
             imgClassName="w-full h-[300px] rounded-lg"
             resource={event.heroImage as Media}
-            sizes="100vw"
+            size="100vw"
           />
         </div>
       )}
