@@ -418,15 +418,6 @@ export interface Event {
    * Form used for event signups
    */
   form: string | Form;
-  /**
-   * If enabled, users must confirm signup via email
-   */
-  requiresOptIn?: boolean | null;
-  /**
-   * If enabled, form will require Turnstile verification
-   */
-  requiresTurnstile?: boolean | null;
-  confirmationEmailSubject?: string | null;
   heroImage?: (string | null) | Media;
   /**
    * Detailed event description displayed on the page
@@ -1023,9 +1014,6 @@ export interface EventsSelect<T extends boolean = true> {
   startDate?: T;
   endDate?: T;
   form?: T;
-  requiresOptIn?: T;
-  requiresTurnstile?: T;
-  confirmationEmailSubject?: T;
   heroImage?: T;
   content?: T;
   updatedAt?: T;

@@ -1,17 +1,4 @@
-/**
- * Base62 encoding for generating short unique hashes
- */
-const BASE62_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-function base62Encode(num: number): string {
-  if (num === 0) return '0';
-  let result = '';
-  while (num > 0) {
-    result = BASE62_CHARS[num % 62] + result;
-    num = Math.floor(num / 62);
-  }
-  return result;
-}
+import base62 from 'base62';
 
 /**
  * Generate a base62 hash from a string
@@ -25,34 +12,27 @@ function generateHash(input: string): string {
   }
   // Ensure positive number
   const positiveHash = Math.abs(hash);
-  return base62Encode(positiveHash).substring(0, 8).toLowerCase();
+  // Use base62 library and normalize to lowercase, limit to 8 chars
+  return base62.encode(positiveHash).toLowerCase().substring(0, 8);
 }
 
 /**
- * Create a URL-friendly slug from event name
- */
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-/**
- * Create an event slug in the format: name-base62hash
+ * Create an event slug in the format: baseSlug-base62hash
  * 
- * @param name - Event name (e.g., "Wizyta Duszpasterska")
+ * @param baseSlug - Base slug (already URL-friendly), e.g. "wizyta-duszpasterska"
  * @returns Slug in format: wizyta-duszpasterska-abc12345
  */
-export function createEventSlug(name: string): string {
-  const slugifiedName = slugify(name);
+export function createEventSlug(baseSlug: string): string {
+  const normalizedBase = (baseSlug || '').trim().toLowerCase();
   const timestamp = Date.now().toString();
   const random = Math.random().toString(36).substring(2, 10);
-  const hashInput = `${slugifiedName}-${timestamp}-${random}`;
+  const hashInput = `${normalizedBase}-${timestamp}-${random}`;
   const hash = generateHash(hashInput);
-  
-  return `${slugifiedName}-${hash}`;
+
+  if (!normalizedBase) {
+    return `-${hash}`;
+  }
+
+  return `${normalizedBase}-${hash}`;
 }
 

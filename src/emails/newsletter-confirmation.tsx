@@ -146,7 +146,7 @@ export default function NewsletterConfirmationEmail({
                     color: "#4B5563",
                     }}
                 >
-                    Ad maiorem Dei gloriam!
+                    Ad maiorem Dei gloriam.
                 </Text>
                 </Row>
             </Section>

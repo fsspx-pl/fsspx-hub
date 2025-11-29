@@ -1,11 +1,8 @@
-import { CollectionConfig, Field } from 'payload';
+import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant';
 import { tenant } from '@/fields/tenant';
-import { superAndTenantAdmins } from '@/access/superAndTenantAdmins';
-import { tenantReadOrPublic } from '@/access/byTenant';
-import { tenantOnlyAccess } from '@/access/byTenant';
 import { createEventSlug } from '@/utilities/createEventSlug';
-import { getPayload } from 'payload';
 import configPromise from '@payload-config';
+import { CollectionConfig, Field, getPayload } from 'payload';
 
 export const Events: CollectionConfig = {
   slug: 'events',
@@ -29,6 +26,7 @@ export const Events: CollectionConfig = {
     update: tenantOnlyAccess,
     delete: tenantOnlyAccess,
   },
+  
   fields: [
     {
       ...tenant,
@@ -63,42 +61,50 @@ export const Events: CollectionConfig = {
       hooks: {
         beforeValidate: [
           async ({ data, operation }) => {
-            if (operation === 'create' && data?.title && !data?.slug) {
-              const payload = await getPayload({ config: configPromise });
-              const tenantId = typeof data.tenant === 'string' ? data.tenant : data.tenant?.id;
-              
-              if (!tenantId) {
-                return;
-              }
-
-              let slug = createEventSlug(data.title);
-              let counter = 0;
-              const maxAttempts = 10;
-
-              // Ensure uniqueness within tenant
-              while (counter < maxAttempts) {
-                const existing = await payload.find({
-                  collection: 'events',
-                  where: {
-                    and: [
-                      { slug: { equals: slug } },
-                      { tenant: { equals: tenantId } },
-                    ],
-                  },
-                  limit: 1,
-                });
-
-                if (existing.docs.length === 0) {
-                  return slug;
-                }
-
-                counter++;
-                slug = createEventSlug(data.title);
-              }
-
-              return slug;
+            // Only generate slug on create; never change it on update
+            if (operation !== 'create') {
+              return data?.slug;
             }
-            return data?.slug;
+
+            const baseSlugSource = data?.slug;
+            if (!baseSlugSource) {
+              return data?.slug;
+            }
+
+            const payload = await getPayload({ config: configPromise });
+            const tenantId = typeof data.tenant === 'string' ? data.tenant : data.tenant?.id;
+
+            if (!tenantId) {
+              return data?.slug;
+            }
+
+            // Use existing slug (or title) and just append a base62 hash suffix
+            let slug = createEventSlug(baseSlugSource);
+            let counter = 0;
+            const maxAttempts = 10;
+
+            // Ensure uniqueness within tenant
+            while (counter < maxAttempts) {
+              const existing = await payload.find({
+                collection: 'events',
+                where: {
+                  and: [
+                    { slug: { equals: slug } },
+                    { tenant: { equals: tenantId } },
+                  ],
+                },
+                limit: 1,
+              });
+
+              if (existing.docs.length === 0) {
+                return slug;
+              }
+
+              counter++;
+              slug = createEventSlug(baseSlugSource);
+            }
+
+            return slug;
           },
         ],
       },
@@ -144,47 +150,6 @@ export const Events: CollectionConfig = {
           pl: 'Formularz używany do zapisów na wydarzenie',
           en: 'Form used for event signups',
         },
-      },
-    },
-    {
-      name: 'requiresOptIn',
-      label: {
-        en: 'Require Double Opt-In',
-        pl: 'Wymagaj podwójnej weryfikacji',
-      },
-      type: 'checkbox',
-      defaultValue: true,
-      admin: {
-        description: {
-          pl: 'Jeśli włączone, użytkownicy muszą potwierdzić zapis przez email',
-          en: 'If enabled, users must confirm signup via email',
-        },
-      },
-    },
-    {
-      name: 'requiresTurnstile',
-      label: {
-        en: 'Require Turnstile Verification',
-        pl: 'Wymagaj weryfikacji Turnstile',
-      },
-      type: 'checkbox',
-      defaultValue: true,
-      admin: {
-        description: {
-          pl: 'Jeśli włączone, formularz będzie wymagał weryfikacji Turnstile',
-          en: 'If enabled, form will require Turnstile verification',
-        },
-      },
-    },
-    {
-      name: 'confirmationEmailSubject',
-      label: {
-        en: 'Confirmation Email Subject',
-        pl: 'Temat emaila potwierdzającego',
-      },
-      type: 'text',
-      admin: {
-        condition: (_, siblingData) => siblingData.requiresOptIn === true,
       },
     },
     {

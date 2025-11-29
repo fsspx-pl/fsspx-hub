@@ -247,7 +247,7 @@ const MassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = ({ feastsW
 export default function Email({
   title = "Pastoral Announcements (DD.MM.YYYY)",
   content_html = "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. <br /> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>",
-  slogan = "Ad maiorem Dei gloriam!",
+  slogan = "Ad maiorem Dei gloriam.",
   copyright = "city.fsspx.pl",
   feastsWithMasses = testFeasts,
 }: {

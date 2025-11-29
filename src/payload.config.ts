@@ -1,11 +1,13 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import {
+  HeadingFeature,
+  defaultEditorFeatures,
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 import { en } from '@payloadcms/translations/languages/en'
 import { pl } from '@payloadcms/translations/languages/pl'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { Field, buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
 import { Media } from './collections/Media'
@@ -24,7 +26,8 @@ import { newsletterTranslations } from './_components/Newsletter/translations'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-import { sendEventConfirmationEmail } from '@/utilities/sendEventConfirmationEmail'
+import { tenantOnlyAccess } from './access/byTenant'
+import { revalidateEventPages } from './collections/Events/hooks/revalidateEventPages'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -90,94 +93,29 @@ export default buildConfig({
               return data;
             },
           ],
+          afterChange: [
+            revalidateEventPages,
+          ],
         },
       },
       formSubmissionOverrides: {
-        fields: [
-          {
-            name: 'confirmationToken',
-            type: 'text',
-            admin: {
-              hidden: true,
-            },
-          },
-          {
-            name: 'status',
-            type: 'select',
-            options: [
-              { label: 'Pending', value: 'pending' },
-              { label: 'Confirmed', value: 'confirmed' },
-              { label: 'Cancelled', value: 'cancelled' },
-            ],
-            defaultValue: 'pending',
-            admin: {
-              hidden: true,
-            },
-          },
-        ],
+        access: {
+          create: tenantOnlyAccess,
+          read: tenantOnlyAccess,
+          update: tenantOnlyAccess,
+          delete: tenantOnlyAccess,
+        },
         hooks: {
-          beforeChange: [
-            async ({ data, req, operation }) => {
-              if (operation === 'create') {
-                // Generate GUID for opt-in token
-                const { randomUUID } = await import('crypto');
-                const token = randomUUID();
-                if (!data.confirmationToken) {
-                  data.confirmationToken = token;
-                }
-                if (!data.status) {
-                  data.status = 'pending';
-                }
-              }
-              return data;
-            },
-          ],
-          afterChange: [
-            async ({ doc, req, operation }) => {
-              if (operation === 'create' && doc.form) {
-                const payload = await getPayload({ config: configPromise });
-                
-                // Find the event that uses this form
-                const events = await payload.find({
-                  collection: 'events',
-                  where: {
-                    form: {
-                      equals: typeof doc.form === 'string' ? doc.form : doc.form.id,
-                    },
-                  },
-                  limit: 1,
-                });
-
-                if (events.docs.length > 0) {
-                  const event = events.docs[0];
-                  
-                  // If event requires opt-in, send confirmation email
-                  if (event.requiresOptIn && doc.confirmationToken) {
-                    await sendEventConfirmationEmail({
-                      submission: doc,
-                      event,
-                      token: doc.confirmationToken as string,
-                      req,
-                    });
-                  } else if (!event.requiresOptIn) {
-                    // Auto-confirm if opt-in not required
-                    await payload.update({
-                      collection: 'form-submissions',
-                      id: doc.id,
-                      data: {
-                        status: 'confirmed',
-                      },
-                    });
-                  }
-                }
-              }
-            },
-          ],
         },
       },
     }),
   ],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: [
+      ...defaultEditorFeatures,
+      HeadingFeature({ enabledHeadingSizes: ['h1', 'h2', 'h3'] }),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

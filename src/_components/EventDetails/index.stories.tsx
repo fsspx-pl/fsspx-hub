@@ -14,19 +14,16 @@ type Story = StoryObj<typeof EventDetails>;
 const mockEvent: Event = {
   id: '1',
   title: 'Wizyta Duszpasterska',
-  description: 'Zapraszamy na wizytę duszpasterską w naszych domach.',
   slug: 'wizyta-duszpasterska-2025-abc123',
   startDate: '2025-12-15T10:00:00.000Z',
   endDate: '2025-12-15T12:00:00.000Z',
-  requiresOptIn: true,
-  requiresTurnstile: true,
   tenant: 'tenant-1',
   form: 'form-1',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
 
-const mockTenant: Tenant = {
+const mockTenant = {
   id: 'tenant-1',
   name: 'Poznań',
   domain: 'poznan.fsspx.pl',
@@ -35,7 +32,7 @@ const mockTenant: Tenant = {
   patron: 'św. Jana Chrzciciela',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
-};
+} as Tenant;
 
 export const Default: Story = {
   args: {
@@ -74,6 +71,7 @@ export const WithContent: Story = {
                   text: 'Szczegółowy opis wydarzenia z treścią formatowaną.',
                 },
               ],
+              version: 1,
             },
           ],
           direction: 'ltr',
