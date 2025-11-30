@@ -89,10 +89,12 @@ async function getPage(id: string) {
 async function sendNewsletter({
   page,
   testEmail,
+  skipCalendar: skipCalendarParam,
   baseUrl,
 }: {
   page: Page;
   testEmail?: string;
+  skipCalendar?: boolean;
   baseUrl: string;
 }) {
   if (!page.period) {
@@ -139,13 +141,22 @@ async function sendNewsletter({
     }
   };
 
+  // Check if calendar should be skipped - use parameter from request if provided, otherwise check saved value
+  const skipCalendar = skipCalendarParam !== undefined 
+    ? skipCalendarParam 
+    : Boolean((page.newsletter as any)?.skipCalendar);
+  
+  const feastsWithMasses = skipCalendar 
+    ? [] 
+    : transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant));
+
   const rawHtml = await render(
     <Email
       title={titleWithDateSuffix}
       content_html={await convertContentToHtml(page.content)}
       copyright={settings.copyright as string}
       slogan={footer.slogan as string}
-      feastsWithMasses={transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant))}
+      feastsWithMasses={feastsWithMasses}
     />,
     {
       htmlToTextOptions: {
@@ -259,6 +270,8 @@ export async function POST(
 ) {
   const { id } = await params;
   const testEmail = request.nextUrl.searchParams.get('testEmail');
+  const skipCalendarParam = request.nextUrl.searchParams.get('skipCalendar');
+  const skipCalendar = skipCalendarParam === 'true';
 
   try {
     const page = await getPage(id);
@@ -276,6 +289,7 @@ export async function POST(
     const newsletterResponse = await sendNewsletter({
       page: page as Page,
       testEmail: testEmail ?? undefined,
+      skipCalendar,
       baseUrl: request.headers.get('host') 
         ? `https://${request.headers.get('host')}` 
         : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',

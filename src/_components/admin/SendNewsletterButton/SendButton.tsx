@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useCallback } from 'react'
-import { Button, ConfirmationModal, toast, useModal } from '@payloadcms/ui'
+import { Button, ConfirmationModal, toast, useModal, useForm } from '@payloadcms/ui'
 import classes from './index.module.scss'
 
 const sendNewsletterModalSlug = 'send-newsletter-confirmation'
@@ -22,14 +22,19 @@ export const SendButton: React.FC<{
   const { openModal, closeModal } = useModal()
   const [modalMessage, setModalMessage] = useState('Are you sure you want to send this newsletter? This action cannot be undone.')
   const [subscriberCount, setSubscriberCount] = useState<number | null>(null)
+  const { getData } = useForm()
 
   const handleSendNewsletter = async () => {
     if (isLoading) return
     
+    // Get current form data to read skipCalendar checkbox value
+    const formData = getData()
+    const skipCalendar = Boolean((formData?.newsletter as any)?.skipCalendar)
+    
     setIsLoading(true)
     const toastId = toast.loading('Sending newsletter...')
     try {
-      const response = await fetch(`/api/pages/${id}/send-newsletter`, {
+      const response = await fetch(`/api/pages/${id}/send-newsletter?skipCalendar=${skipCalendar}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

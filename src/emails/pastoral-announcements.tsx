@@ -300,12 +300,14 @@ export default function Email({
             <div dangerouslySetInnerHTML={{ __html: content_html }} />
           </Section>
 
-          <Section>
-            <Heading as="h2" style={{ fontSize: "24px", color: "#333", fontWeight: 400 }}>
-              Plan nabożeństw
-            </Heading>
-            <MassesList feastsWithMasses={feastsWithMasses} />
-          </Section>
+          {feastsWithMasses.length > 0 && (
+            <Section>
+              <Heading as="h2" style={{ fontSize: "24px", color: "#333", fontWeight: 400 }}>
+                Plan nabożeństw
+              </Heading>
+              <MassesList feastsWithMasses={feastsWithMasses} />
+            </Section>
+          )}
 
           <Section style={{ marginTop: "40px" }} className="p-1">
             <Section style={{ backgroundColor: "#f3f4f6", padding: "24px" }}>
