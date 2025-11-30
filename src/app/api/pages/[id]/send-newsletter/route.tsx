@@ -141,7 +141,6 @@ async function sendNewsletter({
     }
   };
 
-  // Check if calendar should be skipped - use parameter from request if provided, otherwise check saved value
   const skipCalendar = skipCalendarParam !== undefined 
     ? skipCalendarParam 
     : Boolean((page.newsletter as any)?.skipCalendar);

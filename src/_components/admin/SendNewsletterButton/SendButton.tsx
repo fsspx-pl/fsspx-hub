@@ -27,7 +27,6 @@ export const SendButton: React.FC<{
   const handleSendNewsletter = async () => {
     if (isLoading) return
     
-    // Get current form data to read skipCalendar checkbox value
     const formData = getData()
     const skipCalendar = Boolean((formData?.newsletter as any)?.skipCalendar)
     
@@ -92,7 +91,7 @@ export const SendButton: React.FC<{
     }
   }, [openModal, tenantId, fetchSubscriberCount])
 
-  const disabled = isLoading || isNewsletterSent || isDraft
+  const disabled = isLoading || isNewsletterSent
 
   return (
     <>
@@ -107,9 +106,7 @@ export const SendButton: React.FC<{
           ? 'Loading...' 
           : isNewsletterSent 
             ? 'Newsletter already sent' 
-            : isDraft
-              ? 'Publish page to send newsletter'
-              : 'Send Newsletter'
+            : 'Send Newsletter'
         }
       </Button>
 
