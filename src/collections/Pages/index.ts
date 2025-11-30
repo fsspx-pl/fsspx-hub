@@ -123,6 +123,15 @@ export const Pages: CollectionConfig = {
           },
         },
         {
+          name: 'skipCalendar',
+          label: {
+            en: 'Skip Calendar in the newsletter',
+            pl: 'Pomiń kalendarz nabożeństw podczas wysyłania newslettera.',
+          },
+          type: 'checkbox',
+          defaultValue: false,
+        },
+        {
           name: 'test',
           type: 'ui',
           admin: {

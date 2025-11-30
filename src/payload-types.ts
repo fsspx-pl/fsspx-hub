@@ -333,6 +333,7 @@ export interface Page {
   } | null;
   newsletter?: {
     sent?: boolean | null;
+    skipCalendar?: boolean | null;
   };
   printActions?: {};
   /**
@@ -943,6 +944,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         sent?: T;
+        skipCalendar?: T;
       };
   printActions?: T | {};
   relatedEvents?: T;

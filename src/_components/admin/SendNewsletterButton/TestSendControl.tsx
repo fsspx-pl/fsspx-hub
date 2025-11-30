@@ -1,13 +1,14 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button, toast, TextInput, useDocumentInfo } from '@payloadcms/ui'
+import { Button, toast, TextInput, useDocumentInfo, useForm } from '@payloadcms/ui'
 import classes from './index.module.scss'
 
 export const TestSendControl: React.FC<{ disabled?: boolean } > = ({ disabled }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [email, setEmail] = useState('')
   const { id } = useDocumentInfo() as { id?: string }
+  const { getData } = useForm()
   const handleChange = (val: unknown) => {
     if (typeof val === 'string') {
       setEmail(val)
@@ -27,10 +28,15 @@ export const TestSendControl: React.FC<{ disabled?: boolean } > = ({ disabled })
       toast.error('Please enter a valid email')
       return
     }
+    
+    // Get current form data to read skipCalendar checkbox value
+    const formData = getData()
+    const skipCalendar = Boolean((formData?.newsletter as any)?.skipCalendar)
+    
     setIsLoading(true)
     const toastId = toast.loading('Sending test email...')
     try {
-      const res = await fetch(`/api/pages/${id}/send-newsletter?testEmail=${email}`, {
+      const res = await fetch(`/api/pages/${id}/send-newsletter?testEmail=${email}&skipCalendar=${skipCalendar}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
