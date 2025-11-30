@@ -167,5 +167,22 @@ describe('SendButton - skipCalendar functionality', () => {
       expect(newsletterCalls[newsletterCalls.length - 1][0]).toContain('skipCalendar=false');
     });
   });
+
+  it('should allow sending newsletter for draft pages', async () => {
+    mockGetData.mockReturnValue({});
+
+    const user = userEvent.setup();
+    render(<SendButton {...mockProps} isDraft={true} />);
+
+    // Button should not be disabled for draft pages
+    const sendButton = screen.getByText('Send Newsletter');
+    expect(sendButton).not.toBeDisabled();
+
+    await user.click(sendButton);
+
+    await waitFor(() => {
+      expect(mockOpenModal).toHaveBeenCalled();
+    });
+  });
 });
 
