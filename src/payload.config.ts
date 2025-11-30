@@ -26,6 +26,7 @@ import { Users } from './collections/Users'
 import { Footer } from './globals/Footer'
 import { Header } from './globals/Header'
 import { Settings } from './globals/Settings'
+import { anyone } from './access/anyone'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -98,7 +99,7 @@ export default buildConfig({
       },
       formSubmissionOverrides: {
         access: {
-          create: tenantOnlyAccess,
+          create: anyone,
           read: tenantOnlyAccess,
           update: tenantOnlyAccess,
           delete: tenantOnlyAccess,
