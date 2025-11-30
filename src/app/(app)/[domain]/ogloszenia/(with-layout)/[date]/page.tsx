@@ -18,6 +18,7 @@ import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
 import { CMSLink } from "@/_components/Link";
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
+import { RelatedEvents } from "@/_components/RelatedEvents";
 
 export async function generateStaticParams() {
   // Pre-warm the liturgical calendar cache at build time
@@ -156,7 +157,7 @@ export default async function AnnouncementPage({
         updatedAt={page.updatedAt}
       />
       <Gutter className="mt-4 py-6 flex flex-col gap-8 lg:gap-12 lg:flex-row">
-        <div className="lg:order-2 self-center lg:self-auto w-full lg:w-auto lg:basis-full justify-between">
+        <div className="lg:order-2 self-center lg:self-auto w-full lg:w-auto lg:basis-full flex flex-col gap-6">
           <FeastDataProvider
             initialFeasts={feastsWithMasses}
             initialDate={feastsWithMasses.length > 0 ? now.toISOString() : serverNow}
@@ -164,6 +165,11 @@ export default async function AnnouncementPage({
           >
             <Calendar />
           </FeastDataProvider>
+          {page.relatedEvents && page.relatedEvents.length > 0 && (
+            <div className="hidden lg:block">
+              <RelatedEvents events={page.relatedEvents} />
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-4">
           <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0"/>
@@ -174,6 +180,11 @@ export default async function AnnouncementPage({
             <Arrow className="w-4 h-3 fill-[#C81910] rotate-180" />
             <span>Powrót do listy ogłoszeń</span>
           </CMSLink>
+          {page.relatedEvents && page.relatedEvents.length > 0 && (
+            <div className="lg:hidden">
+              <RelatedEvents events={page.relatedEvents} />
+            </div>
+          )}
         </div>
       </Gutter>
     </>
