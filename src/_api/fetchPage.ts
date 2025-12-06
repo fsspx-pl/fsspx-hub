@@ -4,76 +4,73 @@ import { format } from "date-fns";
 import { unstable_cache } from 'next/cache';
 import { getPayload } from 'payload';
 
-const published = {
-  _status: {
-    equals: 'published'
-  },
-}
-
-async function findPage(
-  where: Record<string, any>,
-  sort?: string
-): Promise<Page | undefined> {
-  const payload = await getPayload({
-    config: configPromise,
-  });
-
-  try {
-    const result = await payload.find({
-      collection: 'pages',
-      where,
-      ...(sort && { sort }),
-      depth: 2,
-      limit: 1,
-    });
-    const [doc] = result.docs;
-    return doc;
-  } catch (err: unknown) {
-    return Promise.reject(err);
-  }
-}
-
-export const fetchLatestPage = (subdomain: string): Promise<Page | undefined> => {
-  const cacheKey = `latest-page-${subdomain}`;
+export const fetchLatestPage = (domain: string): Promise<Page | undefined> => {
+  const cacheKey = `latest-page-${domain}`;
   return unstable_cache(
     async (): Promise<Page | undefined> => {
-      return findPage(
-        {
-          ['tenant.domain']: {
-            contains: subdomain
+      const payload = await getPayload({
+        config: configPromise,
+      });
+
+      try {
+        const result = await payload.find({
+          collection: 'pages',
+          where: {
+            ['tenant.domain']: {
+              contains: domain
+            },
           },
-          ...published,
-        },
-        '-createdAt'
-      );
+          sort: '-createdAt',
+          depth: 2,
+          limit: 1,
+        });
+        const [doc] = result.docs;
+        return doc;
+      } catch (err: unknown) {
+        return Promise.reject(err);
+      }
     },
     [cacheKey],
     {
       revalidate: 60 * 60 * 24, // 24 hours,
-      tags: [`tenant:${subdomain}:latest`],
+      tags: [`tenant:${domain}:latest`],
     }
   )();
 };
 
-export const fetchTenantPageByDate = (subdomain: string, isoDate: string): Promise<Page | undefined> => {
+export const fetchTenantPageByDate = (domain: string, isoDate: string): Promise<Page | undefined> => {
   const date = format(isoDate, 'dd-MM-yyyy')
-  const cacheKey = `page-${subdomain}-${date}`;
+  const cacheKey = `page-${domain}-${date}`;
   return unstable_cache(
     async (): Promise<Page | undefined> => {
-      return findPage({
-        ['tenant.domain']: {
-          contains: subdomain
-        },
-        ['period.start']: {
-          equals: isoDate,
-        },
-        ...published,
+      const payload = await getPayload({
+        config: configPromise,
       });
+
+      try {
+        const result = await payload.find({
+          collection: 'pages',
+          where: {
+            ['tenant.domain']: {
+              contains: domain
+            },
+            ['period.start']: {
+              equals: isoDate,
+            }
+          },
+          depth: 2,
+          limit: 1,
+        });
+        const [doc] = result.docs;
+        return doc;
+      } catch (err: unknown) {
+        return Promise.reject(err);
+      }
     },
     [cacheKey],
     {
       revalidate: 60 * 60 * 24, // 24 hours
-      tags: [`tenant:${subdomain}:date:${date}`],
+      tags: [`tenant:${domain}:date:${date}`],
     }
   )();
 };
