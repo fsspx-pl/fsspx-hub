@@ -104,8 +104,7 @@ async function sendNewsletter({
   const startDate = page.period.start
     ? parseISO(page.period.start as string)
     : null;
-  const isDraft = page._status === 'draft';
-  const dateSuffix = startDate && !isDraft
+  const dateSuffix = startDate
     ? `(${format(startDate, "dd.MM.yyyy", { locale: pl })})`
     : null;
   const titleWithDateSuffix = [page.title, dateSuffix]

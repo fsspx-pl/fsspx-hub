@@ -26,7 +26,7 @@ const fetchCalendar = async (year: number): Promise<ApiFeast[]> => {
   return unstable_cache(
     async () => {
       const res = await fetch(
-        `https://www.missalemeum.com/pl/api/v5/calendar/${year}?v=v5.15.0`,
+        `https://www.missalemeum.com/pl/api/v5/calendar/${year}?v=v5.8.0`,
         {
           cache: 'force-cache',
           next: {
