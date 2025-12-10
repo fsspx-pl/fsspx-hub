@@ -88,7 +88,7 @@ const PrintableMassesList: React.FC<{ feastsWithMasses: FeastWithMasses[] }> = (
   return (
     <div className="grid grid-cols-2 gap-3">
       {feastsWithMasses.map((feast, index) => (
-        <div key={index} className="bg-gray-50 rounded">
+        <div key={index} className="bg-gray-50 rounded print-day-block">
           <DayCell feast={feast} />
         </div>
       ))}

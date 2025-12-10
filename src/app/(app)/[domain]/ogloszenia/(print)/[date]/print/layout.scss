@@ -1,7 +1,7 @@
 @page {
   size: A4;
   margin: 0;
-  padding: 0;
+  margin: 10mm;
 }
 
 @media print {
@@ -17,7 +17,7 @@
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
-    font-size: 15px !important;
+    font-size: 18px !important; /* 15px * 1.5 = 22.5px */
   }
   
   .printContainer {
@@ -39,9 +39,6 @@
   }
 
   .print-page {
-    width: 210mm !important;
-    min-height: 277mm !important;
-    padding: 10mm !important;
     margin: 0 !important;
     box-sizing: border-box !important;
     overflow: visible !important;
@@ -74,6 +71,13 @@
       widows: 3 !important;
     }
   }
+  
+  /* Prevent day blocks from breaking across pages */
+  .print-day-block {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
   
   /* Hide browser headers/footers */
   body {
