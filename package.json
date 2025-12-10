@@ -50,7 +50,7 @@
     "graphql": "^16.8.1",
     "html-minifier-terser": "^7.2.0",
     "next": "^15.5.7",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^7.0.11",
     "payload": "3.67.0",
     "photoswipe": "^5.4.4",
     "posthog-js": "^1.294.0",
