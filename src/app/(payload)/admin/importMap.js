@@ -26,6 +26,7 @@ import { SendNewsletterButton as SendNewsletterButton_70fb5c0dadf60568e043f81a79
 import { PrintButton as PrintButton_f6e598d9d2a2d8e9de76ba6be053f249 } from '@/_components/admin/PrintButton/index.tsx'
 import { AdminIcon as AdminIcon_bfb3d3b6c3265583c5be6cff509ea006 } from '@/_components/Logo/Icon/index.tsx'
 import { Icon as Icon_bfb3d3b6c3265583c5be6cff509ea006 } from '@/_components/Logo/Icon/index.tsx'
+import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 
 export const importMap = {
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -55,5 +56,6 @@ export const importMap = {
   "@/_components/admin/SendNewsletterButton/index.tsx#SendNewsletterButton": SendNewsletterButton_70fb5c0dadf60568e043f81a79cc0e95,
   "@/_components/admin/PrintButton/index.tsx#PrintButton": PrintButton_f6e598d9d2a2d8e9de76ba6be053f249,
   "@/_components/Logo/Icon/index.tsx#AdminIcon": AdminIcon_bfb3d3b6c3265583c5be6cff509ea006,
-  "@/_components/Logo/Icon/index.tsx#Icon": Icon_bfb3d3b6c3265583c5be6cff509ea006
+  "@/_components/Logo/Icon/index.tsx#Icon": Icon_bfb3d3b6c3265583c5be6cff509ea006,
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
 }

@@ -12,6 +12,7 @@ import { serializeForEmail } from "@/_components/RichText/serialize";
 import { sendBulkEmailToRecipients } from "@/utilities/awsSes";
 import { sendEmail, sendNewsletterToRecipients } from "@/utilities/nodemailerSes";
 import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
+import { getMediaAsEmailAttachment, formatAttachmentsForEmail } from "@/utilities/s3Download";
 import React from "react";
 import { minify } from "html-minifier-terser";
 
@@ -168,6 +169,31 @@ async function sendNewsletter({
 
   const html = await minifyAndReplaceQuotes(rawHtml);
 
+  // Fetch and prepare attachments if they exist
+  let attachments: Array<{ filename: string; content: Buffer; contentType?: string }> = [];
+  if (page.attachment && Array.isArray(page.attachment) && page.attachment.length > 0) {
+    try {
+      console.info(`Found ${page.attachment.length} attachment(s) for page ${page.id}`);
+      
+      // Fetch full media documents if they're just IDs
+      const attachmentPromises = page.attachment.map(async (attachment) => {
+        const mediaId = typeof attachment === 'string' ? attachment : attachment.id;
+        const mediaDoc = typeof attachment === 'string' 
+          ? await payload.findByID({ collection: 'media', id: mediaId })
+          : attachment;
+        
+        return getMediaAsEmailAttachment(mediaDoc);
+      });
+
+      attachments = await Promise.all(attachmentPromises);
+      console.info(`Successfully prepared ${attachments.length} attachment(s) for email`);
+    } catch (error) {
+      console.error('Error preparing attachments for newsletter:', error);
+      // Don't fail the entire newsletter send if attachments fail
+      // Just log the error and continue without attachments
+    }
+  }
+
   const tenantId = (page.tenant as Tenant).id;
   if (!fromEmail) {
     throw new Error("Sender email is not configured for this tenant.");
@@ -202,6 +228,7 @@ async function sendNewsletter({
     recipients,
     unsubscribeBaseUrl: `${baseUrl}/newsletter/unsubscribe`,
     getSubscriptionId,
+    attachments,
   };
 
   if (testEmail) {
@@ -221,6 +248,7 @@ async function sendNewsletter({
       to: testEmail,
       subject: `[TEST] ${titleWithDateSuffix}`,
       html: personalizedHtml,
+      attachments: formatAttachmentsForEmail(attachments),
     });
     return response;
   }
@@ -240,6 +268,7 @@ async function sendNewsletter({
       replyTo: fromEmail,
       unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
       getSubscriptionId,
+      attachments: formatAttachmentsForEmail(attachments),
     });
 
     return {

@@ -164,6 +164,10 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * S3 storage prefix (automatically set based on upload context)
+   */
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -343,6 +347,10 @@ export interface Page {
    * Select up to 5 related events. Ensure selected events belong to the same tenant.
    */
   relatedEvents?: (string | Event)[] | null;
+  /**
+   * Add PDF attachments that will be sent with the newsletter and available for download on the page.
+   */
+  attachment?: (string | Media)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -964,6 +972,7 @@ export interface PagesSelect<T extends boolean = true> {
       };
   printActions?: T | {};
   relatedEvents?: T;
+  attachment?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -975,6 +984,7 @@ export interface PagesSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;

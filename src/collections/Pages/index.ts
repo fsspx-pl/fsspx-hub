@@ -2,6 +2,8 @@ import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant'
 import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenantPages'
 import { resetNewsletterSentOnCreate } from '@/collections/Pages/hooks/resetNewsletterSentOnCreate'
 import { normalizePeriodDates } from '@/collections/Pages/hooks/normalizePeriodDates'
+import { validateAttachmentsArePDF } from '@/collections/Pages/hooks/validateAttachmentsArePDF'
+import { setAttachmentPrefix } from '@/collections/Pages/hooks/setAttachmentPrefix'
 import { endLocal, period, startLocal } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
 import { CollectionConfig, Field } from 'payload'
@@ -199,11 +201,34 @@ export const Pages: CollectionConfig = {
         },
       },
     },
+    {
+      name: 'attachment',
+      label: {
+        en: 'Attachment',
+        pl: 'Załącznik',
+      },
+      type: 'upload',
+      relationTo: 'media',
+      hasMany: true,
+      filterOptions: {
+        mimeType: {
+          contains: 'application/pdf',
+        },
+      },
+      admin: {
+        position: 'sidebar',
+        description: {
+          pl: 'Dodaj załączniki PDF, które będą wysyłane razem z newsletterem i dostępne do pobrania na stronie.',
+          en: 'Add PDF attachments that will be sent with the newsletter and available for download on the page.',
+        },
+      },
+    },
   ],
   hooks: {
     beforeChange: [
       resetNewsletterSentOnCreate,
       normalizePeriodDates,
+      validateAttachmentsArePDF,
     ],
     beforeValidate: [
       async ({ operation, data }) => {
@@ -215,6 +240,9 @@ export const Pages: CollectionConfig = {
         };
       },
     ],
-    afterChange: [revalidateTenantPages],
+    afterChange: [
+      setAttachmentPrefix,
+      revalidateTenantPages,
+    ],
   },
 }
