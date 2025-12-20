@@ -2,7 +2,7 @@ import { getFeasts } from "@/common/getFeasts";
 import { getServices } from "@/common/getMasses";
 import { Feast } from "@/feast";
 import { Page as PageType, Service, Tenant } from "@/payload-types";
-import { isSameDay, parseISO, startOfMonth, endOfMonth, subMonths, addMonths, startOfYear, endOfYear } from "date-fns";
+import { parseISO, startOfMonth, endOfMonth, subMonths, addMonths, startOfYear, endOfYear } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { POLISH_TIMEZONE } from "@/common/timezone";
 
@@ -15,27 +15,32 @@ type ServicesDateRange = {
   servicesEnd: string;
 };
 
-const toPolishTime = (date: Date | string): Date => {
-  const dateStr = typeof date === 'string' ? date : date.toISOString();
-  const polishDate = formatInTimeZone(dateStr, POLISH_TIMEZONE, "yyyy-MM-dd'T'HH:mm:ssXXX");
-  return new Date(polishDate);
+/**
+ * Extracts the date portion (yyyy-MM-dd) in Polish timezone.
+ * This ensures midnight (00:00) in Polish time is matched to the correct day,
+ * regardless of the server's timezone.
+ */
+const toPolishDateString = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return formatInTimeZone(dateObj, POLISH_TIMEZONE, 'yyyy-MM-dd');
 };
 
 /**
  * Matches feasts with their corresponding masses based on date comparison in Polish timezone.
- * Optimized to pre-convert mass dates once to avoid repeated timezone conversions.
+ * Uses date strings (yyyy-MM-dd) to compare dates, ensuring midnight services
+ * are correctly placed at the start of the day, not the end of the previous day.
  */
 const matchFeastsWithMasses = (feasts: Feast[], masses: Service[]): FeastWithMasses[] => {
-  const massesWithPolishDates = masses.map(mass => ({
+  const massesWithPolishDateStrings = masses.map(mass => ({
     mass,
-    polishDate: toPolishTime(mass.date),
+    polishDateString: toPolishDateString(mass.date),
   }));
 
   return feasts.map((feast: Feast) => {
-    const feastPolishDate = toPolishTime(feast.date);
+    const feastPolishDateString = toPolishDateString(feast.date);
     
-    const feastMasses = massesWithPolishDates
-      .filter(({ polishDate: massDate }) => isSameDay(massDate, feastPolishDate))
+    const feastMasses = massesWithPolishDateStrings
+      .filter(({ polishDateString }) => polishDateString === feastPolishDateString)
       .map(({ mass }) => mass);
     
     return {
