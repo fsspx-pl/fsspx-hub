@@ -14,6 +14,42 @@ import { sendEmail, sendNewsletterToRecipients } from "@/utilities/nodemailerSes
 import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
 import React from "react";
 import { minify } from "html-minifier-terser";
+import { hasText } from '@payloadcms/richtext-lexical/shared'
+
+const adminApiTranslations = {
+  pl: {
+    errorNoContent: "Nie można wysłać newslettera: Strona nie ma treści",
+    errorAlreadySent: "Newsletter został już wysłany dla tej strony",
+    successSent: "Newsletter wysłany pomyślnie",
+  },
+  en: {
+    errorNoContent: "Cannot send newsletter: Page has no content",
+    errorAlreadySent: "Newsletter has already been sent for this page",
+    successSent: "Newsletter sent successfully",
+  },
+} as const;
+
+type Locale = 'pl' | 'en';
+
+function getLocaleFromRequest(request: NextRequest): Locale {
+  const cookies = request.headers.get('cookie');
+  if (cookies) {
+    const payloadLngMatch = cookies.match(/payload-lng=([^;]+)/);
+    if (payloadLngMatch && (payloadLngMatch[1] === 'en' || payloadLngMatch[1] === 'pl')) {
+      return payloadLngMatch[1] as Locale;
+    }
+  }
+  // Fallback to Accept-Language header if cookie is not present
+  const acceptLanguage = request.headers.get('accept-language');
+  if (acceptLanguage?.includes('en')) {
+    return 'en';
+  }
+  return 'pl';
+}
+
+function getTranslation(key: keyof typeof adminApiTranslations.pl, locale: Locale): string {
+  return adminApiTranslations[locale]?.[key] || adminApiTranslations.pl[key];
+}
 
 function transformServiceForEmail(service: Service) {
   return {
@@ -31,6 +67,7 @@ function transformFeastsForEmail(feastsWithMasses: any[]) {
     masses: feast.masses.map(transformServiceForEmail),
   }));
 }
+
 
 async function convertContentToHtml(content: any): Promise<string> {
   if (!content || !content.root || !content.root.children) {
@@ -73,7 +110,8 @@ async function getPage(id: string) {
   const page = await payload.findByID({
     collection: "pages",
     id,
-    depth: 2
+    depth: 2,
+    draft: true,
   });
 
   if (!page || page.type !== "pastoral-announcements") {
@@ -271,6 +309,7 @@ export async function POST(
   const testEmail = request.nextUrl.searchParams.get('testEmail');
   const skipCalendarParam = request.nextUrl.searchParams.get('skipCalendar');
   const skipCalendar = skipCalendarParam === 'true';
+  const locale = getLocaleFromRequest(request);
 
   try {
     const page = await getPage(id);
@@ -278,8 +317,17 @@ export async function POST(
     if ((page as Page).newsletter?.sent && !testEmail) {
       return NextResponse.json(
         {
-          message: "Newsletter has already been sent for this page",
+          message: getTranslation('errorAlreadySent', locale),
           alreadySent: true,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!hasText((page as Page).content)) {
+      return NextResponse.json(
+        {
+          message: getTranslation('errorNoContent', locale),
         },
         { status: 400 }
       );
@@ -296,7 +344,7 @@ export async function POST(
     if(!testEmail) await markNewsletterAsSent(id);
 
     return NextResponse.json({
-      message: "Newsletter sent successfully",
+      message: getTranslation('successSent', locale),
       messageId: newsletterResponse.messageId,
       sendStatus: newsletterResponse
     });
