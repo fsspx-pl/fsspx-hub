@@ -35,17 +35,20 @@ export const TestSendControl: React.FC<{ disabled?: boolean } > = ({ disabled })
     
     setIsLoading(true)
     const toastId = toast.loading('Sending test email...')
+    const boilerplateError = 'Failed to send test email'
     try {
       const res = await fetch(`/api/pages/${id}/send-newsletter?testEmail=${email}&skipCalendar=${skipCalendar}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })
       if (!res.ok) {
-        throw new Error('Failed to send test email')
+        const errorData = await res.json()
+        throw new Error(errorData.message || boilerplateError)
       }
       toast.success('Test email sent')
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : 'Failed to send test email')
+      console.error(`${boilerplateError}:`, e)
+      toast.error(e instanceof Error ? e.message : boilerplateError)
     } finally {
       setIsLoading(false)
       toast.dismiss(toastId)

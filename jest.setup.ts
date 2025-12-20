@@ -13,3 +13,16 @@ jest.mock('next/cache', () => ({
 
 // Set timezone to UTC for consistent test results
 process.env.TZ = 'UTC';
+
+// Suppress console.error and console.log during tests to reduce noise
+const originalError = console.error;
+const originalLog = console.log;
+beforeEach(() => {
+  console.error = jest.fn();
+  console.log = jest.fn();
+});
+
+afterAll(() => {
+  console.error = originalError;
+  console.log = originalLog;
+});
