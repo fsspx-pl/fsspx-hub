@@ -84,10 +84,15 @@ function createMockPayload(page: any) {
   };
 }
 
-function createMockRequest(url = 'http://localhost:3000/api/pages/test-id/send-newsletter') {
+function createMockRequest(url = 'http://localhost:3000/api/pages/test-id/send-newsletter', locale = 'en') {
   return {
     nextUrl: new URL(url),
-    headers: { get: jest.fn().mockReturnValue('localhost:3000') },
+    headers: { 
+      get: jest.fn((header: string) => {
+        if (header === 'cookie') return `payload-lng=${locale}`;
+        return null;
+      }),
+    },
   } as unknown as NextRequest;
 }
 
@@ -122,6 +127,7 @@ describe('POST /api/pages/[id]/send-newsletter', () => {
       collection: 'pages',
       id: 'test-id',
       depth: 2,
+      draft: true,
     });
   });
 
@@ -131,7 +137,7 @@ describe('POST /api/pages/[id]/send-newsletter', () => {
 
     beforeEach(() => {
       params = createMockParams();
-      request = createMockRequest();
+      request = createMockRequest('http://localhost:3000/api/pages/test-id/send-newsletter');
     });
 
     const expectNoContentError = async (content: any) => {
@@ -144,7 +150,7 @@ describe('POST /api/pages/[id]/send-newsletter', () => {
       const data = await response.json();
 
       expect(response.status).toBe(400);
-      expect(data.message).toBe('Cannot send newsletter: page has no content');
+      expect(data.message).toBe('Cannot send newsletter: Page has no content');
     };
 
     it('should return 400 when page has no content (null)', async () => {
