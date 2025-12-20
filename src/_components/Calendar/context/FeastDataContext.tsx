@@ -3,7 +3,19 @@
 import { Feast } from '@/feast'
 import { Service as ServiceType } from '@/payload-types'
 import { addDays, isSameDay, subDays, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns'
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { formatInTimeZone } from 'date-fns-tz'
+import React, { createContext, useContext, useState, useCallback } from 'react'
+
+const POLISH_TIMEZONE = 'Europe/Warsaw'
+
+/**
+ * Extracts the date portion (yyyy-MM-dd) in Polish timezone for comparison.
+ * This ensures midnight (00:00) services are matched to the correct day.
+ */
+const toPolishDateString = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  return formatInTimeZone(dateObj, POLISH_TIMEZONE, 'yyyy-MM-dd')
+}
 
 type FeastWithMasses = Feast & { masses: ServiceType[] }
 
@@ -89,10 +101,12 @@ export const FeastDataProvider: React.FC<{
         const newServices: ServiceType[] = await response.json()
         
         // Merge new services with existing feasts
+        // Use Polish timezone date strings for comparison to handle midnight correctly
         setFeasts(currentFeasts => 
           currentFeasts.map(feast => {
+            const feastDateString = toPolishDateString(feast.date)
             const additionalMasses = newServices.filter(service => 
-              isSameDay(new Date(service.date), feast.date) &&
+              toPolishDateString(service.date) === feastDateString &&
               !feast.masses.some(existing => existing.id === service.id)
             )
             
