@@ -32,6 +32,10 @@ function transformFeastsForEmail(feastsWithMasses: any[]) {
   }));
 }
 
+function hasContent(content: any): boolean {
+  return !!(content && content.root && content.root.children && content.root.children.length > 0);
+}
+
 async function convertContentToHtml(content: any): Promise<string> {
   if (!content || !content.root || !content.root.children) {
     return "";
@@ -280,6 +284,15 @@ export async function POST(
         {
           message: "Newsletter has already been sent for this page",
           alreadySent: true,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!hasContent((page as Page).content)) {
+      return NextResponse.json(
+        {
+          message: "Cannot send newsletter: page has no content",
         },
         { status: 400 }
       );
