@@ -11,6 +11,9 @@ jest.mock('@/utilities/awsSes', () => ({
 jest.mock('@/utilities/nodemailerSes');
 jest.mock('@react-email/components');
 jest.mock('html-minifier-terser');
+jest.mock('@payloadcms/richtext-lexical/shared', () => ({
+  hasText: jest.fn(),
+}));
 jest.mock('next/server', () => ({
   NextRequest: class MockNextRequest {
     nextUrl: URL;
@@ -35,6 +38,7 @@ import { serialize } from '@/_components/RichText/serialize';
 import { sendEmail } from '@/utilities/nodemailerSes';
 import { render } from '@react-email/components';
 import { minify } from 'html-minifier-terser';
+import { hasText } from '@payloadcms/richtext-lexical/shared';
 
 const mockGetPayload = getPayload as jest.MockedFunction<typeof getPayload>;
 const mockFetchFooter = fetchFooter as jest.MockedFunction<typeof fetchFooter>;
@@ -44,6 +48,7 @@ const mockSerialize = serialize as jest.MockedFunction<typeof serialize>;
 const mockSendEmail = sendEmail as jest.MockedFunction<typeof sendEmail>;
 const mockRender = render as jest.MockedFunction<typeof render>;
 const mockMinify = minify as jest.MockedFunction<typeof minify>;
+const mockHasText = hasText as jest.MockedFunction<typeof hasText>;
 
 const baseTenant = {
   id: 'tenant-id',
@@ -110,6 +115,7 @@ describe('POST /api/pages/[id]/send-newsletter', () => {
     mockRender.mockResolvedValue('<html>test</html>');
     mockMinify.mockResolvedValue('<html>test</html>');
     mockSendEmail.mockResolvedValue({ messageId: 'test-message-id' } as any);
+    mockHasText.mockReturnValue(true);
   });
 
   it('should call getPage with depth: 2 when fetching page', async () => {
@@ -143,8 +149,9 @@ describe('POST /api/pages/[id]/send-newsletter', () => {
     const expectNoContentError = async (content: any) => {
       const page = createMockPage(content);
       const mockPayload = createMockPayload(page);
-
+      
       mockGetPayload.mockResolvedValue(mockPayload as any);
+      mockHasText.mockReturnValue(false);
 
       const response = await POST(request, { params });
       const data = await response.json();
