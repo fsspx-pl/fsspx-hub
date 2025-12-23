@@ -1,6 +1,7 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import {
   HeadingFeature,
   defaultEditorFeatures,
@@ -105,6 +106,9 @@ export default buildConfig({
           delete: tenantOnlyAccess,
         },
       },
+    }),
+    importExportPlugin({
+      collections: ['form-submissions'],
     }),
   ],
   editor: lexicalEditor({
