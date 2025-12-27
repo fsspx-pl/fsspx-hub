@@ -79,7 +79,8 @@ export default async function PrintPage({
 
   const parsedDate = parse(date, 'dd-MM-yyyy', new Date());
   const isoDate = parsedDate.toISOString();
-  const page = await fetchTenantPageByDate(domain, isoDate);
+  // Include drafts to allow printing before publishing
+  const page = await fetchTenantPageByDate(domain, isoDate, { includeDrafts: true });
 
   if (!page?.content) return null;
 

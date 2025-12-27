@@ -9,7 +9,6 @@ export const PrintButton: React.FC<{ data: Page }> = async ({
 }) => {
   const id = data.id;
   const date = data.period?.start;
-  const isDraft = data._status === 'draft';
 
   if (!id || !date) return null;
 
@@ -20,7 +19,6 @@ export const PrintButton: React.FC<{ data: Page }> = async ({
     <div className={classes.fieldType}>
       <PrintPageButton
         date={date} 
-        isDraft={isDraft}
       />
     </div>
   )

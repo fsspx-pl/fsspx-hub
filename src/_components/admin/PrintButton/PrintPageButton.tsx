@@ -6,11 +6,9 @@ import classes from './index.module.scss'
 import { formatInPolishTime } from '@/common/timezone'
 
 export const PrintPageButton: React.FC<{ 
-  date: string,
-  isDraft: boolean
+  date: string
 }> = ({
-  date,
-  isDraft
+  date
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -37,7 +35,7 @@ export const PrintPageButton: React.FC<{
     }
   }, [date, isLoading])
 
-  const disabled = isLoading || isDraft
+  const disabled = isLoading
 
   return (
     <Button 
@@ -48,9 +46,7 @@ export const PrintPageButton: React.FC<{
     >
       {isLoading 
         ? 'Opening...' 
-        : isDraft
-          ? 'Publish page to enable print'
-          : '🖨️ Open Print Version'
+        : '🖨️ Open Print Version'
       }
     </Button>
   )
