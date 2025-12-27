@@ -109,13 +109,15 @@ export default async function AnnouncementPage({
   const currentDate = parseISO(isoDate);
   const prevMonth = startOfMonth(subMonths(currentDate, 1));
   const nextMonth = endOfMonth(addMonths(currentDate, 1));
+  const currentYear = currentDate.getFullYear();
+  const nextYear = currentYear + 1;
 
-  // Fetch feasts for the entire year
+  // Fetch feasts for the current year and next year to enable navigation to next year
   const feastsWithMasses: FeastWithMasses[] = pageTenant 
     ? await getFeastsWithMasses(
         {
-          start: new Date(currentDate.getFullYear(), 0, 1).toISOString(), // Start of year
-          end: new Date(currentDate.getFullYear(), 11, 31).toISOString(), // End of year
+          start: new Date(currentYear, 0, 1).toISOString(), // Start of current year
+          end: new Date(nextYear, 11, 31).toISOString(), // End of next year
         },
         pageTenant,
         now,
