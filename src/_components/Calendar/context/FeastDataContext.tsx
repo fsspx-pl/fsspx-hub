@@ -2,7 +2,7 @@
 
 import { Feast } from '@/feast'
 import { Service as ServiceType } from '@/payload-types'
-import { addDays, isSameDay, subDays, startOfMonth, endOfMonth, addMonths, subMonths } from 'date-fns'
+import { addDays, isSameDay, subDays, startOfMonth, endOfMonth, addMonths, subMonths, startOfYear, endOfYear } from 'date-fns'
 import { formatInTimeZone } from 'date-fns-tz'
 import React, { createContext, useContext, useState, useCallback } from 'react'
 
@@ -81,6 +81,58 @@ export const FeastDataProvider: React.FC<{
 
   const [loadedServiceMonths, setLoadedServiceMonths] = useState<Set<string>>(getInitialLoadedMonths())
   const [isLoadingServices, setIsLoadingServices] = useState(false)
+  
+  // Track which years have feasts loaded
+  const getInitialLoadedYears = () => {
+    const years = new Set<number>()
+    initialFeasts.forEach(feast => {
+      years.add(feast.date.getFullYear())
+    })
+    return years
+  }
+  const [loadedFeastYears, setLoadedFeastYears] = useState<Set<number>>(getInitialLoadedYears())
+
+  const loadFeastsForYear = useCallback(async (year: number) => {
+    if (loadedFeastYears.has(year)) return
+
+    try {
+      const yearStart = startOfYear(new Date(year, 0, 1))
+      const yearEnd = endOfYear(new Date(year, 11, 31))
+      
+      const response = await fetch(
+        `/api/feasts-range?start=${yearStart.toISOString()}&end=${yearEnd.toISOString()}`
+      )
+      
+      if (response.ok) {
+        const newFeasts: Feast[] = await response.json()
+        
+        // Convert to FeastWithMasses with empty masses array
+        const newFeastsWithMasses: FeastWithMasses[] = newFeasts.map(feast => ({
+          ...feast,
+          masses: []
+        }))
+        
+        // Merge with existing feasts, avoiding duplicates
+        setFeasts(currentFeasts => {
+          const existingDateStrings = new Set(
+            currentFeasts.map(f => toPolishDateString(f.date))
+          )
+          
+          const uniqueNewFeasts = newFeastsWithMasses.filter(
+            f => !existingDateStrings.has(toPolishDateString(f.date))
+          )
+          
+          return [...currentFeasts, ...uniqueNewFeasts].sort(
+            (a, b) => a.date.getTime() - b.date.getTime()
+          )
+        })
+        
+        setLoadedFeastYears(prev => new Set([...prev, year]))
+      }
+    } catch (error) {
+      console.error('Failed to load feasts for year:', error)
+    }
+  }, [loadedFeastYears])
 
   const loadServicesForMonth = useCallback(async (date: Date) => {
     if (!tenantId) return
@@ -128,20 +180,30 @@ export const FeastDataProvider: React.FC<{
   const handlePrevious = useCallback(() => {
     setCurrentDate((prev) => {
       const newDate = viewMode === 'weekly' ? subDays(prev, 7) : subMonths(prev, 1)
+      const newYear = newDate.getFullYear()
+      // Load feasts for the year if not already loaded
+      if (!loadedFeastYears.has(newYear)) {
+        loadFeastsForYear(newYear)
+      }
       loadServicesForMonth(newDate)
       return newDate
     })
     setSelectedDay(undefined)
-  }, [loadServicesForMonth, viewMode])
+  }, [loadServicesForMonth, loadFeastsForYear, loadedFeastYears, viewMode])
 
   const handleNext = useCallback(() => {
     setCurrentDate((prev) => {
       const newDate = viewMode === 'weekly' ? addDays(prev, 7) : addMonths(prev, 1)
+      const newYear = newDate.getFullYear()
+      // Load feasts for the year if not already loaded
+      if (!loadedFeastYears.has(newYear)) {
+        loadFeastsForYear(newYear)
+      }
       loadServicesForMonth(newDate)
       return newDate
     })
     setSelectedDay(undefined)
-  }, [loadServicesForMonth, viewMode])
+  }, [loadServicesForMonth, loadFeastsForYear, loadedFeastYears, viewMode])
 
   const handleDateSelect = (date: Date) => {
     const selected = feasts.find(feast => isSameDay(feast.date, date))
