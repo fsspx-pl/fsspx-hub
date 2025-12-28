@@ -18,14 +18,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setMounted(true)
-    // Check localStorage and system preference
     const stored = localStorage.getItem('theme') as Theme | null
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     
     const initialTheme = stored || (systemPrefersDark ? 'dark' : 'light')
     setThemeState(initialTheme)
     
-    // Apply theme to document
     if (initialTheme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
@@ -36,14 +34,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return
     
-    // Update document class when theme changes
     if (theme === 'dark') {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
     
-    // Save to localStorage
     localStorage.setItem('theme', theme)
   }, [theme, mounted])
 
@@ -55,7 +51,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeState(newTheme)
   }
 
-  // Always provide the context, even during SSR
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       {children}

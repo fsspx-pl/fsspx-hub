@@ -8,8 +8,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl" className={`${gothic.className}`} suppressHydrationWarning>
-      <body className="bg-white dark:bg-[#2B2B2B] text-gray-900 dark:text-[#CCCCCC]">
+    <html lang="pl" className={`${gothic.className}`}>
+      <body className="bg-[var(--bg-primary)] dark:bg-[var(--bg-primary)] text-[var(--text-primary)] dark:text-[var(--text-primary)]">
         <ThemeProvider>
           {children}
         </ThemeProvider>
