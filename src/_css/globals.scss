@@ -4,6 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './react-calendar.scss';
+
 :root {
   --base: 24px;
   --font-body: system-ui;
@@ -28,6 +30,9 @@
   --text-primary: #4b5563;
   --text-secondary: #9ca3af;
   --text-heading: #111827;
+  
+  /* Brand color */
+  --color-primary: #C81910;
 }
 
 .dark {
@@ -47,44 +52,6 @@
   .dark-bg-logo svg path {
     fill: white !important;
   }
-
-  /* React Calendar dark mode overrides */
-  .react-calendar {
-    background: transparent !important;
-  }
-
-  .react-calendar__tile {
-    color: #CCCCCC !important;
-  }
-
-  .react-calendar__month-view__days__day {
-    color: #CCCCCC !important;
-  }
-
-  .react-calendar__month-view__weekdays {
-    color: #CCCCCC !important;
-  }
-
-  .react-calendar__month-view__weekdays__weekday {
-    color: #CCCCCC !important;
-  }
-
-  .react-calendar__month-view__weekdays__weekday abbr {
-    color: #CCCCCC !important;
-  }
-
-  .react-calendar__tile--neighboringMonth {
-    color: #515658 !important;
-  }
-
-  .react-calendar__tile--now {
-    color: #CCCCCC !important;
-  }
-
-  .react-calendar__tile--active {
-    color: #CCCCCC !important;
-  }
-
 }
 
 @layer utilities {
