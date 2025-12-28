@@ -36,18 +36,27 @@ const ExternalLinkIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-export const CMSLink: React.FC<CMSLinkType> = ({
-  type,
-  url,
-  newTab,
-  reference,
-  label,
-  children,
-  className,
-  disabled,
-  isStatic = false,
-  preventNavigation = false,
-}) => {
+export const CMSLink: React.FC<CMSLinkType> = (props) => {
+  const {
+    type,
+    url,
+    newTab,
+    reference,
+    label,
+    children,
+    className,
+    disabled,
+    isStatic = false,
+    preventNavigation = false,
+  } = props
+  
+  // #region agent log
+  if (preventNavigation && label && typeof document !== 'undefined') {
+    const hasDarkClass = document.documentElement.classList.contains('dark')
+    const finalClassName = className ? `${className} cursor-pointer` : 'cursor-pointer'
+    fetch('http://127.0.0.1:7242/ingest/46f8c944-18d0-4cd8-805e-7c6ed513f481',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Link/index.tsx:51',message:'CMSLink render with preventNavigation',data:{hasDarkClass,classNameProp:className||'undefined',classNameInProps:props.className||'undefined',finalClassName,label:label.substring(0,20),allPropsKeys:Object.keys(props)},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix2',hypothesisId:'A,B'})}).catch(()=>{});
+  }
+  // #endregion
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
@@ -67,12 +76,12 @@ export const CMSLink: React.FC<CMSLinkType> = ({
     <div className='flex-row items-center gap-1 inline-flex'>
         <span className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
       {shouldRenderAsSpan ? (
-          <span className={`${className} cursor-pointer`}>
+          <span className={`${className || ''} cursor-pointer text-gray-700 dark:text-[#CCCCCC]`}>
             {label && label}
             {children && children}
           </span>
       ) : (
-          <Link {...newTabProps} href={href ?? ''} className={`${className} no-underline`}>
+          <Link {...newTabProps} href={href ?? ''} className={className ? `${className} no-underline` : 'no-underline'}>
             {label && label}
             {children && children}
           </Link>

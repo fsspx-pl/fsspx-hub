@@ -4,6 +4,7 @@ import { Event, Media } from '@/payload-types';
 import { Media as MediaComponent } from '@/_components/Media';
 import { Heading } from '@/_components/Heading';
 import { garamond } from '@/fonts';
+import TwoHeartsLogo from '@/_components/Logo/two-hearts-logo.svg';
 
 type RelatedEventsProps = {
   events: (Event | string)[];
@@ -25,7 +26,7 @@ export const RelatedEvents: React.FC<RelatedEventsProps> = ({
 
   return (
     <div className={`w-full flex flex-col gap-6 ${className}`}>
-      <Heading as="h2" className="text-xl sm:text-3xl mb-0">
+      <Heading as="h2" className="text-xl sm:text-3xl mb-0 text-gray-900 dark:text-[#CCCCCC]">
         Powiązane
       </Heading>
       
@@ -55,15 +56,22 @@ export const RelatedEvents: React.FC<RelatedEventsProps> = ({
                     />
                   </div>
                 ) : (
-                  <div className="relative w-full aspect-[32/9] bg-gray-200 flex items-center justify-center rounded-lg">
-                    <span className="text-gray-400 text-sm">Brak zdjęcia</span>
+                  <div className="relative w-full aspect-[32/9] bg-gray-200 dark:bg-[#3C3F41] flex items-center justify-center rounded-lg overflow-hidden">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.05] pointer-events-none overflow-hidden dark-bg-logo">
+                      <TwoHeartsLogo 
+                        width={500}
+                        height={650}
+                        className="w-[130%] h-[130%]"
+                      />
+                    </div>
+                    <span className="text-gray-400 dark:text-[#A9B7C6] text-sm relative z-10">Brak zdjęcia</span>
                   </div>
                 )}
                 <div className="p-4">
-                  <h3 className={`text-gray-900 text-lg font-medium line-clamp-2 mb-1 ${garamond.className}`}>
+                  <h3 className={`text-gray-900 dark:text-[#CCCCCC] text-lg font-medium line-clamp-2 mb-1 ${garamond.className}`}>
                     {event.title}
                   </h3>
-                  <p className="text-[#C81910] text-sm font-sans">
+                  <p className="text-[#C81910] dark:text-[#C81910] text-sm font-sans">
                     Wydarzenia
                   </p>
                 </div>

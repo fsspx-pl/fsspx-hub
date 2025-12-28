@@ -24,7 +24,7 @@ export const ArticleInfo: React.FC<Props> = ({
 }) => {
   return (
     <div
-      className="flex items-center gap-2 whitespace-nowrap text-gray-700"
+      className="flex items-center gap-2 whitespace-nowrap text-gray-700 dark:text-[#CCCCCC]"
     >
       {author && avatar?.url && (
         <Image

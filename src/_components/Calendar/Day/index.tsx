@@ -26,7 +26,7 @@ export const Day: React.FC<Props> = ({
   hideDayName = false,
 }) => {
   const isSunday = date.getDay() === 0;
-  const textColor = isSunday ? 'text-[#c81910]' : 'text-[#4a4b4f]';
+  const textColor = isSunday ? 'text-[#c81910] dark:text-[#c81910]' : 'text-[#4a4b4f] dark:text-[#CCCCCC]';
   const dayNumber = date.getDate();
   const dayName = formatInTimeZone(date, POLISH_TIMEZONE, 'EEE', { locale: polishLocale }).replace('.', '')
   
@@ -40,7 +40,7 @@ export const Day: React.FC<Props> = ({
         cursor-pointer
         flex-col justify-start items-center inline-flex 
         transition-all duration-300 ease-in-out
-        ${isSelected ? 'bg-[#f8f7f7] rounded-t-lg' : ''} 
+        ${isSelected ? 'bg-[#f8f7f7] dark:bg-[#3C3F41] rounded-t-lg' : ''} 
         ${className}
         relative
       `}
@@ -57,8 +57,8 @@ export const Day: React.FC<Props> = ({
         {(hasMoreLeft || hasMoreRight) && !isSelected && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ? 'bg-gradient-to-r from-white via-white to-transparent' : ''}
-            ${hasMoreRight ? 'bg-gradient-to-l from-white via-white to-transparent' : ''}
+            ${hasMoreLeft ? 'bg-gradient-to-r from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
+            ${hasMoreRight ? 'bg-gradient-to-l from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
             opacity-70
           `} />
         )}
@@ -75,8 +75,8 @@ export const Day: React.FC<Props> = ({
         {(hasMoreLeft || hasMoreRight) && !isSelected && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ? 'bg-gradient-to-r from-white via-white to-transparent' : ''}
-            ${hasMoreRight ? 'bg-gradient-to-l from-white via-white to-transparent' : ''}
+            ${hasMoreLeft ? 'bg-gradient-to-r from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
+            ${hasMoreRight ? 'bg-gradient-to-l from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
             opacity-70
           `} />
         )}
