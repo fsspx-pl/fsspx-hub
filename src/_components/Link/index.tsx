@@ -49,14 +49,6 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     isStatic = false,
     preventNavigation = false,
   } = props
-  
-  // #region agent log
-  if (preventNavigation && label && typeof document !== 'undefined') {
-    const hasDarkClass = document.documentElement.classList.contains('dark')
-    const finalClassName = className ? `${className} cursor-pointer` : 'cursor-pointer'
-    fetch('http://127.0.0.1:7242/ingest/46f8c944-18d0-4cd8-805e-7c6ed513f481',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Link/index.tsx:51',message:'CMSLink render with preventNavigation',data:{hasDarkClass,classNameProp:className||'undefined',classNameInProps:props.className||'undefined',finalClassName,label:label.substring(0,20),allPropsKeys:Object.keys(props)},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix2',hypothesisId:'A,B'})}).catch(()=>{});
-  }
-  // #endregion
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
