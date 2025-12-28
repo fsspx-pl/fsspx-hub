@@ -36,12 +36,11 @@
 }
 
 .dark {
-  /* Dark mode colors - Darcula theme */
   --bg-primary: #2B2B2B;
   --bg-secondary: #3C3F41;
   --text-primary: #CCCCCC;
   --text-secondary: #A9B7C6;
-  --text-heading: #CCCCCC;
+  --text-heading: --text-primary;
 
   /* Logo SVG colors in dark mode */
   #logo svg path {
