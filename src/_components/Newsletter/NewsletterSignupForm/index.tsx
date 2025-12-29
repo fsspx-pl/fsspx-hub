@@ -6,7 +6,7 @@ import { Input } from '@/_components/Input';
 import { Button } from '@/_components/Button';
 import { Alert } from '@/_components/Alert';
 import { getNewsletterTranslation } from '../translations';
-import { useTheme } from '@/_components/ThemeProvider';
+import { useTheme } from 'next-themes';
 
 type Props = {
   subdomain: string;
@@ -21,7 +21,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
   className = '',
   locale = 'pl',
 }) => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>('idle');
@@ -159,7 +159,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
               onError={handleTurnstileError}
               onExpire={() => setTurnstileToken(null)}
               options={{
-                theme: theme === 'dark' ? 'dark' : 'light',
+                theme: resolvedTheme === 'dark' ? 'dark' : 'light',
                 size: 'normal',
               }}
             />

@@ -16,7 +16,7 @@ const config: Config = {
           css: {
             '--tw-prose-body': 'rgb(55 65 81)',
             '--tw-prose-headings': 'rgb(17 24 39)',
-            '--tw-prose-links': 'rgb(59 130 246)',
+            '--tw-prose-links': 'var(--text-heading)',
             '--tw-prose-bold': 'rgb(17 24 39)',
             '--tw-prose-counters': 'rgb(107 114 128)',
             '--tw-prose-bullets': 'rgb(209 213 219)',
@@ -35,7 +35,7 @@ const config: Config = {
           css: {
             '--tw-prose-body': 'rgb(209 213 219)',
             '--tw-prose-headings': 'rgb(249 250 251)',
-            '--tw-prose-links': 'rgb(96 165 250)',
+            '--tw-prose-links': 'var(--text-heading)',
             '--tw-prose-bold': 'rgb(249 250 251)',
             '--tw-prose-counters': 'rgb(156 163 175)',
             '--tw-prose-bullets': 'rgb(75 85 99)',

@@ -25,10 +25,10 @@ export async function Footer() {
   const copyright = settings?.copyright || ''
 
   return (
-    <footer className="text-gray-600 dark:text-[#CCCCCC] body-font bg-gray-100 dark:bg-[#3C3F41]">
+    <footer className="text-[var(--text-primary)] body-font bg-[var(--bg-primary)] dark:bg-[var(--bg-secondary)]">
       <Gutter className="py-24 flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
         <div className="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left flex flex-col gap-4">
-          <a className="flex title-font font-medium items-center md:justify-start justify-center text-gray-900 dark:text-[#CCCCCC]">
+          <a className="flex title-font font-medium items-center md:justify-start justify-center text-[var(--text-heading)]">
             <Logo skipMainText />
           </a>
           <span className="text-sm">{slogan}</span>
@@ -56,12 +56,12 @@ export async function Footer() {
           </div> */}
         </div>
       </Gutter>
-      <div className="bg-gray-200 dark:bg-[#484C4E]">
+      <div className="bg-[var(--bg-copyright)]">
         <Gutter className="py-6 flex flex-wrap flex-col sm:flex-row">
           <div className="w-full flex items-center gap-4 flex-col sm:flex-row justify-center sm:justify-between">
             <div className="flex items-center gap-1 flex-col sm:flex-row">
-              <p className="text-gray-400 dark:text-[#A9B7C6] text-sm text-center sm:text-left">© 2024 - {copyright}</p>
-              <HeartWithCrossIcon className="w-6 h-6 fill-[#C81910]" />
+              <HeartWithCrossIcon className="w-6 h-6 fill-[var(--color-primary)]" />
+              <p className="text-[var(--text-secondary)] text-sm text-center sm:text-left">© 2024 - {copyright}</p>
             </div>
             <ThemeSwitcher />
           </div>

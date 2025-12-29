@@ -30,6 +30,8 @@
   --text-primary: #4b5563;
   --text-secondary: #9ca3af;
   --text-heading: #111827;
+  --text-breadcrumb: #7F8186;
+  --bg-copyright: #e5e7eb;
   
   /* Brand color */
   --color-primary: #C81910;
@@ -41,6 +43,8 @@
   --text-primary: #CCCCCC;
   --text-secondary: #A9B7C6;
   --text-heading: --text-primary;
+  --text-breadcrumb: #7F8186;
+  --bg-copyright: #484C4E;
 
   /* Logo SVG colors in dark mode */
   #logo svg path {
@@ -57,4 +61,13 @@
   .text-balance {
     text-wrap: balance;
   }
+}
+
+// Override prose link colors to use theme variables
+.prose a {
+  color: var(--text-heading) !important;
+}
+
+.dark .prose a {
+  color: var(--text-heading) !important;
 }

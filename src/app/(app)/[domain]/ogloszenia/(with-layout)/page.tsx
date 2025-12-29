@@ -78,8 +78,8 @@ export default async function AnnouncementsListingPage({
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-[#CCCCCC] mb-2">Nie znaleziono kaplicy</h1>
-          <p className="text-gray-600 dark:text-[#A9B7C6]">Podana domena nie istnieje lub nie ma przypisanej kaplicy.</p>
+          <h1 className="text-2xl font-semibold text-[var(--text-heading)] mb-2">Nie znaleziono kaplicy</h1>
+          <p className="text-[var(--text-primary)]">Podana domena nie istnieje lub nie ma przypisanej kaplicy.</p>
         </div>
       </div>
     );
@@ -133,8 +133,8 @@ export default async function AnnouncementsListingPage({
             />
           </div>
           <div className="relative h-full flex flex-col justify-end">
-            <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-white dark:to-[#2B2B2B] to-70% pt-24">
-              <h1 className={`${garamond.className} text-gray-700 dark:text-[#CCCCCC]`}>
+            <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-white dark:to-[var(--bg-primary)] to-70% pt-24">
+              <h1 className={`${garamond.className} text-[var(--text-primary)]`}>
                 Ogłoszenia duszpasterskie
               </h1>
             </div>

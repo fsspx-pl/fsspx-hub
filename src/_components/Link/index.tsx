@@ -68,7 +68,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     <div className='flex-row items-center gap-1 inline-flex'>
         <span className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
       {shouldRenderAsSpan ? (
-          <span className={`${className || ''} cursor-pointer text-gray-700 dark:text-[#CCCCCC]`}>
+          <span className={`${className || ''} cursor-pointer`}>
             {label && label}
             {children && children}
           </span>
