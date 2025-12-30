@@ -87,3 +87,40 @@ export const fetchTenantPageByDate = (
   )();
 };
 
+export const fetchPageById = (
+  pageId: string,
+  options: FetchPageOptions = {}
+): Promise<Page | undefined> => {
+  const { includeDrafts = false } = options;
+  const cacheKey = `page-${pageId}${includeDrafts ? '-all' : ''}`;
+  return unstable_cache(
+    async (): Promise<Page | undefined> => {
+      const payload = await getPayload({
+        config: configPromise,
+      });
+
+      try {
+        const page = await payload.findByID({
+          collection: 'pages',
+          id: pageId,
+          depth: 2,
+        });
+
+        // Filter by published status if not including drafts
+        if (!includeDrafts && page._status !== 'published') {
+          return undefined;
+        }
+
+        return page;
+      } catch (err: unknown) {
+        return undefined;
+      }
+    },
+    [cacheKey],
+    {
+      revalidate: 60 * 60 * 24, // 24 hours
+      tags: [`page:${pageId}`],
+    }
+  )();
+};
+
