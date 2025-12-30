@@ -35,6 +35,14 @@
   
   /* Brand color */
   --color-primary: #C81910;
+  
+  /* Alert colors */
+  --alert-success-bg: #f0fdf4;
+  --alert-success-border: #bbf7d0;
+  --alert-success-text: #166534;
+  --alert-error-bg: #fef2f2;
+  --alert-error-border: #fecaca;
+  --alert-error-text: #991b1b;
 }
 
 .dark {
@@ -45,6 +53,14 @@
   --text-heading: --text-primary;
   --text-breadcrumb: #7F8186;
   --bg-copyright: #484C4E;
+  
+  /* Alert colors - dark mode */
+  --alert-success-bg: #1a3a1a;
+  --alert-success-border: #2d5a2d;
+  --alert-success-text: #4ade80;
+  --alert-error-bg: #3a1a1a;
+  --alert-error-border: #5a2d2d;
+  --alert-error-text: #f87171;
 
   /* Logo SVG colors in dark mode */
   #logo svg path {
