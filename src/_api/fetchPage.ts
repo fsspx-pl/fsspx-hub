@@ -87,12 +87,8 @@ export const fetchTenantPageByDate = (
   )();
 };
 
-export const fetchPageById = (
-  pageId: string,
-  options: FetchPageOptions = {}
-): Promise<Page | undefined> => {
-  const { includeDrafts = false } = options;
-  const cacheKey = `page-${pageId}${includeDrafts ? '-all' : ''}`;
+export const fetchPageById = (pageId: string): Promise<Page | undefined> => {
+  const cacheKey = `page-${pageId}`;
   return unstable_cache(
     async (): Promise<Page | undefined> => {
       const payload = await getPayload({
@@ -105,11 +101,6 @@ export const fetchPageById = (
           id: pageId,
           depth: 2,
         });
-
-        // Filter by published status if not including drafts
-        if (!includeDrafts && page._status !== 'published') {
-          return undefined;
-        }
 
         return page;
       } catch (err: unknown) {

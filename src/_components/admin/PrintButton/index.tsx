@@ -1,10 +1,9 @@
 import { Page, Tenant } from '@/payload-types'
-import { FieldLabel } from '@payloadcms/ui'
+import configPromise from '@payload-config'
+import { getPayload } from 'payload'
 import React from 'react'
 import { PrintPageButton } from './PrintPageButton'
 import classes from './index.module.scss'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 
 export const PrintButton: React.FC<{ data: Page }> = async ({ 
   data 
@@ -41,19 +40,10 @@ export const PrintButton: React.FC<{ data: Page }> = async ({
     tenant = tenantIdOrObject as Tenant;
   }
 
-  // Ensure we have the domain - it should be the full domain like "poznan.localhost"
-  const domain = tenant?.domain;
-
-  if (!domain) {
-    console.error('Tenant domain not found for tenant:', tenant?.id);
-    return null;
-  }
-
   return (
     <div className={classes.fieldType}>
       <PrintPageButton
         pageId={id}
-        domain={domain}
       />
     </div>
   )

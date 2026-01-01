@@ -1,5 +1,5 @@
 import { fetchPageById } from "@/_api/fetchPage";
-import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
+import { fetchTenant } from "@/_api/fetchTenants";
 import { FeastWithMasses } from "@/_components/Calendar";
 
 import { Page as PageType, Tenant } from "@/payload-types";
@@ -9,54 +9,8 @@ import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMa
 import { PrintableAnnouncements } from "./PrintableAnnouncements";
 import { checkPrintAccess } from "@/utilities/checkPrintAccess";
 
-
-export async function generateStaticParams() {
-  const tenants = await fetchTenants();
-  const params = [];
-
-  for (const tenant of tenants.filter((tenant) => tenant.domain)) {
-    // Extract subdomain - middleware rewrites to /${subdomain}/path
-    // So the [domain] param will be just the subdomain
-    const subdomain = tenant.domain.split('.')[0];
-    const { getPayload } = await import('payload');
-    const configPromise = await import('@payload-config');
-    const payload = await getPayload({
-      config: configPromise.default,
-    });
-    
-    const pages = await payload.find({
-      collection: 'pages',
-      where: {
-        and: [
-          {
-            ['tenant.domain']: {
-              contains: subdomain,
-            },
-          },
-          {
-            type: {
-              equals: 'pastoral-announcements',
-            },
-          },
-        ],
-      },
-      limit: 100,
-      depth: 0,
-    });
-
-    for (const page of pages.docs) {
-      if (page.id) {
-        // Use subdomain for [domain] param since middleware rewrites to /${subdomain}/path
-        params.push({
-          domain: subdomain,
-          id: page.id,
-        });
-      }
-    }
-  }
-  
-  return params;
-}
+// Force dynamic rendering since we use headers() for authentication
+export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({
   params,
@@ -89,113 +43,51 @@ export async function generateMetadata({
 
 export default async function PrintPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ domain: string; id: string }>;
+  searchParams: Promise<{ token?: string }>;
 }) {
   const { domain, id } = await params;
+  const { token } = await searchParams;
   
-  // #region agent log
-  const fs = await import('fs/promises');
-  await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-    location: 'print/page.tsx:95',
-    message: 'PrintPage called',
-    data: { domain, id },
-    timestamp: Date.now(),
-    sessionId: 'debug-session',
-    runId: 'run1',
-    hypothesisId: 'B'
-  }) + '\n').catch(() => {});
-  // #endregion
+  // Domain param from middleware rewrite is just the subdomain (e.g., "poznan")
+  // But fetchTenant expects exact match, so we need to handle the domain format
+  // Try the domain as-is first (in case it's the full domain)
+  let tenant = await fetchTenant(domain);
   
-  const tenant = await fetchTenant(domain);
-  
-  // #region agent log
-  await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-    location: 'print/page.tsx:98',
-    message: 'After fetchTenant',
-    data: { tenantFound: !!tenant, tenantId: tenant?.id, tenantDomain: tenant?.domain },
-    timestamp: Date.now(),
-    sessionId: 'debug-session',
-    runId: 'run1',
-    hypothesisId: 'C'
-  }) + '\n').catch(() => {});
-  // #endregion
-  
+  // If not found, extract subdomain and try again
+  // This handles cases where domain might be "poznan.localhost" or just "poznan"
   if (!tenant) {
-    // #region agent log
-    await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-      location: 'print/page.tsx:106',
-      message: 'Tenant not found - calling notFound()',
-      data: { domain },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'C'
-    }) + '\n').catch(() => {});
-    // #endregion
+    const [subdomain] = domain.split(".");
+    if (subdomain !== domain) {
+      tenant = await fetchTenant(subdomain);
+    }
+  }
+  if (!tenant) {
     const { notFound } = await import('next/navigation');
     notFound();
   }
 
   const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) {
-    // #region agent log
-    await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-      location: 'print/page.tsx:115',
-      message: 'Display pastoral announcements disabled - calling notFound()',
-      data: { tenantId: tenant.id },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'D'
-    }) + '\n').catch(() => {});
-    // #endregion
     const { notFound } = await import('next/navigation');
     notFound();
   }
 
-  // Only include drafts if user is authenticated and authorized (super admin or tenant admin)
+  // Print pages are back-office only - require authentication for all access
   const fullDomain = tenant.domain;
-  const canAccessDrafts = await checkPrintAccess(fullDomain);
+  const isAuthenticated = await checkPrintAccess(fullDomain, token);
   
-  // #region agent log
-  await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-    location: 'print/page.tsx:125',
-    message: 'Before fetchPageById',
-    data: { id, canAccessDrafts, fullDomain },
-    timestamp: Date.now(),
-    sessionId: 'debug-session',
-    runId: 'run1',
-    hypothesisId: 'E'
-  }) + '\n').catch(() => {});
-  // #endregion
-  
-  const page = await fetchPageById(id, { includeDrafts: canAccessDrafts });
+  if (!isAuthenticated) {
+    const { notFound } = await import('next/navigation');
+    notFound();
+  }
 
-  // #region agent log
-  await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-    location: 'print/page.tsx:131',
-    message: 'After fetchPageById',
-    data: { pageFound: !!page, pageId: page?.id, pageStatus: page?._status, hasContent: !!page?.content },
-    timestamp: Date.now(),
-    sessionId: 'debug-session',
-    runId: 'run1',
-    hypothesisId: 'E'
-  }) + '\n').catch(() => {});
-  // #endregion
+  // Authenticated users can see both drafts and published pages
+  const page = await fetchPageById(id);
 
   if (!page || !page.content) {
-    // #region agent log
-    await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-      location: 'print/page.tsx:139',
-      message: 'Page not found or no content - calling notFound()',
-      data: { pageFound: !!page, hasContent: !!page?.content },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'E'
-    }) + '\n').catch(() => {});
-    // #endregion
     const { notFound } = await import('next/navigation');
     notFound();
   }
@@ -205,17 +97,6 @@ export default async function PrintPage({
 
   // Verify it's a pastoral announcements page
   if (validPage.type !== 'pastoral-announcements') {
-    // #region agent log
-    await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-      location: 'print/page.tsx:152',
-      message: 'Page type mismatch - calling notFound()',
-      data: { pageType: validPage.type },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'F'
-    }) + '\n').catch(() => {});
-    // #endregion
     const { notFound } = await import('next/navigation');
     notFound();
   }
@@ -223,30 +104,7 @@ export default async function PrintPage({
   // Verify the page belongs to the correct tenant
   const pageTenant = validPage.tenant ? (typeof validPage.tenant === 'string' ? null : validPage.tenant as Tenant) : null;
   
-  // #region agent log
-  await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-    location: 'print/page.tsx:162',
-    message: 'Checking tenant match',
-    data: { pageTenantId: pageTenant?.id, tenantId: tenant.id, matches: pageTenant?.id === tenant.id },
-    timestamp: Date.now(),
-    sessionId: 'debug-session',
-    runId: 'run1',
-    hypothesisId: 'G'
-  }) + '\n').catch(() => {});
-  // #endregion
-  
   if (!pageTenant || pageTenant.id !== tenant.id) {
-    // #region agent log
-    await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-      location: 'print/page.tsx:170',
-      message: 'Tenant mismatch - calling notFound()',
-      data: { pageTenantId: pageTenant?.id, tenantId: tenant.id },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'G'
-    }) + '\n').catch(() => {});
-    // #endregion
     const { notFound } = await import('next/navigation');
     notFound();
   }

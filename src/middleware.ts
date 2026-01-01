@@ -18,25 +18,6 @@ export default async function middleware(req: NextRequest) {
 
   const subdomain = getSubdomain(req)
 
-  // #region agent log
-  try {
-    const fs = await import('fs/promises');
-    await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-      location: 'middleware.ts:19',
-      message: 'Middleware called',
-      data: {
-        pathname: url.pathname,
-        subdomain,
-        host: req.headers.get('host'),
-      },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'A'
-    }) + '\n');
-  } catch (e) {}
-  // #endregion
-
   if (!subdomain) {
     return NextResponse.next();
   }
@@ -48,27 +29,6 @@ export default async function middleware(req: NextRequest) {
 
   const newPath = `/${subdomain}${path}`;
   const rewrittenURL = new URL(newPath, req.url);
-
-  // #region agent log
-  try {
-    const fs = await import('fs/promises');
-    await fs.appendFile('/Users/jacek/Projects/fsspx/hub/.cursor/debug.log', JSON.stringify({
-      location: 'middleware.ts:45',
-      message: 'Middleware rewrite',
-      data: {
-        originalPath: url.pathname,
-        subdomain,
-        newPath,
-        rewrittenPath: rewrittenURL.pathname,
-        host: req.headers.get('host'),
-      },
-      timestamp: Date.now(),
-      sessionId: 'debug-session',
-      runId: 'run1',
-      hypothesisId: 'A'
-    }) + '\n');
-  } catch (e) {}
-  // #endregion
 
   return NextResponse.rewrite(rewrittenURL);
 }
