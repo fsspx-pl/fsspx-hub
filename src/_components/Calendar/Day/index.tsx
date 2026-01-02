@@ -57,8 +57,8 @@ export const Day: React.FC<Props> = ({
         {(hasMoreLeft || hasMoreRight) && !isSelected && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ? 'bg-gradient-to-r from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
-            ${hasMoreRight ? 'bg-gradient-to-l from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
+            ${hasMoreLeft ? 'bg-gradient-to-r from-[var(--bg-primary)] via-[var(--bg-primary)] to-transparent' : ''}
+            ${hasMoreRight ? 'bg-gradient-to-l from-[var(--bg-primary)] via-[var(--bg-primary)] to-transparent' : ''}
             opacity-70
           `} />
         )}
@@ -75,8 +75,8 @@ export const Day: React.FC<Props> = ({
         {(hasMoreLeft || hasMoreRight) && !isSelected && (
           <div className={`
             absolute inset-0 pointer-events-none
-            ${hasMoreLeft ? 'bg-gradient-to-r from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
-            ${hasMoreRight ? 'bg-gradient-to-l from-white dark:from-[#2B2B2B] via-white dark:via-[#2B2B2B] to-transparent' : ''}
+            ${hasMoreLeft ? 'bg-gradient-to-r from-[var(--bg-primary)] via-[var(--bg-primary)] to-transparent' : ''}
+            ${hasMoreRight ? 'bg-gradient-to-l from-[var(--bg-primary)] via-[var(--bg-primary)] to-transparent' : ''}
             opacity-70
           `} />
         )}

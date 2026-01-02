@@ -133,7 +133,7 @@ export default async function AnnouncementsListingPage({
             />
           </div>
           <div className="relative h-full flex flex-col justify-end">
-            <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-white dark:to-[var(--bg-primary)] to-70% pt-24">
+            <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-[var(--bg-primary)] to-70% pt-24">
               <h1 className={`${garamond.className} text-[var(--text-primary)]`}>
                 Ogłoszenia duszpasterskie
               </h1>
