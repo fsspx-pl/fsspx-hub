@@ -75,7 +75,7 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-8">
           <LoadingIndicator />
-          <p className="mt-2 text-gray-600">Ładowanie ogłoszeń...</p>
+          <p className="mt-2 text-[var(--text-primary)]">Ładowanie ogłoszeń...</p>
         </div>
       ) : (
         <AnnouncementList announcements={announcements} currentMonth={currentDate} />

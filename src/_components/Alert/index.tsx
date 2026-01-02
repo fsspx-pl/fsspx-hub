@@ -21,12 +21,12 @@ export const Alert: React.FC<AlertProps> = ({
   const isSuccess = variant === 'success';
   
   const containerClasses = isSuccess
-    ? 'bg-green-50 border border-green-200'
-    : 'bg-red-50 border border-red-200';
+    ? 'bg-[var(--alert-success-bg)] border border-[var(--alert-success-border)]'
+    : 'bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)]';
   
-  const iconColor = isSuccess ? 'text-green-400' : 'text-red-400';
-  const titleColor = isSuccess ? 'text-green-800' : 'text-red-800';
-  const messageColor = isSuccess ? 'text-green-700' : 'text-red-800';
+  const iconColor = isSuccess ? 'text-[var(--alert-success-text)]' : 'text-[var(--alert-error-text)]';
+  const titleColor = isSuccess ? 'text-[var(--alert-success-text)]' : 'text-[var(--alert-error-text)]';
+  const messageColor = isSuccess ? 'text-[var(--text-secondary)]' : 'text-[var(--alert-error-text)]';
 
   const SuccessIcon = () => (
     <svg

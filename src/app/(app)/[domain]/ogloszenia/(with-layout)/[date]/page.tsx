@@ -174,10 +174,10 @@ export default async function AnnouncementPage({
           )}
         </div>
         <div className="flex flex-col gap-4">
-          <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0"/>
+          <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0 dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-[#CCCCCC] prose-p:text-gray-700 dark:prose-p:text-[#CCCCCC]"/>
           <NewsletterSignupForm subdomain={domain.split('.')[0]} className="mt-4" />
           <CMSLink url={'/ogloszenia'}
-            className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910]"
+            className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910] dark:text-[#C81910]"
           >
             <Arrow className="w-4 h-3 fill-[#C81910] rotate-180" />
             <span>Powrót do listy ogłoszeń</span>

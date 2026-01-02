@@ -1,0 +1,49 @@
+// React Calendar dark mode styles
+
+.dark {
+  .react-calendar {
+    background: transparent !important;
+
+    // Base tile styles
+    &__tile {
+      color: var(--text-primary) !important;
+
+      // Neighboring month (disabled dates)
+      &--neighboringMonth {
+        color: #515658 !important;
+      }
+
+      // Current day
+      &--now {
+        color: var(--text-primary) !important;
+      }
+
+      // Active/selected day
+      &--active {
+        color: var(--text-primary) !important;
+      }
+    }
+
+    // Month view specific styles
+    &__month-view {
+      // Weekday headers
+      &__weekdays {
+        color: var(--text-primary) !important;
+
+        &__weekday {
+          color: var(--text-primary) !important;
+
+          abbr {
+            color: var(--text-primary) !important;
+          }
+        }
+      }
+
+      // Day cells
+      &__days__day {
+        color: var(--text-primary) !important;
+      }
+    }
+  }
+}
+
