@@ -55,9 +55,18 @@ export const fetchLatestPage = (subdomain: string): Promise<Page | undefined> =>
   )();
 };
 
-export const fetchTenantPageByDate = (subdomain: string, isoDate: string): Promise<Page | undefined> => {
+interface FetchPageOptions {
+  includeDrafts?: boolean;
+}
+
+export const fetchTenantPageByDate = (
+  subdomain: string, 
+  isoDate: string,
+  options: FetchPageOptions = {}
+): Promise<Page | undefined> => {
+  const { includeDrafts = false } = options;
   const date = format(isoDate, 'dd-MM-yyyy')
-  const cacheKey = `page-${subdomain}-${date}`;
+  const cacheKey = `page-${subdomain}-${date}${includeDrafts ? '-all' : ''}`;
   return unstable_cache(
     async (): Promise<Page | undefined> => {
       return findPage({
@@ -67,13 +76,41 @@ export const fetchTenantPageByDate = (subdomain: string, isoDate: string): Promi
         ['period.start']: {
           equals: isoDate,
         },
-        ...published,
+        ...(includeDrafts ? {} : published),
       });
     },
     [cacheKey],
     {
       revalidate: 60 * 60 * 24, // 24 hours
       tags: [`tenant:${subdomain}:date:${date}`],
+    }
+  )();
+};
+
+export const fetchPageById = (pageId: string): Promise<Page | undefined> => {
+  const cacheKey = `page-${pageId}`;
+  return unstable_cache(
+    async (): Promise<Page | undefined> => {
+      const payload = await getPayload({
+        config: configPromise,
+      });
+
+      try {
+        const page = await payload.findByID({
+          collection: 'pages',
+          id: pageId,
+          depth: 2,
+        });
+
+        return page;
+      } catch (err: unknown) {
+        return undefined;
+      }
+    },
+    [cacheKey],
+    {
+      revalidate: 60 * 60 * 24, // 24 hours
+      tags: [`page:${pageId}`],
     }
   )();
 };
