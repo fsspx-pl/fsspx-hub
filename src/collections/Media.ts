@@ -44,6 +44,9 @@ export const Media: CollectionConfig = {
     // staticDir removed - using S3 storage instead
     // staticDir: path.resolve(__dirname, '../../media'),
   },
+  admin: {
+    folders: true,
+  },
   access: {
     read: () => true,
   },
