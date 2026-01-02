@@ -22,6 +22,7 @@ export const Pages: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'type', 'period.start', 'period.end', 'tenant.name'],
+    folders: true,
   },
   access: {
     read: tenantReadOrPublic,

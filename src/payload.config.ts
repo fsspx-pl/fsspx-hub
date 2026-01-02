@@ -65,6 +65,9 @@ export default buildConfig({
       },
     },
   },
+  folders: {
+    browseByFolder: true,
+  },
   globals: [Settings, Header, Footer],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, NewsletterSubscriptions, Events],
   plugins: [
