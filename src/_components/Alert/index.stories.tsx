@@ -31,3 +31,12 @@ export const Error: Story = {
   },
 };
 
+export const Info: Story = {
+  args: {
+    variant: 'info',
+    title: 'Załączniki',
+    message:
+      'Ta strona zawiera 3 załączniki.',
+  },
+};
+

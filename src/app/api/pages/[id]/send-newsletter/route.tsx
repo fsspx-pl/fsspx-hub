@@ -15,6 +15,43 @@ import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
 import { getMediaAsEmailAttachment, formatAttachmentsForEmail } from "@/utilities/s3Download";
 import React from "react";
 import { minify } from "html-minifier-terser";
+import { hasText } from '@payloadcms/richtext-lexical/shared'
+import { extractMediaFromLexical } from "@/collections/Pages/hooks/extractMediaFromLexical";
+
+const adminApiTranslations = {
+  pl: {
+    errorNoContent: "Nie można wysłać newslettera: Strona nie ma treści",
+    errorAlreadySent: "Newsletter został już wysłany dla tej strony",
+    successSent: "Newsletter wysłany pomyślnie",
+  },
+  en: {
+    errorNoContent: "Cannot send newsletter: Page has no content",
+    errorAlreadySent: "Newsletter has already been sent for this page",
+    successSent: "Newsletter sent successfully",
+  },
+} as const;
+
+type Locale = 'pl' | 'en';
+
+function getLocaleFromRequest(request: NextRequest): Locale {
+  const cookies = request.headers.get('cookie');
+  if (cookies) {
+    const payloadLngMatch = cookies.match(/payload-lng=([^;]+)/);
+    if (payloadLngMatch && (payloadLngMatch[1] === 'en' || payloadLngMatch[1] === 'pl')) {
+      return payloadLngMatch[1] as Locale;
+    }
+  }
+  // Fallback to Accept-Language header if cookie is not present
+  const acceptLanguage = request.headers.get('accept-language');
+  if (acceptLanguage?.includes('en')) {
+    return 'en';
+  }
+  return 'pl';
+}
+
+function getTranslation(key: keyof typeof adminApiTranslations.pl, locale: Locale): string {
+  return adminApiTranslations[locale]?.[key] || adminApiTranslations.pl[key];
+}
 
 function transformServiceForEmail(service: Service) {
   return {
@@ -32,6 +69,7 @@ function transformFeastsForEmail(feastsWithMasses: any[]) {
     masses: feast.masses.map(transformServiceForEmail),
   }));
 }
+
 
 async function convertContentToHtml(content: any): Promise<string> {
   if (!content || !content.root || !content.root.children) {
@@ -74,7 +112,8 @@ async function getPage(id: string) {
   const page = await payload.findByID({
     collection: "pages",
     id,
-    depth: 2
+    depth: 2,
+    draft: true,
   });
 
   if (!page || page.type !== "pastoral-announcements") {
@@ -169,24 +208,35 @@ async function sendNewsletter({
 
   const html = await minifyAndReplaceQuotes(rawHtml);
 
-  // Fetch and prepare attachments if they exist
+  // Extract and prepare attachments from page content
   let attachments: Array<{ filename: string; content: Buffer; contentType?: string }> = [];
-  if (page.attachment && Array.isArray(page.attachment) && page.attachment.length > 0) {
+  if (page.content) {
     try {
-      console.info(`Found ${page.attachment.length} attachment(s) for page ${page.id}`);
+      // Extract media IDs from Lexical content
+      const mediaIds = extractMediaFromLexical(page.content);
       
-      // Fetch full media documents if they're just IDs
-      const attachmentPromises = page.attachment.map(async (attachment) => {
-        const mediaId = typeof attachment === 'string' ? attachment : attachment.id;
-        const mediaDoc = typeof attachment === 'string' 
-          ? await payload.findByID({ collection: 'media', id: mediaId })
-          : attachment;
+      if (mediaIds.length > 0) {
+        console.info(`Found ${mediaIds.length} attachment(s) in page content for page ${page.id}`);
         
-        return getMediaAsEmailAttachment(mediaDoc);
-      });
+        // Fetch full media documents and prepare as email attachments
+        const attachmentPromises = mediaIds.map(async (mediaId) => {
+          try {
+            const mediaDoc = await payload.findByID({ 
+              collection: 'media', 
+              id: mediaId 
+            });
+            return getMediaAsEmailAttachment(mediaDoc);
+          } catch (error) {
+            console.warn(`Failed to fetch media ${mediaId} for newsletter attachment:`, error);
+            return null;
+          }
+        });
 
-      attachments = await Promise.all(attachmentPromises);
-      console.info(`Successfully prepared ${attachments.length} attachment(s) for email`);
+        const attachmentResults = await Promise.all(attachmentPromises);
+        attachments = attachmentResults.filter((att): att is { filename: string; content: Buffer; contentType?: string } => att !== null);
+        
+        console.info(`Successfully prepared ${attachments.length} attachment(s) for email`);
+      }
     } catch (error) {
       console.error('Error preparing attachments for newsletter:', error);
       // Don't fail the entire newsletter send if attachments fail
@@ -300,6 +350,7 @@ export async function POST(
   const testEmail = request.nextUrl.searchParams.get('testEmail');
   const skipCalendarParam = request.nextUrl.searchParams.get('skipCalendar');
   const skipCalendar = skipCalendarParam === 'true';
+  const locale = getLocaleFromRequest(request);
 
   try {
     const page = await getPage(id);
@@ -307,8 +358,17 @@ export async function POST(
     if ((page as Page).newsletter?.sent && !testEmail) {
       return NextResponse.json(
         {
-          message: "Newsletter has already been sent for this page",
+          message: getTranslation('errorAlreadySent', locale),
           alreadySent: true,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!hasText((page as Page).content)) {
+      return NextResponse.json(
+        {
+          message: getTranslation('errorNoContent', locale),
         },
         { status: 400 }
       );
@@ -325,7 +385,7 @@ export async function POST(
     if(!testEmail) await markNewsletterAsSent(id);
 
     return NextResponse.json({
-      message: "Newsletter sent successfully",
+      message: getTranslation('successSent', locale),
       messageId: newsletterResponse.messageId,
       sendStatus: newsletterResponse
     });

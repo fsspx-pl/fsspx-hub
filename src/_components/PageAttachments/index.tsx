@@ -48,7 +48,6 @@ export function PageAttachments({ attachments }: PageAttachmentsProps) {
               >
                 {filename}
               </CMSLink>
-              <span className="text-xs text-gray-500 flex-shrink-0">(PDF)</span>
             </li>
           );
         })}

@@ -2,7 +2,7 @@ import { dirname } from 'path'
 import { CollectionConfig, CollectionBeforeChangeHook } from 'payload'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { Media } from '@/payload-types'
+import { Media as MediaType } from '@/payload-types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename)
  * - Page attachments: uploads/posts/{pageId}
  * - Admin/media files: media (default)
  */
-const setMediaPrefix: CollectionBeforeChangeHook<Media> = async ({
+const setMediaPrefix: CollectionBeforeChangeHook<MediaType> = async ({
   data,
   req,
   operation,
@@ -24,7 +24,7 @@ const setMediaPrefix: CollectionBeforeChangeHook<Media> = async ({
 
   // Check if this upload is coming from a page's attachment field
   // When uploading through an upload field, PayloadCMS may include context in req
-  const referer = req.headers?.referer || '';
+  const referer = req.headers?.get?.('referer') || '';
   const isPageAttachment = referer.includes('/admin/collections/pages');
 
   // If it's a page attachment and we have a page ID in the context, set custom prefix
@@ -39,13 +39,11 @@ const setMediaPrefix: CollectionBeforeChangeHook<Media> = async ({
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  folders: true,
   upload: {
     disableLocalStorage: true,
     // staticDir removed - using S3 storage instead
     // staticDir: path.resolve(__dirname, '../../media'),
-  },
-  admin: {
-    folders: true,
   },
   access: {
     read: () => true,

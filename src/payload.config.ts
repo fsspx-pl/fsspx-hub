@@ -2,6 +2,7 @@ import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { s3Storage } from '@payloadcms/storage-s3'
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import {
   HeadingFeature,
   defaultEditorFeatures,
@@ -65,6 +66,9 @@ export default buildConfig({
       },
     },
   },
+  folders: {
+    browseByFolder: false, // Disable global folder view - folders only work within Media collection
+  },
   globals: [Settings, Header, Footer],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, NewsletterSubscriptions, Events],
   plugins: [
@@ -121,6 +125,9 @@ export default buildConfig({
           delete: tenantOnlyAccess,
         },
       },
+    }),
+    importExportPlugin({
+      collections: ['form-submissions'],
     }),
   ],
   editor: lexicalEditor({

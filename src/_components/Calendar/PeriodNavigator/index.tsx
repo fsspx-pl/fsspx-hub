@@ -46,7 +46,7 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
     return (
       <div className={baseClassName}>
         <CMSLink label={monthYear} preventNavigation />
-        {weekNumber && <div>Tydz. {weekNumber}</div>}
+        {weekNumber && <span className="dark:text-[#CCCCCC] transition-colors">Tydz. {weekNumber}</span>}
       </div>
     )
   }

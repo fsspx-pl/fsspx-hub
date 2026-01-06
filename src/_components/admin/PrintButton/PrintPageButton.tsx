@@ -3,14 +3,11 @@
 import React, { useState, useCallback } from 'react'
 import { Button, toast } from '@payloadcms/ui'
 import classes from './index.module.scss'
-import { formatInPolishTime } from '@/common/timezone'
 
 export const PrintPageButton: React.FC<{ 
-  date: string,
-  isDraft: boolean
+  pageId: string
 }> = ({
-  date,
-  isDraft
+  pageId
 }) => {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -20,12 +17,8 @@ export const PrintPageButton: React.FC<{
     setIsLoading(true)
     
     try {
-      // Format the date for the URL
-      const formattedDate = formatInPolishTime(date, 'dd-MM-yyyy')
+      const printUrl = `/ogloszenia/print/${pageId}`
       
-      const printUrl = `/ogloszenia/${formattedDate}/print`
-      
-      // Open in new tab
       window.open(printUrl, '_blank', 'noopener,noreferrer')
       
       toast.success('Print page opened in new tab')
@@ -35,22 +28,20 @@ export const PrintPageButton: React.FC<{
     } finally {
       setIsLoading(false)
     }
-  }, [date, isLoading])
+  }, [pageId, isLoading])
 
-  const disabled = isLoading || isDraft
+  const disabled = isLoading
 
   return (
     <Button 
       className={classes.button} 
       buttonStyle='secondary'
       onClick={handlePrintPage}
-      disabled={disabled}
+      disabled={false}
     >
       {isLoading 
         ? 'Opening...' 
-        : isDraft
-          ? 'Publish page to enable print'
-          : '🖨️ Open Print Version'
+        : '🖨️ Open Print Version'
       }
     </Button>
   )
