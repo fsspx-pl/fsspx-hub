@@ -49,7 +49,12 @@ export async function downloadFileFromS3(key: string): Promise<Buffer> {
     }
 
     return Buffer.concat(chunks);
-  } catch (error) {
+  } catch (error: any) {
+    // Handle NoSuchKey errors gracefully - file doesn't exist in S3
+    if (error?.Code === 'NoSuchKey' || error?.name === 'NoSuchKey') {
+      throw new Error(`File not found in S3: ${key}`);
+    }
+    
     console.error(`Failed to download file from S3: ${key}`, error);
     throw new Error(
       `Failed to download file from S3: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -61,15 +66,19 @@ export async function downloadFileFromS3(key: string): Promise<Buffer> {
  * Convert a PayloadCMS Media document to an email attachment format
  * Downloads the file from S3 and returns it in the format expected by email services
  * @param media - PayloadCMS Media document (can be string ID or populated object)
+ * @param pageId - Optional page ID to try page-specific prefix as fallback
  * @returns Email attachment object with filename, content, and contentType
  */
-export async function getMediaAsEmailAttachment(media: {
-  id: string;
-  filename?: string | null;
-  url?: string | null;
-  mimeType?: string | null;
-  prefix?: string | null;
-}): Promise<{
+export async function getMediaAsEmailAttachment(
+  media: {
+    id: string;
+    filename?: string | null;
+    url?: string | null;
+    mimeType?: string | null;
+    prefix?: string | null;
+  },
+  pageId?: string
+): Promise<{
   filename: string;
   content: Buffer;
   contentType?: string;
@@ -82,13 +91,51 @@ export async function getMediaAsEmailAttachment(media: {
   const prefix = media.prefix || 'media';
   const s3Key = `${prefix}/${media.filename}`;
 
-  const buffer = await downloadFileFromS3(s3Key);
-
-  return {
-    filename: media.filename,
-    content: buffer,
-    contentType: media.mimeType || 'application/pdf',
-  };
+  try {
+    const buffer = await downloadFileFromS3(s3Key);
+    
+    return {
+      filename: media.filename,
+      content: buffer,
+      contentType: media.mimeType || 'application/pdf',
+    };
+  } catch (error: any) {
+    // If the file is not found with the specified prefix, try alternative prefixes
+    if (error?.message?.includes('not found') || error?.message?.includes('NoSuchKey')) {
+      // Build list of alternative prefixes to try
+      const alternativePrefixes: string[] = [];
+      
+      // If current prefix is not 'media', try 'media' as fallback
+      if (prefix !== 'media') {
+        alternativePrefixes.push('media');
+      }
+      
+      // If we have a pageId and the prefix doesn't already include it, try page-specific prefix
+      if (pageId && !prefix.includes(pageId)) {
+        alternativePrefixes.push(`uploads/posts/${pageId}`);
+      }
+      
+      // Try each alternative prefix
+      for (const altPrefix of alternativePrefixes) {
+        const altS3Key = `${altPrefix}/${media.filename}`;
+        
+        try {
+          const buffer = await downloadFileFromS3(altS3Key);
+          
+          return {
+            filename: media.filename,
+            content: buffer,
+            contentType: media.mimeType || 'application/pdf',
+          };
+        } catch (altError) {
+          // Continue to next alternative or re-throw original error
+        }
+      }
+    }
+    
+    // Re-throw the original error if all attempts failed
+    throw error;
+  }
 }
 
 /**

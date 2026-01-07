@@ -76,8 +76,15 @@ async function convertContentToHtml(content: any): Promise<string> {
     return "";
   }
   
-  const serializedContent = serializeForEmail(content.root.children);
+  // Hide attachments in HTML - they will be added as separate email attachments
+  const serializedContent = serializeForEmail(content.root.children, true);
+  
+  if (!serializedContent || serializedContent.length === 0) {
+    return "";
+  }
+  
   const html = await render(React.createElement('div', {}, serializedContent));
+  
   return html;
 }
 
@@ -189,13 +196,67 @@ async function sendNewsletter({
     ? [] 
     : transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant));
 
+  // Convert content to HTML (attachments will be excluded and added separately)
+  const contentHtml = await convertContentToHtml(page.content);
+
+  // Extract and prepare attachments from page content
+  // These will be added as separate email attachments (not in HTML body)
+  let attachments: Array<{ filename: string; content: Buffer; contentType?: string }> = [];
+  if (page.content) {
+    try {
+      // Extract media IDs from Lexical content
+      const mediaIds = extractMediaFromLexical(page.content);
+      
+      if (mediaIds.length > 0) {
+        // Fetch full media documents and prepare as email attachments
+        const attachmentPromises = mediaIds.map(async (mediaId) => {
+          try {
+            const mediaDoc = await payload.findByID({ 
+              collection: 'media', 
+              id: mediaId 
+            });
+            
+            if (!mediaDoc) {
+              console.warn(`Media document ${mediaId} not found in Payload`);
+              return null;
+            }
+            
+            try {
+              // Pass page ID to allow fallback to page-specific prefix
+              return await getMediaAsEmailAttachment(mediaDoc, page.id);
+            } catch (s3Error: any) {
+              // Handle S3 errors gracefully - log but don't fail the entire newsletter
+              if (s3Error?.message?.includes('not found') || s3Error?.message?.includes('NoSuchKey')) {
+                // Skip missing attachments silently
+              } else {
+                console.error(`Failed to download attachment from S3:`, s3Error);
+              }
+              return null;
+            }
+          } catch (error) {
+            console.error(`Failed to fetch media ${mediaId} for newsletter attachment:`, error);
+            return null;
+          }
+        });
+
+        const attachmentResults = await Promise.all(attachmentPromises);
+        attachments = attachmentResults.filter((att): att is { filename: string; content: Buffer; contentType?: string } => att !== null);
+      }
+    } catch (error) {
+      console.error('Error preparing attachments for newsletter:', error);
+      // Don't fail the entire newsletter send if attachments fail
+      // Just log the error and continue without attachments
+    }
+  }
+
   const rawHtml = await render(
     <Email
       title={titleWithDateSuffix}
-      content_html={await convertContentToHtml(page.content)}
+      content_html={contentHtml}
       copyright={settings.copyright as string}
       slogan={footer.slogan as string}
       feastsWithMasses={feastsWithMasses}
+      attachmentCount={attachments.length}
     />,
     {
       htmlToTextOptions: {
@@ -208,41 +269,8 @@ async function sendNewsletter({
 
   const html = await minifyAndReplaceQuotes(rawHtml);
 
-  // Extract and prepare attachments from page content
-  let attachments: Array<{ filename: string; content: Buffer; contentType?: string }> = [];
-  if (page.content) {
-    try {
-      // Extract media IDs from Lexical content
-      const mediaIds = extractMediaFromLexical(page.content);
-      
-      if (mediaIds.length > 0) {
-        console.info(`Found ${mediaIds.length} attachment(s) in page content for page ${page.id}`);
-        
-        // Fetch full media documents and prepare as email attachments
-        const attachmentPromises = mediaIds.map(async (mediaId) => {
-          try {
-            const mediaDoc = await payload.findByID({ 
-              collection: 'media', 
-              id: mediaId 
-            });
-            return getMediaAsEmailAttachment(mediaDoc);
-          } catch (error) {
-            console.warn(`Failed to fetch media ${mediaId} for newsletter attachment:`, error);
-            return null;
-          }
-        });
-
-        const attachmentResults = await Promise.all(attachmentPromises);
-        attachments = attachmentResults.filter((att): att is { filename: string; content: Buffer; contentType?: string } => att !== null);
-        
-        console.info(`Successfully prepared ${attachments.length} attachment(s) for email`);
-      }
-    } catch (error) {
-      console.error('Error preparing attachments for newsletter:', error);
-      // Don't fail the entire newsletter send if attachments fail
-      // Just log the error and continue without attachments
-    }
-  }
+  // Attachments are already extracted above (before email rendering)
+  // They are used in the email template and will be attached to the email
 
   const tenantId = (page.tenant as Tenant).id;
   if (!fromEmail) {
@@ -267,7 +295,6 @@ async function sendNewsletter({
     throw new Error("No confirmed subscribers found for this tenant.");
   }
 
-  console.info(`Found ${recipients.length} confirmed subscribers from Payload`);
 
   const emailData = {
     subject: titleWithDateSuffix,
@@ -282,15 +309,11 @@ async function sendNewsletter({
   };
 
   if (testEmail) {
-    console.info('Sending test email to:', testEmail);
-
     const personalizedHtml = await personalizeUnsubscribeUrl({
       html,
       email: testEmail,
       unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
       getSubscriptionId: emailData.getSubscriptionId,
-      onMissingSubscription: (email) =>
-        console.warn(`No subscription found for test email ${email}, UNSUBSCRIBE_URL will not be replaced`),
     });
 
     const response = await sendEmail({
@@ -300,6 +323,7 @@ async function sendNewsletter({
       html: personalizedHtml,
       attachments: formatAttachmentsForEmail(attachments),
     });
+    
     return response;
   }
 

@@ -228,7 +228,7 @@ export const serialize = (
 ): React.ReactNode[] | null =>
   serializeInternal(children, undefined, hideAttachments)
 
-export const serializeForEmail = (children?: (Node | TextNode)[]): React.ReactNode[] | null =>
+export const serializeForEmail = (children?: (Node | TextNode)[], hideAttachments: boolean = true): React.ReactNode[] | null =>
   serializeInternal(children, ({ key, href, newTab, children: linkChildren }) => {
     const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
     return (
@@ -236,4 +236,4 @@ export const serializeForEmail = (children?: (Node | TextNode)[]): React.ReactNo
         {linkChildren}
       </a>
     )
-  }, false)
+  }, hideAttachments)
