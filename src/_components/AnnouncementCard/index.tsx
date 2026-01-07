@@ -44,12 +44,14 @@ export const AnnouncementCard: React.FC<Props> = ({
   const endDateFormatted = endDate ? format(endDate, 'dd.MM.yyyy', { locale: pl }) : '';
 
   return (
-    <article className={`prose prose-lg max-w-none w-full ${className}`}>
+    <article className={`prose prose-lg max-w-none w-full dark:prose-invert ${className}`}>
       {date && (
         <div className="flex justify-between items-baseline">
           <div className="flex flex-row items-center gap-2">
             {/* TODO: make link as reference */}
-            <CMSLink url={linkTo}
+            <CMSLink 
+              url={linkTo}
+              className="text-[var(--text-heading)] hover:text-[var(--text-heading)]"
             >
               <h3 className={`${garamond.className} m-0`}>
                 {date}
@@ -58,7 +60,7 @@ export const AnnouncementCard: React.FC<Props> = ({
             {isCurrent && <Badge>Aktualne</Badge>}
           </div>
           {isSpanningAnnouncement && endDateFormatted && (
-                <span className="text-sm text-gray-500 font-normal ml-2">
+                <span className="text-sm text-[var(--text-secondary)] font-normal ml-2">
                   do: {endDateFormatted}
                 </span>
               )}
@@ -66,7 +68,7 @@ export const AnnouncementCard: React.FC<Props> = ({
       )}
       
       {excerpt && (
-        <p className="text-gray-600 leading-relaxed mt-3 mb-6 line-clamp-3 text-justify">
+        <p className="text-[var(--text-secondary)] leading-relaxed mt-3 mb-6 line-clamp-3 text-justify">
           {excerpt}
         </p>
       )}
@@ -81,10 +83,10 @@ export const AnnouncementCard: React.FC<Props> = ({
           />
                 </div>
           <CMSLink url={linkTo}
-            className="flex items-center gap-2 mb-1 text-sm text-[#C81910]"
+            className="flex items-center gap-2 mb-1 text-sm text-[var(--color-primary)]"
           >
             <span>Więcej</span>
-            <Arrow className="w-4 h-3 fill-[#C81910]" />
+            <Arrow className="w-4 h-3 fill-[var(--color-primary)]" />
           </CMSLink>
         </div>
     </article>

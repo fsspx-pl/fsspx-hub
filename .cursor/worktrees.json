@@ -1,0 +1,7 @@
+[
+  "echo '🔧 Setting up worktree...'",
+  "pnpm install",
+  "echo '✅ Dependencies installed'",
+  "test -f $ROOT_WORKTREE_PATH/.env && (cp $ROOT_WORKTREE_PATH/.env .env && echo '✅ .env file copied from root worktree') || echo '⚠️  Warning: .env file not found in root worktree'",
+  "echo '✨ Worktree setup complete!'"
+]

@@ -21,7 +21,7 @@ export async function Header() {
 
   return (
       <Gutter>
-        <header className="flex flex-row justify-between items-center w-full py-4 lg:py-8">
+        <header className="flex flex-row justify-between items-center w-full py-4 lg:py-8 bg-white dark:bg-[#2B2B2B]">
           <Logo />
           <div className="hidden md:block">
             <HeaderNav navItems={header.navItems} />

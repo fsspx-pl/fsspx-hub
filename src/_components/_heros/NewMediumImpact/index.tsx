@@ -67,8 +67,8 @@ export const NewMediumImpact: React.FC<Props> = ({
           </div>
         </Gallery>
         <div className="relative h-full flex flex-col justify-end pointer-events-none z-10">
-          <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-white to-70% pt-24">
-            <h1 className={`${garamond.className} text-gray-700`}>
+          <div className="prose prose-lg max-w-none bg-gradient-to-b from-transparent to-[var(--bg-primary)] to-70% pt-24">
+            <h1 className={`${garamond.className} text-[var(--text-primary)]`}>
               {title}
             </h1>
           </div>

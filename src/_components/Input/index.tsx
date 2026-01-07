@@ -38,12 +38,19 @@ export const Input: React.FC<InputProps> = ({
       aria-label={ariaLabel}
       className={`
         w-full px-4 py-2 
-        border border-gray-300 
+        bg-white dark:bg-[#3C3F41]
+        text-gray-900 dark:text-[#CCCCCC]
+        border border-gray-300 dark:border-gray-600
         rounded-md
         focus:outline-none focus:ring-2 
-        disabled:bg-gray-100 disabled:cursor-not-allowed
+        focus:ring-gray-200 dark:focus:ring-gray-700
+        focus:border-gray-400 dark:focus:border-gray-500
+        disabled:bg-gray-100 dark:disabled:bg-gray-800
+        disabled:text-gray-400 dark:disabled:text-gray-500
+        disabled:cursor-not-allowed
+        placeholder:text-gray-400 dark:placeholder:text-[#A9B7C6]
         transition-colors
-        ${className || 'focus:ring-gray-200 focus:border-gray-400'}
+        ${className}
       `}
     />
   );

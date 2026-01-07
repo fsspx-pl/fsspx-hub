@@ -53,15 +53,15 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
     if (titleClickable) {
       return (
         <div className={baseClassName}>
-          <CMSLink label={monthYear} preventNavigation />
-          {weekNumber && <div>Tydz. {weekNumber}</div>}
+          <CMSLink label={monthYear} preventNavigation className="text-gray-700 dark:text-[var(--text-primary)]" />
+          {weekNumber && <div className="dark:text-[var(--text-primary)]">Tydz. {weekNumber}</div>}
         </div>
       )
     } else {
       return (
         <div className={baseClassName}>
-          <span>{monthYear}</span>
-          {weekNumber && <div>Tydz. {weekNumber}</div>}
+          <span className="text-gray-700 dark:text-[var(--text-primary)]">{monthYear}</span>
+          {weekNumber && <div className="text-gray-700 dark:text-[var(--text-primary)]">Tydz. {weekNumber}</div>}
         </div>
       )
     }
@@ -81,7 +81,7 @@ export const PeriodNavigator: React.FC<PeriodNavigatorProps> = ({
       
       <div 
         onClick={onToggleView} 
-        className={`text-gray-700 hover:text-gray-700 relative top-1 ${titleClickable ? 'cursor-pointer' : ''}`}
+        className={`text-gray-700 dark:text-[var(--text-primary)] hover:text-gray-700 dark:hover:text-[var(--text-primary)] relative top-1 ${titleClickable ? 'cursor-pointer' : ''}`}
         data-tooltip-id="view-toggle-tooltip"
         data-tooltip-content={tooltipText}
       >
