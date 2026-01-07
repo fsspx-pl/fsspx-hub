@@ -109,13 +109,15 @@ export default async function AnnouncementPage({
   const currentDate = parseISO(isoDate);
   const prevMonth = startOfMonth(subMonths(currentDate, 1));
   const nextMonth = endOfMonth(addMonths(currentDate, 1));
+  const currentYear = currentDate.getFullYear();
+  const nextYear = currentYear + 1;
 
-  // Fetch feasts for the entire year
+  // Fetch feasts for the current year and next year to enable navigation to next year
   const feastsWithMasses: FeastWithMasses[] = pageTenant 
     ? await getFeastsWithMasses(
         {
-          start: new Date(currentDate.getFullYear(), 0, 1).toISOString(), // Start of year
-          end: new Date(currentDate.getFullYear(), 11, 31).toISOString(), // End of year
+          start: new Date(currentYear, 0, 1).toISOString(), // Start of current year
+          end: new Date(nextYear, 11, 31).toISOString(), // End of next year
         },
         pageTenant,
         now,
@@ -172,10 +174,10 @@ export default async function AnnouncementPage({
           )}
         </div>
         <div className="flex flex-col gap-4">
-          <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0"/>
+          <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0 dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-[#CCCCCC] prose-p:text-gray-700 dark:prose-p:text-[#CCCCCC]"/>
           <NewsletterSignupForm subdomain={domain.split('.')[0]} className="mt-4" />
           <CMSLink url={'/ogloszenia'}
-            className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910]"
+            className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910] dark:text-[#C81910]"
           >
             <Arrow className="w-4 h-3 fill-[#C81910] rotate-180" />
             <span>Powrót do listy ogłoszeń</span>
