@@ -195,7 +195,7 @@ const serializeInternal = (
               relationTo: typedNode.fields?.doc?.relationTo,
             }}
             newTab={typedNode.fields?.newTab}
-            className="text-[#C81910] no-underline"
+            className="no-underline"
           >
             {serializedChildren}
           </CMSLink>

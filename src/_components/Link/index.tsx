@@ -59,7 +59,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
   const linkClasses = !isStatic ?
-    'after:bg-[#C81910] after:scale-x-0 group-hover:after:scale-x-100 after:transition after:duration-300 after:origin-left' : 'after:bg-gray-400 after:scale-x-100'
+    'after:bg-[var(--color-primary)] after:scale-x-0 group-hover:after:scale-x-100 after:transition after:duration-300 after:origin-left' : 'after:bg-gray-400 after:scale-x-100'
   
   // If preventNavigation is true or there's no valid href, render as span instead of Link
   const shouldRenderAsSpan = preventNavigation || disabled || (!href && !url)
@@ -73,7 +73,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
             {children && children}
           </span>
       ) : (
-          <Link {...newTabProps} href={href ?? ''} className={className ? `${className} no-underline text-[var(--color-primary)]` : 'no-underline text-[var(--color-primary)]'}>
+          <Link {...newTabProps} href={href ?? ''} className={className ? `text-[var(--color-primary)] ${className} no-underline` : 'no-underline text-[var(--color-primary)]'}>
             {label && label}
             {children && children}
           </Link>

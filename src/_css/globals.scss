@@ -84,12 +84,3 @@
     text-wrap: balance;
   }
 }
-
-// Override prose link colors to use theme variables
-.prose a {
-  color: var(--text-heading) !important;
-}
-
-.dark .prose a {
-  color: var(--text-heading) !important;
-}
