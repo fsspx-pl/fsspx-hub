@@ -161,7 +161,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
       case 'number':
         return (
           <div key={field.id || fieldName} className={`space-y-2 col-span-12 ${widthClass}`}>
-            <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={fieldName} className="block text-sm font-medium text-[var(--text-primary)]">
               {fieldLabel}
               {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -200,7 +200,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
       case 'text':
         return (
           <div key={field.id || fieldName} className={`space-y-2 col-span-12 ${widthClass}`}>
-            <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={fieldName} className="block text-sm font-medium text-[var(--text-primary)]">
               {fieldLabel}
               {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -219,7 +219,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
       case 'email':
         return (
           <div key={field.id || fieldName} className={`space-y-2 col-span-12 ${widthClass}`}>
-            <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={fieldName} className="block text-sm font-medium text-[var(--text-primary)]">
               {fieldLabel}
               {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -238,7 +238,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
       case 'textarea':
         return (
           <div key={field.id || fieldName} className={`space-y-2 col-span-12 ${widthClass}`}>
-            <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={fieldName} className="block text-sm font-medium text-[var(--text-primary)]">
               {fieldLabel}
               {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -257,7 +257,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
       case 'select':
         return (
           <div key={field.id || fieldName} className={`space-y-2 col-span-12 ${widthClass}`}>
-            <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={fieldName} className="block text-sm font-medium text-[var(--text-primary)]">
               {fieldLabel}
               {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -268,11 +268,11 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
               value={formData[fieldName] || ''}
               onChange={(e) => handleFieldChange(fieldName, e.target.value)}
               disabled={formState === 'loading'}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C81910] focus:border-[#C81910]"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-[var(--bg-secondary)] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
             >
-              <option value="">Wybierz...</option>
+              <option value="" className="bg-[var(--bg-primary)] text-[var(--text-primary)]">Wybierz...</option>
               {field.options?.map((option: any) => (
-                <option key={option.value || option} value={option.value || option}>
+                <option key={option.value || option} value={option.value || option} className="bg-[var(--bg-primary)] text-[var(--text-primary)]">
                   {option.label || option}
                 </option>
               ))}
@@ -283,7 +283,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
       case 'date':
         return (
           <div key={field.id || fieldName} className={`space-y-2 col-span-12 ${widthClass}`}>
-            <label htmlFor={fieldName} className="block text-sm font-medium text-gray-700">
+            <label htmlFor={fieldName} className="block text-sm font-medium text-[var(--text-primary)]">
               {fieldLabel}
               {isRequired && <span className="text-red-500 ml-1">*</span>}
             </label>
@@ -295,7 +295,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
               value={formData[fieldName] || ''}
               onChange={(e) => handleFieldChange(fieldName, e.target.value)}
               disabled={formState === 'loading'}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#C81910] focus:border-[#C81910]"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-[var(--bg-secondary)] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-[var(--color-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
             />
           </div>
         );
@@ -317,7 +317,7 @@ export const EventSignupForm: React.FC<EventSignupFormProps> = ({
   }
 
   return (
-    <div className={`bg-[#f8f7f7] rounded-lg p-6 ${className}`}>
+    <div className={`bg-[var(--bg-secondary)] rounded-lg p-6 ${className}`}>
       <form onSubmit={handleSubmit} noValidate className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
           {formFields.map((field) => renderField(field))}

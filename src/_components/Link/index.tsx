@@ -36,18 +36,19 @@ const ExternalLinkIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-export const CMSLink: React.FC<CMSLinkType> = ({
-  type,
-  url,
-  newTab,
-  reference,
-  label,
-  children,
-  className,
-  disabled,
-  isStatic = false,
-  preventNavigation = false,
-}) => {
+export const CMSLink: React.FC<CMSLinkType> = (props) => {
+  const {
+    type,
+    url,
+    newTab,
+    reference,
+    label,
+    children,
+    className,
+    disabled,
+    isStatic = false,
+    preventNavigation = false,
+  } = props
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
@@ -58,21 +59,21 @@ export const CMSLink: React.FC<CMSLinkType> = ({
 
   const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
   const linkClasses = !isStatic ?
-    'after:bg-[#C81910] after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-left' : 'after:bg-gray-400 after:scale-x-100'
+    'after:bg-[var(--color-primary)] after:scale-x-0 group-hover:after:scale-x-100 after:transition after:duration-300 after:origin-left' : 'after:bg-gray-400 after:scale-x-100'
   
   // If preventNavigation is true or there's no valid href, render as span instead of Link
   const shouldRenderAsSpan = preventNavigation || disabled || (!href && !url)
   
   return (
-    <div className='flex-row items-center gap-1 inline-flex'>
+    <div className='flex-row items-center gap-1 inline-flex group'>
         <span className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
       {shouldRenderAsSpan ? (
-          <span className={`${className} cursor-pointer`}>
+          <span className={`${className || ''} cursor-pointer`}>
             {label && label}
             {children && children}
           </span>
       ) : (
-          <Link {...newTabProps} href={href ?? ''} className={`${className} no-underline`}>
+          <Link {...newTabProps} href={href ?? ''} className={className ? `text-[var(--color-primary)] ${className} no-underline` : 'no-underline text-[var(--color-primary)]'}>
             {label && label}
             {children && children}
           </Link>

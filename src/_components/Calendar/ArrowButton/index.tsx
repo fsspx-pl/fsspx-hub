@@ -14,7 +14,7 @@ const ArrowButton: React.FC<ArrowButtonProps> = ({
 }) => {
   return (
     <div 
-      className={`w-8 h-8 flex items-center justify-center rounded-full transition-color ${!disabled && 'hover:bg-[#e9c9c9] hover:cursor-pointer'} ${className}`}
+      className={`w-8 h-8 flex items-center justify-center rounded-full transition-color ${!disabled && 'hover:bg-[#e9c9c9] dark:hover:bg-[#333333] hover:cursor-pointer'} ${className}`}
       onClick={disabled ? undefined : onClick}
     >
       <Arrow className={`w-4 h-3 ${disabled ? "fill-[#696A6D]" : "fill-[#C81910]"}`}/>

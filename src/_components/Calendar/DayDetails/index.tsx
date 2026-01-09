@@ -18,7 +18,7 @@ export const DayDetails: React.FC<SelectedDayDetailsProps> = ({
   selectedDayColor
 }) => {
   return (
-    <div className="self-stretch p-4 rounded-b-lg flex-col justify-start items-start gap-6 flex bg-[#f8f7f7]">
+    <div className="self-stretch p-4 rounded-b-lg flex-col justify-start items-start gap-6 flex bg-[#f8f7f7] dark:bg-[#3C3F41] text-gray-900 dark:text-[#CCCCCC]">
       {(selectedDay.title || selectedDay.rank) && (
         <div className="self-stretch flex-col justify-start items-start gap-1.5 flex">
           {selectedDay.title && (
@@ -53,12 +53,12 @@ export const DayDetails: React.FC<SelectedDayDetailsProps> = ({
               <div>{getServiceTitle(mass)}</div>
               {mass.notes && <div></div>}
               {mass.notes && (
-                <div className="text-xs text-gray-400">{mass.notes}</div>
+                <div className="text-xs text-gray-400 dark:text-[#A9B7C6]">{mass.notes}</div>
               )}
             </div>
           ))
         ) : (
-          <div className="self-center text-gray-400">{NO_MASSES_MESSAGE}</div>
+          <div className="self-center text-gray-400 dark:text-[#A9B7C6]">{NO_MASSES_MESSAGE}</div>
         )}
       </div>
     </div>

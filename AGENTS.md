@@ -46,10 +46,9 @@
       - Follow the existing story patterns in the codebase (use `Meta` and `StoryObj` types from `@storybook/react`).
     
     ### Working with GIT
-    - Use short, concise and clear commit messages that directly communicate the change (e.g., "fix: handle null title" or "feat: add error state to form").
+    - Use short, concise and clear commit messages that directly communicate the change (e.g., "fix: handle null title" or "feat: add error state to form"). Max 2,3 lines.
     - Avoid filler or verbose explanations; focus on what changed and why if needed.
-    - use conventional commit notation
-    - Example: "refactor: rename isLoading to hasLoaded", "test: add coverage for newsletter API".
+    - use conventional commit notation. Example: "refactor: rename isLoading to hasLoaded", "test: add coverage for newsletter API".
 
     ### Methodology
     1. **System 2 Thinking**: Approach the problem with analytical rigor. Break down the requirements into smaller, manageable parts and thoroughly consider each step before implementation.

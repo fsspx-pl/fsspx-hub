@@ -34,11 +34,11 @@ export const EventDetails: React.FC<EventDetailsProps> = ({
       )}
 
       <div className="space-y-4">
-        <h1 className={`text-4xl font-bold text-gray-900 ${garamond.className}`}>
+        <h1 className={`text-4xl font-bold text-[var(--text-heading)] ${garamond.className}`}>
           {event.title}
         </h1>
 
-        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+        <div className="flex flex-wrap gap-4 text-sm text-[var(--text-secondary)]">
           {startDate && (
             <div>
               <span className="font-medium">Data rozpoczęcia: </span>
@@ -54,7 +54,7 @@ export const EventDetails: React.FC<EventDetailsProps> = ({
         </div>
 
         {event.content && (
-          <div className="prose prose-lg max-w-none">
+          <div className="prose prose-lg max-w-none dark:prose-invert">
             <RichText data={event.content} />
           </div>
         )}

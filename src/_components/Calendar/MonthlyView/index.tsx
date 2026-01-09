@@ -22,11 +22,11 @@ export const MonthlyView: React.FC<MonthlyViewProps> = ({ onDaySelect }) => {
     if (view !== 'month') return ''
 
     if(selectedDay && isSameDay(date, selectedDay.date)) {
-      classes.push('!bg-[#f8f7f7] rounded-lg')
+      classes.push('!bg-[#f8f7f7] dark:!bg-[#2E3133] rounded-lg')
     }
 
     if(isSameDay(date, currentDate)) {
-      classes.push('!border-[2px] !border-[#d7d7d7] !border-solid !border-inset')
+      classes.push('!border-[2px] !border-[#d7d7d7] dark:!border-gray-600 !border-solid !border-inset')
     }
 
     if(isPast(date) && !isSameDay(date, currentDate)) {

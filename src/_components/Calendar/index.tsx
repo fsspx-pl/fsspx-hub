@@ -83,9 +83,9 @@ export const Calendar: React.FC = () => {
   }
 
   return (
-    <div className="w-full flex-col justify-start items-start gap-6 inline-flex text-gray-700">
-      <div className="prose max-w-none self-stretch flex flex-row justify-between items-center gap-4">
-        <Heading as="h2" className="mb-0 text-xl sm:text-3xl">
+    <div className="w-full flex-col justify-start items-start gap-6 inline-flex text-gray-700 dark:text-[#CCCCCC]">
+      <div className="prose max-w-none self-stretch flex flex-row justify-between items-center gap-4 dark:prose-invert">
+        <Heading as="h2" className="mb-0 text-xl sm:text-3xl text-gray-900 dark:text-[#CCCCCC]">
           Porządek nabożeństw
         </Heading>
       </div>

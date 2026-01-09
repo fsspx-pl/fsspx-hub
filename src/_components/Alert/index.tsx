@@ -1,11 +1,11 @@
 import React from 'react';
 
-type AlertVariant = 'success' | 'error';
+type AlertVariant = 'success' | 'error' | 'info';
 
 type AlertProps = {
   variant: AlertVariant;
   title: string;
-  message: string;
+  message?: string;
   className?: string;
 };
 
@@ -19,14 +19,29 @@ export const Alert: React.FC<AlertProps> = ({
   className = '',
 }) => {
   const isSuccess = variant === 'success';
+  const isInfo = variant === 'info';
   
   const containerClasses = isSuccess
-    ? 'bg-green-50 border border-green-200'
-    : 'bg-red-50 border border-red-200';
+    ? 'bg-[var(--alert-success-bg)] border border-[var(--alert-success-border)]'
+    : isInfo
+    ? 'bg-[var(--alert-info-bg)] border border-[var(--alert-info-border)]'
+    : 'bg-[var(--alert-error-bg)] border border-[var(--alert-error-border)]';
   
-  const iconColor = isSuccess ? 'text-green-400' : 'text-red-400';
-  const titleColor = isSuccess ? 'text-green-800' : 'text-red-800';
-  const messageColor = isSuccess ? 'text-green-700' : 'text-red-800';
+  const iconColor = isSuccess 
+    ? 'text-[var(--alert-success-text)]' 
+    : isInfo 
+    ? 'text-[var(--alert-info-text)]' 
+    : 'text-[var(--alert-error-text)]';
+  const titleColor = isSuccess 
+    ? 'text-[var(--alert-success-text)]' 
+    : isInfo 
+    ? 'text-[var(--alert-info-text)]' 
+    : 'text-[var(--alert-error-text)]';
+  const messageColor = isSuccess 
+    ? 'text-[var(--text-secondary)]' 
+    : isInfo 
+    ? 'text-[var(--alert-info-text)]' 
+    : 'text-[var(--alert-error-text)]';
 
   const SuccessIcon = () => (
     <svg
@@ -56,19 +71,38 @@ export const Alert: React.FC<AlertProps> = ({
     </svg>
   );
 
+  const InfoIcon = () => (
+    <svg
+      className={`h-5 w-5 ${iconColor}`}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fillRule="evenodd"
+        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+
+  const hasMessage = message && message.trim().length > 0;
+  const paddingClass = hasMessage ? 'p-6' : 'px-4 py-4';
+  
   return (
-    <div className={`${containerClasses} rounded-lg p-6 ${className}`}>
+    <div className={`${containerClasses} rounded-lg ${paddingClass} ${className}`}>
       <div className="flex items-start">
         <div className="flex-shrink-0">
-          {isSuccess ? <SuccessIcon /> : <ErrorIcon />}
+          {isSuccess ? <SuccessIcon /> : isInfo ? <InfoIcon /> : <ErrorIcon />}
         </div>
         <div className="ml-3">
-          <h3 className={`font-medium ${titleColor}`}>
+          <h3 className={`font-medium ${titleColor} ${hasMessage ? '' : 'leading-tight'}`}>
             {title}
           </h3>
-          <div className={`mt-2 ${messageColor}`}>
-            <p>{message}</p>
-          </div>
+          {hasMessage && (
+            <div className={`mt-2 ${messageColor}`}>
+              <p>{message}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

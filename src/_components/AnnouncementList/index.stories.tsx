@@ -58,6 +58,10 @@ const baseAnnouncement: Omit<Page, 'id' | 'title' | 'period' | 'content' | 'crea
     author: mockUser,
     tenant: baseTenant,
     _status: 'published',
+    attachmentDisplay: {
+      displayMode: 'collect-bottom',
+      showTopAlert: false,
+    },
   }
 };
 
