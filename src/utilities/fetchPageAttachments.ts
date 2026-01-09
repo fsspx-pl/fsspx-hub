@@ -2,6 +2,7 @@ import { Media, Page } from '@/payload-types';
 import { extractMediaFromLexical } from '@/collections/Pages/hooks/extractMediaFromLexical';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
+import { getMediaAsEmailAttachment } from './s3Download';
 
 interface AttachmentResult {
   attachments: Media[];
@@ -40,4 +41,33 @@ export async function fetchPageAttachments(page: Page): Promise<AttachmentResult
   };
 
   return { attachments, attachmentDisplay };
+}
+
+export type EmailAttachment = { filename: string; content: Buffer; contentType?: string };
+
+/**
+ * Downloads media files from S3 and prepares them as email attachments.
+ * Errors are handled gracefully - missing files are skipped.
+ */
+export async function prepareEmailAttachments(
+  mediaList: Media[],
+  pageId: string
+): Promise<EmailAttachment[]> {
+  if (mediaList.length === 0) return [];
+
+  const results = await Promise.all(
+    mediaList.map(async (media) => {
+      try {
+        return await getMediaAsEmailAttachment(media, pageId);
+      } catch (error: any) {
+        const isNotFound = error?.message?.includes('not found') || error?.message?.includes('NoSuchKey');
+        if (!isNotFound) {
+          console.error(`Failed to download attachment ${media.id} from S3:`, error);
+        }
+        return null;
+      }
+    })
+  );
+
+  return results.filter((att): att is EmailAttachment => att !== null);
 }

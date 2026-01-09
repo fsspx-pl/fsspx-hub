@@ -12,11 +12,11 @@ import { serializeForEmail } from "@/_components/RichText/serialize";
 import { sendBulkEmailToRecipients } from "@/utilities/awsSes";
 import { sendEmail, sendNewsletterToRecipients } from "@/utilities/nodemailerSes";
 import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
-import { getMediaAsEmailAttachment, formatAttachmentsForEmail } from "@/utilities/s3Download";
+import { formatAttachmentsForEmail } from "@/utilities/s3Download";
+import { fetchPageAttachments, prepareEmailAttachments } from "@/utilities/fetchPageAttachments";
 import React from "react";
 import { minify } from "html-minifier-terser";
 import { hasText } from '@payloadcms/richtext-lexical/shared'
-import { extractMediaFromLexical } from "@/collections/Pages/hooks/extractMediaFromLexical";
 
 const adminApiTranslations = {
   pl: {
@@ -86,51 +86,6 @@ async function convertContentToHtml(content: any): Promise<string> {
   const html = await render(React.createElement('div', {}, serializedContent));
   
   return html;
-}
-
-type EmailAttachment = { filename: string; content: Buffer; contentType?: string };
-
-async function fetchMediaAttachment(
-  payload: Awaited<ReturnType<typeof getPayload>>,
-  mediaId: string,
-  pageId: string
-): Promise<EmailAttachment | null> {
-  const mediaDoc = await payload.findByID({ collection: 'media', id: mediaId });
-  if (!mediaDoc) {
-    console.warn(`Media document ${mediaId} not found in Payload`);
-    return null;
-  }
-
-  try {
-    return await getMediaAsEmailAttachment(mediaDoc, pageId);
-  } catch (error: any) {
-    const isNotFound = error?.message?.includes('not found') || error?.message?.includes('NoSuchKey');
-    if (!isNotFound) {
-      console.error(`Failed to download attachment from S3:`, error);
-    }
-    return null;
-  }
-}
-
-async function prepareNewsletterAttachments(
-  payload: Awaited<ReturnType<typeof getPayload>>,
-  page: Page
-): Promise<EmailAttachment[]> {
-  if (!page.content) return [];
-
-  try {
-    const mediaIds = extractMediaFromLexical(page.content);
-    if (mediaIds.length === 0) return [];
-
-    const results = await Promise.all(
-      mediaIds.map((id) => fetchMediaAttachment(payload, id, page.id).catch(() => null))
-    );
-    
-    return results.filter((att): att is EmailAttachment => att !== null);
-  } catch (error) {
-    console.error('Error preparing attachments for newsletter:', error);
-    return [];
-  }
 }
 
 async function minifyAndReplaceQuotes(html: string): Promise<string> {
@@ -243,7 +198,9 @@ async function sendNewsletter({
 
   const contentHtml = await convertContentToHtml(page.content);
 
-  const attachments = await prepareNewsletterAttachments(payload, page);
+  // Fetch media documents and download from S3 for email attachments
+  const { attachments: mediaList } = await fetchPageAttachments(page);
+  const attachments = await prepareEmailAttachments(mediaList, page.id);
 
   const rawHtml = await render(
     <Email
