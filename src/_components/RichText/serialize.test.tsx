@@ -233,7 +233,7 @@ describe('RichText serialize - Attachment handling', () => {
       value: {
         id: mediaId,
         filename,
-        url: `/media/\${filename}`,
+        url: `/media/${filename}`,
       },
     },
   })
@@ -248,7 +248,7 @@ describe('RichText serialize - Attachment handling', () => {
       const children = [createUploadNode('media-123', 'document.pdf')]
       const result = serialize(children, false)
 
-      const { getByTestId } = render(<>{result}</>)
+      const { container, getByTestId } = render(<>{result}</>)
       
       const attachment = getByTestId('page-attachments')
       expect(attachment).toBeInTheDocument()
@@ -271,12 +271,11 @@ describe('RichText serialize - Attachment handling', () => {
       const children = [createUploadNode('media-789', 'hidden.pdf')]
       const result = serialize(children, true)
 
-      const { queryByTestId } = render(<>{result}</>)
+      const { container, queryByTestId } = render(<>{result}</>)
       
       const attachment = queryByTestId('page-attachments')
       expect(attachment).not.toBeInTheDocument()
     })
-
 
     it('should show attachments in mixed content when hideAttachments is false', () => {
       const children = [
