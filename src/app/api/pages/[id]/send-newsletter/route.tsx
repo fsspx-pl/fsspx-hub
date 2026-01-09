@@ -12,6 +12,8 @@ import { serializeForEmail } from "@/_components/RichText/serialize";
 import { sendBulkEmailToRecipients } from "@/utilities/awsSes";
 import { sendEmail, sendNewsletterToRecipients } from "@/utilities/nodemailerSes";
 import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
+import { formatAttachmentsForEmail } from "@/utilities/s3Download";
+import { fetchPageAttachments, prepareEmailAttachments } from "@/utilities/fetchPageAttachments";
 import React from "react";
 import { minify } from "html-minifier-terser";
 import { hasText } from '@payloadcms/richtext-lexical/shared'
@@ -74,8 +76,15 @@ async function convertContentToHtml(content: any): Promise<string> {
     return "";
   }
   
-  const serializedContent = serializeForEmail(content.root.children);
+  // Hide attachments in HTML - they will be added as separate email attachments
+  const serializedContent = serializeForEmail(content.root.children, true);
+  
+  if (!serializedContent || serializedContent.length === 0) {
+    return "";
+  }
+  
   const html = await render(React.createElement('div', {}, serializedContent));
+  
   return html;
 }
 
@@ -187,13 +196,20 @@ async function sendNewsletter({
     ? [] 
     : transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant));
 
+  const contentHtml = await convertContentToHtml(page.content);
+
+  // Fetch media documents and download from S3 for email attachments
+  const { attachments: mediaList } = await fetchPageAttachments(page);
+  const attachments = await prepareEmailAttachments(mediaList, page.id);
+
   const rawHtml = await render(
     <Email
       title={titleWithDateSuffix}
-      content_html={await convertContentToHtml(page.content)}
+      content_html={contentHtml}
       copyright={settings.copyright as string}
       slogan={footer.slogan as string}
       feastsWithMasses={feastsWithMasses}
+      attachmentCount={attachments.length}
     />,
     {
       htmlToTextOptions: {
@@ -229,7 +245,6 @@ async function sendNewsletter({
     throw new Error("No confirmed subscribers found for this tenant.");
   }
 
-  console.info(`Found ${recipients.length} confirmed subscribers from Payload`);
 
   const emailData = {
     subject: titleWithDateSuffix,
@@ -240,18 +255,15 @@ async function sendNewsletter({
     recipients,
     unsubscribeBaseUrl: `${baseUrl}/newsletter/unsubscribe`,
     getSubscriptionId,
+    attachments,
   };
 
   if (testEmail) {
-    console.info('Sending test email to:', testEmail);
-
     const personalizedHtml = await personalizeUnsubscribeUrl({
       html,
       email: testEmail,
       unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
       getSubscriptionId: emailData.getSubscriptionId,
-      onMissingSubscription: (email) =>
-        console.warn(`No subscription found for test email ${email}, UNSUBSCRIBE_URL will not be replaced`),
     });
 
     const response = await sendEmail({
@@ -259,7 +271,9 @@ async function sendNewsletter({
       to: testEmail,
       subject: `[TEST] ${titleWithDateSuffix}`,
       html: personalizedHtml,
+      attachments: formatAttachmentsForEmail(attachments),
     });
+    
     return response;
   }
 
@@ -278,6 +292,7 @@ async function sendNewsletter({
       replyTo: fromEmail,
       unsubscribeBaseUrl: emailData.unsubscribeBaseUrl,
       getSubscriptionId,
+      attachments: formatAttachmentsForEmail(attachments),
     });
 
     return {

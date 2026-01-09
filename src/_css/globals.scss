@@ -43,6 +43,9 @@
   --alert-error-bg: #fef2f2;
   --alert-error-border: #fecaca;
   --alert-error-text: #991b1b;
+  --alert-info-bg: #f8f7f7;
+  --alert-info-border: #e5e7eb;
+  --alert-info-text: #374151;
 }
 
 .dark {
@@ -61,6 +64,9 @@
   --alert-error-bg: #3a1a1a;
   --alert-error-border: #5a2d2d;
   --alert-error-text: #f87171;
+  --alert-info-bg: #3C3F41;
+  --alert-info-border: #4a4d50;
+  --alert-info-text: #A9B7C6;
 
   /* Logo SVG colors in dark mode */
   #logo svg path {
@@ -77,13 +83,4 @@
   .text-balance {
     text-wrap: balance;
   }
-}
-
-// Override prose link colors to use theme variables
-.prose a {
-  color: var(--text-heading) !important;
-}
-
-.dark .prose a {
-  color: var(--text-heading) !important;
 }

@@ -1,5 +1,5 @@
 import { FeastWithMasses } from "@/_components/Calendar";
-import { Media as MediaType, Tenant } from "@/payload-types";
+import { Media as MediaType, Page, Tenant } from "@/payload-types";
 import { formatInPolishTime } from "@/common/timezone";
 import { romanize } from "@/_components/Calendar/utils/romanize";
 import { vestmentColorToTailwind } from "@/_components/Calendar/utils/vestmentColorToHex";
@@ -10,12 +10,15 @@ import { Media } from "@/_components/Media";
 import { garamond } from "@/fonts";
 import { RichText } from "@/_components/RichText";
 import { DateDisplay } from "./DateDisplay";
+import { PageAttachments } from "@/_components/PageAttachments";
 
 interface PrintableAnnouncementsProps {
   title: string;
   content: any;
   feastsWithMasses: FeastWithMasses[];
   tenant: Tenant | null;
+  attachments?: MediaType[];
+  attachmentDisplay?: Page['attachmentDisplay'];
 }
 
 const getServiceTitle = (service: ServiceType) => {
@@ -101,8 +104,11 @@ export function PrintableAnnouncements({
   content,
   feastsWithMasses,
   tenant,
+  attachments = [],
+  attachmentDisplay,
 }: PrintableAnnouncementsProps) {
   const coverImage = tenant?.coverBackground as MediaType;
+  const showAttachmentsAtBottom = attachmentDisplay?.displayMode === 'collect-bottom';
 
   return (
     <div className="bg-white">
@@ -157,8 +163,13 @@ export function PrintableAnnouncements({
           <div className="flex-1 min-h-0">
             <div className="overflow-hidden h-full">
               <div className="prose prose-lg max-w-none text-left prose-a:no-underline">
-                <RichText data={content} />
+                <RichText data={content} hideAttachments={showAttachmentsAtBottom} />
               </div>
+              {showAttachmentsAtBottom && attachments.length > 0 && (
+                <div className="mt-4 print:mt-2">
+                  <PageAttachments attachments={attachments} />
+                </div>
+              )}
             </div>
           </div>
         </div>

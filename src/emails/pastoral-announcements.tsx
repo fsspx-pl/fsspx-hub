@@ -250,14 +250,23 @@ export default function Email({
   slogan = "Ad maiorem Dei gloriam.",
   copyright = "city.fsspx.pl",
   feastsWithMasses = testFeasts,
+  attachmentCount = 0,
 }: {
   title: string;
   content_html: string;
   copyright: string;
   slogan: string;
   feastsWithMasses: FeastWithMasses[];
+  attachmentCount?: number;
 }) {
   const currentYear = now.getFullYear();
+
+  // Helper function to get Polish plural form for attachments
+  const getAttachmentText = (count: number): string => {
+    if (count === 1) return 'załącznik';
+    if (count < 5) return 'załączniki';
+    return 'załączników';
+  };
 
   return (
     <Html>
@@ -296,6 +305,53 @@ export default function Email({
               {title ?? "Pastoral Announcements (DD.MM.YYYY)"}
             </Text>
           </Section>
+          
+          {/* Alert for attachments */}
+          {attachmentCount > 0 && (
+            <Section style={{ marginTop: "20px", marginBottom: "20px" }}>
+              <div
+                style={{
+                  backgroundColor: "#f8f7f7",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  padding: "16px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "flex-start" }}>
+                  <div style={{ flexShrink: 0, marginRight: "12px" }}>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{ color: "#4b5563" }}
+                    >
+                      <path
+                        fillRule="evenodd"
+                        clipRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <Text
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                        margin: 0,
+                      }}
+                    >
+                      Ten email zawiera {attachmentCount} {getAttachmentText(attachmentCount)}.
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            </Section>
+          )}
+
           <Section>
             <div dangerouslySetInnerHTML={{ __html: content_html }} />
           </Section>

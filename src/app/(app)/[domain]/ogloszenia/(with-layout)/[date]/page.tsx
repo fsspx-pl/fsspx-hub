@@ -19,6 +19,9 @@ import { CMSLink } from "@/_components/Link";
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
 import { RelatedEvents } from "@/_components/RelatedEvents";
+import { PageAttachments } from "@/_components/PageAttachments";
+import { fetchPageAttachments } from "@/utilities/fetchPageAttachments";
+import { Alert } from "@/_components/Alert";
 
 export async function generateStaticParams() {
   // Pre-warm the liturgical calendar cache at build time
@@ -145,6 +148,11 @@ export default async function AnnouncementPage({
     ? user.avatar as Media 
     : null;
 
+  // Fetch attachments and display settings
+  const { attachments, attachmentDisplay } = await fetchPageAttachments(page);
+  const showAttachmentsAtBottom = attachmentDisplay.displayMode === 'collect-bottom';
+  const showTopAlert = attachmentDisplay.showTopAlert === true;
+
   return (
     <>
       <Gutter className="mb-4">
@@ -174,7 +182,20 @@ export default async function AnnouncementPage({
           )}
         </div>
         <div className="flex flex-col gap-4">
-          <RichText data={page.content} className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0 dark:prose-invert prose-headings:text-gray-900 dark:prose-headings:text-[#CCCCCC] prose-p:text-gray-700 dark:prose-p:text-[#CCCCCC]"/>
+          {showTopAlert && attachments.length > 0 && (
+            <Alert
+              variant="info"
+              title={`Ta strona zawiera ${attachments.length} ${attachments.length === 1 ? 'załącznik' : attachments.length < 5 ? 'załączniki' : 'załączników'}.`}
+            />
+          )}
+          <RichText 
+            data={page.content} 
+            className="overflow-auto flex-1 prose prose-lg max-w-none text-left prose-a:no-underline m-0 dark:prose-invert prose-headings:text-[var(--text-heading)] dark:prose-headings:text-[var(--text-primary)] prose-p:text-[var(--text-primary)] dark:prose-p:text-[var(--text-primary)]"
+            hideAttachments={showAttachmentsAtBottom}
+          />
+          {showAttachmentsAtBottom && attachments.length > 0 && (
+            <PageAttachments attachments={attachments} />
+          )}
           <NewsletterSignupForm subdomain={domain.split('.')[0]} className="mt-4" />
           <CMSLink url={'/ogloszenia'}
             className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910] dark:text-[#C81910]"

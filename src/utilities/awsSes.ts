@@ -39,6 +39,7 @@ export async function sendBulkEmailToRecipients(emailData: {
   htmlContent: string;
   unsubscribeBaseUrl?: string;
   getSubscriptionId?: (email: string) => Promise<string | null>;
+  attachments?: Array<{ filename: string; content: Buffer; contentType?: string }>;
 }) {
   try {
     console.info('Sending bulk email to recipients:', {
@@ -85,23 +86,37 @@ export async function sendBulkEmailToRecipients(emailData: {
             }
           }
 
+          // Build email content with attachments if present
+          const emailContent: any = {
+            Subject: {
+              Data: emailData.subject,
+              Charset: 'UTF-8',
+            },
+            Body: {
+              Html: {
+                Data: personalizedHtml,
+                Charset: 'UTF-8',
+              },
+            },
+          };
+
+          // Add attachments if present
+          if (emailData.attachments && emailData.attachments.length > 0) {
+            emailContent.Attachments = emailData.attachments.map(att => ({
+              Filename: att.filename,
+              RawContent: att.content.toString('base64'),
+              ContentType: att.contentType || 'application/pdf',
+              ContentDisposition: 'ATTACHMENT',
+              ContentTransferEncoding: 'BASE64',
+            }));
+          }
+
           const sendCommand = new SendEmailCommand({
             Destination: {
               ToAddresses: [email],
             },
             Content: {
-              Simple: {
-                Subject: {
-                  Data: emailData.subject,
-                  Charset: 'UTF-8',
-                },
-                Body: {
-                  Html: {
-                    Data: personalizedHtml,
-                    Charset: 'UTF-8',
-                  },
-                },
-              },
+              Simple: emailContent,
             },
             FromEmailAddress: emailData.fromEmail,
             ReplyToAddresses: [emailData.replyTo],

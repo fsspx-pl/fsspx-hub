@@ -1,6 +1,7 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { s3Storage } from '@payloadcms/storage-s3'
 import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import {
   HeadingFeature,
@@ -65,9 +66,27 @@ export default buildConfig({
       },
     },
   },
+  folders: {
+    browseByFolder: false, // Disable global folder view - folders only work within Media collection
+  },
   globals: [Settings, Header, Footer],
   collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, NewsletterSubscriptions, Events],
   plugins: [
+    s3Storage({
+      collections: {
+        media: {
+          prefix: 'media', // Default prefix; Media documents can override via their prefix field
+        },
+      },
+      bucket: process.env.AWS_S3_BUCKET as string,
+      config: {
+        credentials: {
+          accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID as string,
+          secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY as string,
+        },
+        region: process.env.AWS_REGION as string,
+      },
+    }),
     formBuilderPlugin({
       fields: {
         payment: false,

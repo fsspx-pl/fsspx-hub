@@ -50,15 +50,6 @@ export const Basic: Story = {
   },
 };
 
-// Link with children instead of label
-export const WithChildren: Story = {
-  args: {
-    type: 'custom',
-    url: 'https://example.com',
-    children: <span>Link with children</span>,
-  },
-};
-
 // External link with new tab
 export const ExternalNewTab: Story = {
   args: {
@@ -68,69 +59,3 @@ export const ExternalNewTab: Story = {
     newTab: true,
   },
 };
-
-// Reference link to a page
-export const ReferenceToPage: Story = {
-  args: {
-    type: 'reference',
-    reference: {
-      relationTo: 'pages',
-      value: {
-        id: '1',
-        type: 'pastoral-announcements',
-        title: 'Example Page',
-        slug: 'example-page',
-        period: {
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
-        },
-        tenant: '1',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      } as Page,
-    },
-    label: 'Page Reference Link',
-  },
-};
-
-// Reference link to another collection
-export const ReferenceToOtherCollection: Story = {
-  args: {
-    type: 'reference',
-    reference: {
-      relationTo: 'pages',
-      value: {
-        id: '2',
-        type: 'pastoral-announcements',
-        title: 'Example Service',
-        slug: 'example-service',
-        period: {
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
-        },
-        tenant: '1',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      } as Page,
-    },
-    label: 'Service Reference Link',
-  },
-};
-
-// Link with custom className
-export const WithCustomClass: Story = {
-  args: {
-    type: 'custom',
-    url: 'https://example.com',
-    label: 'Custom Styled Link',
-    className: 'text-blue-500 hover:text-blue-700',
-  },
-};
-
-// Invalid link (should not render)
-export const InvalidLink: Story = {
-  args: {
-    type: 'custom',
-    label: 'Invalid Link',
-  },
-}; 

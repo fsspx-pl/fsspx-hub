@@ -2,6 +2,7 @@ import { tenantOnlyAccess, tenantReadOrPublic } from '@/access/byTenant'
 import { revalidateTenantPages } from '@/collections/Pages/hooks/revalidateTenantPages'
 import { resetNewsletterSentOnCreate } from '@/collections/Pages/hooks/resetNewsletterSentOnCreate'
 import { normalizePeriodDates } from '@/collections/Pages/hooks/normalizePeriodDates'
+import { organizeMediaFolders } from '@/collections/Pages/hooks/organizeMediaFolders'
 import { endLocal, period, startLocal } from '@/fields/period'
 import { tenant } from '@/fields/tenant'
 import { CollectionConfig, Field } from 'payload'
@@ -79,11 +80,62 @@ export const Pages: CollectionConfig = {
       index: true,
       admin: {
         position: 'sidebar',
-        condition: (_, siblingData) => siblingData.type !== 'pastoral-announcements',
       },
       hooks: {
         beforeValidate: [formatSlug('title'), addPeriodStartDate],
       },
+    },
+    {
+      name: 'attachmentDisplay',
+      type: 'group',
+      label: {
+        en: 'Attachment Display',
+        pl: 'Wyświetlanie załączników',
+      },
+      admin: {
+        position: 'sidebar',
+        description: {
+          en: 'Control how attachments from the editor are displayed on the page',
+          pl: 'Kontroluj sposób wyświetlania załączników na stronie',
+        },
+      },
+      fields: [
+        {
+          name: 'displayMode',
+          type: 'select',
+          label: {
+            en: 'Attachment Display Mode',
+            pl: 'Tryb wyświetlania załączników',
+          },
+          options: [
+            {
+              label: {
+                en: 'Collect all attachments at bottom',
+                pl: 'Zbierz wszystkie załączniki u dołu strony',
+              },
+              value: 'collect-bottom',
+            },
+            {
+              label: {
+                en: 'Show attachments inline where placed',
+                pl: 'Pokaż załączniki w miejscu ich wystąpienia',
+              },
+              value: 'inline',
+            },
+          ],
+          defaultValue: 'collect-bottom',
+          required: true,
+        },
+        {
+          name: 'showTopAlert',
+          type: 'checkbox',
+          label: {
+            en: 'Show top-level alert about the amount of attachments',
+            pl: 'Pokaż alert na górze o ilości załączników',
+          },
+          defaultValue: false,
+        },
+      ],
     },
     {
       ...user as Field,
@@ -99,7 +151,13 @@ export const Pages: CollectionConfig = {
         en: 'Content',
         pl: 'Treść',
       },
-      type: 'richText'
+      type: 'richText',
+      admin: {
+        description: {
+          en: 'Files used in the editor will be automatically organized into Media/Pages folder when the page is published',
+          pl: 'Pliki użyte w edytorze będą automatycznie umieszczone w folderze Media/Pages po opublikowaniu Strony',
+        },
+      },
     },
     {
       name: 'newsletter',
@@ -215,6 +273,9 @@ export const Pages: CollectionConfig = {
         };
       },
     ],
-    afterChange: [revalidateTenantPages],
+    afterChange: [
+      organizeMediaFolders,
+      revalidateTenantPages,
+    ],
   },
 }

@@ -164,6 +164,7 @@ export async function sendNewsletterToRecipients(emailData: {
   replyTo?: string;
   unsubscribeBaseUrl?: string;
   getSubscriptionId?: (email: string) => Promise<string | null>;
+  attachments?: Array<{ filename: string; content: Buffer; contentType?: string }>;
 }) {
   try {
     console.info('Sending newsletter to recipients:', {
@@ -204,6 +205,11 @@ export async function sendNewsletterToRecipients(emailData: {
           text: emailData.text,
           from: emailData.from,
           replyTo: emailData.replyTo,
+          attachments: emailData.attachments?.map(att => ({
+            filename: att.filename,
+            content: att.content,
+            contentType: att.contentType,
+          })),
         }).catch((error) => {
           console.error(`Failed to send to ${email}:`, error);
           return { success: false, email, error: error instanceof Error ? error.message : 'Unknown error' };

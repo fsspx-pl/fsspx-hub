@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react'
 
 import { CMSLink } from '@/_components/Link'
-import { Page } from '@/payload-types'
+import { Page, Media } from '@/payload-types'
 import { Heading } from '@/_components/Heading'
+import { PageAttachments } from '@/_components/PageAttachments'
 
 // Text format constants
 const IS_BOLD = 1
@@ -18,6 +19,8 @@ interface Node {
   children?: (Node | TextNode)[]
   fields?: any
   tag?: string
+  relationTo?: string
+  value?: any
 }
 
 interface TextNode {
@@ -82,7 +85,8 @@ type LinkRenderer = (props: {
 
 const serializeInternal = (
   children?: (Node | TextNode)[],
-  linkRenderer?: LinkRenderer
+  linkRenderer?: LinkRenderer,
+  hideAttachments?: boolean
 ): React.ReactNode[] | null =>
   children?.map((node, i) => {
     if (isText(node)) {
@@ -94,8 +98,40 @@ const serializeInternal = (
     }
 
     const typedNode = node as Node
+    
+    // Handle upload nodes - check multiple possible type names
+    const isUploadNode = typedNode.type === 'upload' || 
+                        typedNode.type?.includes('upload');
+    
+    if (isUploadNode) {
+      if (hideAttachments) {
+        return null; // Skip rendering if attachments should be hidden
+      }
+      
+      const relationTo = typedNode.fields?.relationTo || typedNode.relationTo;
+      const value = typedNode.fields?.value || typedNode.value;
+      
+      // Check if this is a media upload
+      if (relationTo === 'media' || !relationTo) {
+        // PayloadCMS with depth: 2 will populate the value as a Media object
+        // Otherwise it's just the ID string
+        if (value && typeof value === 'object' && 'id' in value) {
+          const media = value as Media;
+          return <PageAttachments key={i} attachments={media} />;
+        }
+        
+        // If we only have the ID, we can't render it inline without fetching
+        // This shouldn't happen if depth: 2 is used, but handle gracefully
+        if (typeof value === 'string') {
+          return null; // Skip rendering if we don't have the full media object
+        }
+      }
+      
+      return null;
+    }
+    
     const serializedChildren = typedNode.children 
-      ? serializeInternal(typedNode.children, linkRenderer) 
+      ? serializeInternal(typedNode.children, linkRenderer, hideAttachments) 
       : undefined
 
     switch (typedNode.type) {
@@ -159,7 +195,7 @@ const serializeInternal = (
               relationTo: typedNode.fields?.doc?.relationTo,
             }}
             newTab={typedNode.fields?.newTab}
-            className="text-[#C81910] no-underline"
+            className="no-underline"
           >
             {serializedChildren}
           </CMSLink>
@@ -186,10 +222,13 @@ const serializeInternal = (
     }
   }) || null
 
-export const serialize = (children?: (Node | TextNode)[]): React.ReactNode[] | null =>
-  serializeInternal(children)
+export const serialize = (
+  children?: (Node | TextNode)[],
+  hideAttachments?: boolean
+): React.ReactNode[] | null =>
+  serializeInternal(children, undefined, hideAttachments)
 
-export const serializeForEmail = (children?: (Node | TextNode)[]): React.ReactNode[] | null =>
+export const serializeForEmail = (children?: (Node | TextNode)[], hideAttachments: boolean = true): React.ReactNode[] | null =>
   serializeInternal(children, ({ key, href, newTab, children: linkChildren }) => {
     const newTabProps = newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {}
     return (
@@ -197,4 +236,4 @@ export const serializeForEmail = (children?: (Node | TextNode)[]): React.ReactNo
         {linkChildren}
       </a>
     )
-  })
+  }, hideAttachments)

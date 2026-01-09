@@ -8,6 +8,7 @@ import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
 import { PrintableAnnouncements } from "./PrintableAnnouncements";
 import { checkPrintAccess } from "@/utilities/checkPrintAccess";
+import { fetchPageAttachments } from "@/utilities/fetchPageAttachments";
 
 // Force dynamic rendering since we use headers() for authentication
 export const dynamic = 'force-dynamic';
@@ -131,12 +132,17 @@ export default async function PrintPage({
     }
   );
 
+  // Fetch attachments and display settings
+  const { attachments, attachmentDisplay } = await fetchPageAttachments(validPage);
+
   return (
     <PrintableAnnouncements
       title={validPage.title}
       content={validPage.content}
       feastsWithMasses={periodFeasts}
       tenant={pageTenant}
+      attachments={attachments}
+      attachmentDisplay={attachmentDisplay}
     />
   );
 }
