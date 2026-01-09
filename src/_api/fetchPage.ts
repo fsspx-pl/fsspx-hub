@@ -91,21 +91,9 @@ export const fetchPageById = (pageId: string): Promise<Page | undefined> => {
   const cacheKey = `page-${pageId}`;
   return unstable_cache(
     async (): Promise<Page | undefined> => {
-      const payload = await getPayload({
-        config: configPromise,
+      return findPage({
+        id: pageId
       });
-
-      try {
-        const page = await payload.findByID({
-          collection: 'pages',
-          id: pageId,
-          depth: 2,
-        });
-
-        return page;
-      } catch (err: unknown) {
-        return undefined;
-      }
     },
     [cacheKey],
     {

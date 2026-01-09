@@ -50,17 +50,18 @@ function createMockPage(
 }
 
 function setupMockPayloadWithPage(mockPage: ReturnType<typeof createMockPage>) {
-  const mockPayload = setupMockPayload(createMockPayload());
-  mockPayload.findByID.mockResolvedValue(mockPage as any);
+  const mockPayload = setupMockPayload(createMockPayload([mockPage as any]));
   return mockPayload;
 }
 
-function expectFindByIDCalled(mockPayload: ReturnType<typeof createMockPayload>, pageId: string) {
-  expect(mockPayload.findByID).toHaveBeenCalledWith({
-    collection: 'pages',
-    id: pageId,
-    depth: 2,
-  });
+function expectFindByIdCalled(mockPayload: ReturnType<typeof createMockPayload>, pageId: string) {
+  expect(mockPayload.find).toHaveBeenCalledWith(
+    expect.objectContaining({
+      collection: 'pages',
+      where: { id: pageId },
+      depth: 2,
+    })
+  );
 }
 
 describe('fetchPage', () => {
@@ -120,7 +121,7 @@ describe('fetchPage', () => {
 
       const result = await fetchPageById('test-page-id');
 
-      expectFindByIDCalled(mockPayload, 'test-page-id');
+      expectFindByIdCalled(mockPayload, 'test-page-id');
       expect(result).toEqual(mockPage);
     });
 
@@ -130,13 +131,12 @@ describe('fetchPage', () => {
 
       const result = await fetchPageById('test-page-id');
 
-      expectFindByIDCalled(mockPayload, 'test-page-id');
+      expectFindByIdCalled(mockPayload, 'test-page-id');
       expect(result).toEqual(mockPage);
     });
 
     it('should return undefined when page is not found', async () => {
-      const mockPayload = setupMockPayload(createMockPayload());
-      mockPayload.findByID.mockRejectedValue(new Error('Not found'));
+      const mockPayload = setupMockPayload(createMockPayload([]));
 
       const result = await fetchPageById('non-existent-id');
 
