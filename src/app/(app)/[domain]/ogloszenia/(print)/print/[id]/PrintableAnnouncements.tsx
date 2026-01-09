@@ -157,7 +157,7 @@ export function PrintableAnnouncements({
           <div className="flex-1 min-h-0">
             <div className="overflow-hidden h-full">
               <div className="prose prose-lg max-w-none text-left prose-a:no-underline">
-                <RichText data={content} />
+                <RichText data={content} hideAttachments />
               </div>
             </div>
           </div>
