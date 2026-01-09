@@ -2,15 +2,13 @@ import { fetchPageById } from "@/_api/fetchPage";
 import { fetchTenant } from "@/_api/fetchTenants";
 import { FeastWithMasses } from "@/_components/Calendar";
 
-import { Media, Page as PageType, Tenant } from "@/payload-types";
+import { Page as PageType, Tenant } from "@/payload-types";
 import { parse } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
 import { PrintableAnnouncements } from "./PrintableAnnouncements";
 import { checkPrintAccess } from "@/utilities/checkPrintAccess";
-import { extractMediaFromLexical } from "@/collections/Pages/hooks/extractMediaFromLexical";
-import { getPayload } from 'payload';
-import configPromise from '@payload-config';
+import { fetchPageAttachments } from "@/utilities/fetchPageAttachments";
 
 // Force dynamic rendering since we use headers() for authentication
 export const dynamic = 'force-dynamic';
@@ -134,37 +132,8 @@ export default async function PrintPage({
     }
   );
 
-  // Extract media IDs from lexical content
-  const mediaIds = validPage.content ? extractMediaFromLexical(validPage.content) : [];
-  
-  // Fetch media objects
-  let attachments: Media[] = [];
-  if (mediaIds.length > 0) {
-    const payload = await getPayload({ config: configPromise });
-    try {
-      const mediaResults = await Promise.all(
-        mediaIds.map(async (id) => {
-          try {
-            return await payload.findByID({
-              collection: 'media',
-              id,
-            });
-          } catch {
-            return null;
-          }
-        })
-      );
-      attachments = mediaResults.filter((m): m is Media => m !== null);
-    } catch (error) {
-      console.error('Failed to fetch attachments:', error);
-    }
-  }
-
-  // Get attachment display settings
-  const attachmentDisplay = validPage.attachmentDisplay || {
-    displayMode: 'collect-bottom' as const,
-    showTopAlert: false,
-  };
+  // Fetch attachments and display settings
+  const { attachments, attachmentDisplay } = await fetchPageAttachments(validPage);
 
   return (
     <PrintableAnnouncements

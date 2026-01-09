@@ -20,9 +20,7 @@ import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
 import { RelatedEvents } from "@/_components/RelatedEvents";
 import { PageAttachments } from "@/_components/PageAttachments";
-import { extractMediaFromLexical } from "@/collections/Pages/hooks/extractMediaFromLexical";
-import { getPayload } from 'payload';
-import configPromise from '@payload-config';
+import { fetchPageAttachments } from "@/utilities/fetchPageAttachments";
 import { Alert } from "@/_components/Alert";
 
 export async function generateStaticParams() {
@@ -150,37 +148,8 @@ export default async function AnnouncementPage({
     ? user.avatar as Media 
     : null;
 
-  // Extract media IDs from lexical content
-  const mediaIds = page.content ? extractMediaFromLexical(page.content) : [];
-  
-  // Fetch media objects
-  let attachments: Media[] = [];
-  if (mediaIds.length > 0) {
-    const payload = await getPayload({ config: configPromise });
-    try {
-      const mediaResults = await Promise.all(
-        mediaIds.map(async (id) => {
-          try {
-            return await payload.findByID({
-              collection: 'media',
-              id,
-            });
-          } catch {
-            return null;
-          }
-        })
-      );
-      attachments = mediaResults.filter((m): m is Media => m !== null);
-    } catch (error) {
-      console.error('Failed to fetch attachments:', error);
-    }
-  }
-
-  // Get attachment display settings
-  const attachmentDisplay = page.attachmentDisplay || {
-    displayMode: 'collect-bottom' as const,
-    showTopAlert: false,
-  };
+  // Fetch attachments and display settings
+  const { attachments, attachmentDisplay } = await fetchPageAttachments(page);
   const showAttachmentsAtBottom = attachmentDisplay.displayMode === 'collect-bottom';
   const showTopAlert = attachmentDisplay.showTopAlert === true;
 
