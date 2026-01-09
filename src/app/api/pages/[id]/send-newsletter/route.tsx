@@ -88,6 +88,51 @@ async function convertContentToHtml(content: any): Promise<string> {
   return html;
 }
 
+type EmailAttachment = { filename: string; content: Buffer; contentType?: string };
+
+async function fetchMediaAttachment(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  mediaId: string,
+  pageId: string
+): Promise<EmailAttachment | null> {
+  const mediaDoc = await payload.findByID({ collection: 'media', id: mediaId });
+  if (!mediaDoc) {
+    console.warn(`Media document ${mediaId} not found in Payload`);
+    return null;
+  }
+
+  try {
+    return await getMediaAsEmailAttachment(mediaDoc, pageId);
+  } catch (error: any) {
+    const isNotFound = error?.message?.includes('not found') || error?.message?.includes('NoSuchKey');
+    if (!isNotFound) {
+      console.error(`Failed to download attachment from S3:`, error);
+    }
+    return null;
+  }
+}
+
+async function prepareNewsletterAttachments(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  page: Page
+): Promise<EmailAttachment[]> {
+  if (!page.content) return [];
+
+  try {
+    const mediaIds = extractMediaFromLexical(page.content);
+    if (mediaIds.length === 0) return [];
+
+    const results = await Promise.all(
+      mediaIds.map((id) => fetchMediaAttachment(payload, id, page.id).catch(() => null))
+    );
+    
+    return results.filter((att): att is EmailAttachment => att !== null);
+  } catch (error) {
+    console.error('Error preparing attachments for newsletter:', error);
+    return [];
+  }
+}
+
 async function minifyAndReplaceQuotes(html: string): Promise<string> {
   let minified = await minify(html, {
     removeComments: true,
@@ -196,58 +241,9 @@ async function sendNewsletter({
     ? [] 
     : transformFeastsForEmail(await getFeastsWithMasses(page.period as PageType['period'], page.tenant as Tenant));
 
-  // Convert content to HTML (attachments will be excluded and added separately)
   const contentHtml = await convertContentToHtml(page.content);
 
-  // Extract and prepare attachments from page content
-  // These will be added as separate email attachments (not in HTML body)
-  let attachments: Array<{ filename: string; content: Buffer; contentType?: string }> = [];
-  if (page.content) {
-    try {
-      // Extract media IDs from Lexical content
-      const mediaIds = extractMediaFromLexical(page.content);
-      
-      if (mediaIds.length > 0) {
-        // Fetch full media documents and prepare as email attachments
-        const attachmentPromises = mediaIds.map(async (mediaId) => {
-          try {
-            const mediaDoc = await payload.findByID({ 
-              collection: 'media', 
-              id: mediaId 
-            });
-            
-            if (!mediaDoc) {
-              console.warn(`Media document ${mediaId} not found in Payload`);
-              return null;
-            }
-            
-            try {
-              // Pass page ID to allow fallback to page-specific prefix
-              return await getMediaAsEmailAttachment(mediaDoc, page.id);
-            } catch (s3Error: any) {
-              // Handle S3 errors gracefully - log but don't fail the entire newsletter
-              if (s3Error?.message?.includes('not found') || s3Error?.message?.includes('NoSuchKey')) {
-                // Skip missing attachments silently
-              } else {
-                console.error(`Failed to download attachment from S3:`, s3Error);
-              }
-              return null;
-            }
-          } catch (error) {
-            console.error(`Failed to fetch media ${mediaId} for newsletter attachment:`, error);
-            return null;
-          }
-        });
-
-        const attachmentResults = await Promise.all(attachmentPromises);
-        attachments = attachmentResults.filter((att): att is { filename: string; content: Buffer; contentType?: string } => att !== null);
-      }
-    } catch (error) {
-      console.error('Error preparing attachments for newsletter:', error);
-      // Don't fail the entire newsletter send if attachments fail
-      // Just log the error and continue without attachments
-    }
-  }
+  const attachments = await prepareNewsletterAttachments(payload, page);
 
   const rawHtml = await render(
     <Email
@@ -268,9 +264,6 @@ async function sendNewsletter({
   );
 
   const html = await minifyAndReplaceQuotes(rawHtml);
-
-  // Attachments are already extracted above (before email rendering)
-  // They are used in the email template and will be attached to the email
 
   const tenantId = (page.tenant as Tenant).id;
   if (!fromEmail) {
