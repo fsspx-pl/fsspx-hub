@@ -96,7 +96,7 @@ export const Pages: CollectionConfig = {
         position: 'sidebar',
         description: {
           en: 'Control how attachments from the editor are displayed on the page',
-          pl: 'Kontroluj sposób wyświetlania załączników z edytora na stronie',
+          pl: 'Kontroluj sposób wyświetlania załączników na stronie',
         },
       },
       fields: [
@@ -111,14 +111,14 @@ export const Pages: CollectionConfig = {
             {
               label: {
                 en: 'Collect all attachments at bottom',
-                pl: 'Zbierz wszystkie załączniki na dole',
+                pl: 'Zbierz wszystkie załączniki u dołu strony',
               },
               value: 'collect-bottom',
             },
             {
               label: {
                 en: 'Show attachments inline where placed',
-                pl: 'Pokaż załączniki w miejscu wstawienia',
+                pl: 'Pokaż załączniki w miejscu ich wystąpienia',
               },
               value: 'inline',
             },
