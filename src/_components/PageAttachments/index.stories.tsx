@@ -33,7 +33,13 @@ const mockMedia2: Media = {
   updatedAt: new Date().toISOString(),
 };
 
-export const SingleAttachment: Story = {
+export const SingleAttachmentAsObject: Story = {
+  args: {
+    attachments: mockMedia1,
+  },
+};
+
+export const SingleAttachmentAsArray: Story = {
   args: {
     attachments: [mockMedia1],
   },

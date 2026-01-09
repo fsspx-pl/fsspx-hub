@@ -24,7 +24,7 @@ export const ArticleInfo: React.FC<Props> = ({
 }) => {
   return (
     <div
-      className="flex items-center gap-2 whitespace-nowrap text-gray-700"
+      className="flex items-center gap-2 whitespace-nowrap text-[var(--text-primary)]"
     >
       {author && avatar?.url && (
         <Image
@@ -36,7 +36,7 @@ export const ArticleInfo: React.FC<Props> = ({
         />
       )}
       <span>{author}</span>
-      {!noDates && <div className="flex flex-row text-gray-400 gap-4 ml-2">
+      {!noDates && <div className="flex flex-row text-[var(--text-secondary)] gap-4 ml-2">
         <div className="hidden sm:flex items-center gap-2">
           <DateWithTooltip
             icon={Clock}

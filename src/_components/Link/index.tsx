@@ -36,18 +36,19 @@ const ExternalLinkIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
-export const CMSLink: React.FC<CMSLinkType> = ({
-  type,
-  url,
-  newTab,
-  reference,
-  label,
-  children,
-  className,
-  disabled,
-  isStatic = false,
-  preventNavigation = false,
-}) => {
+export const CMSLink: React.FC<CMSLinkType> = (props) => {
+  const {
+    type,
+    url,
+    newTab,
+    reference,
+    label,
+    children,
+    className,
+    disabled,
+    isStatic = false,
+    preventNavigation = false,
+  } = props
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
@@ -67,12 +68,12 @@ export const CMSLink: React.FC<CMSLinkType> = ({
     <div className='flex-row items-center gap-1 inline-flex group'>
         <span className={`items-center gap-1 relative w-fit block after:block after:content-[''] after:absolute after:bottom-[1px] after:h-[2px] after:w-full ${linkClasses}`}>
       {shouldRenderAsSpan ? (
-          <span className={`${className} cursor-pointer`}>
+          <span className={`${className || ''} cursor-pointer`}>
             {label && label}
             {children && children}
           </span>
       ) : (
-          <Link {...newTabProps} href={href ?? ''} className={`${className} no-underline text-[#C81910]`}>
+          <Link {...newTabProps} href={href ?? ''} className={className ? `${className} no-underline text-[var(--color-primary)]` : 'no-underline text-[var(--color-primary)]'}>
             {label && label}
             {children && children}
           </Link>

@@ -31,8 +31,8 @@ export const AnnouncementList: React.FC<Props> = ({
     return (
       <div className={`text-center py-12 ${className}`}>
         <div className="max-w-md mx-auto">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Brak ogłoszeń</h3>
-          <p className="text-gray-500">Dla tego miesiąca nie zostały opublikowane żadne ogłoszenia.</p>
+          <h3 className="text-lg font-semibold text-[var(--text-heading)] mb-2">Brak ogłoszeń</h3>
+          <p className="text-[var(--text-secondary)]">Dla tego miesiąca nie zostały opublikowane żadne ogłoszenia.</p>
         </div>
       </div>
     );

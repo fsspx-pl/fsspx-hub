@@ -17,8 +17,11 @@ export const Logo = ({
           />
         </div>
       )}
-      <TwoHeartsLogo width={38} height={50} />
-      <div id="title" className="flex flex-col text-sm leading-[1.1] relative top-[-21px] text-left">
+      <TwoHeartsLogo 
+        width={38} 
+        height={50} 
+      />
+      <div id="title" className="flex flex-col text-sm leading-[1.1] relative top-[-21px] text-left text-gray-900 dark:text-[#CCCCCC]">
         <span className={`font-light`}>Bractwo Kapłańskie</span>
         <span className={`font-medium`}>Świętego Piusa X</span>
       </div>

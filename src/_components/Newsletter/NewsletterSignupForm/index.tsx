@@ -6,6 +6,7 @@ import { Input } from '@/_components/Input';
 import { Button } from '@/_components/Button';
 import { Alert } from '@/_components/Alert';
 import { getNewsletterTranslation } from '../translations';
+import { useTheme } from 'next-themes';
 
 type Props = {
   subdomain: string;
@@ -20,6 +21,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
   className = '',
   locale = 'pl',
 }) => {
+  const { resolvedTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [formState, setFormState] = useState<FormState>('idle');
@@ -111,11 +113,11 @@ export const NewsletterSignupForm: React.FC<Props> = ({
   }
 
   return (
-    <div className={`bg-[#f8f7f7] rounded-lg p-6 ${className}`}>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">
+    <div className={`bg-[#f8f7f7] dark:bg-[#3C3F41] rounded-lg p-6 ${className}`}>
+      <h3 className="text-lg font-medium text-gray-900 dark:text-[#CCCCCC] mb-2">
         {t('title')}
       </h3>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-sm text-gray-600 dark:text-[#A9B7C6] mb-4">
         {t('description')}
       </p>
 
@@ -148,7 +150,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
 
         {process.env.NODE_ENV !== 'development' && (
           <div>
-            <label className="text-sm text-gray-400 mb-4">
+            <label className="text-sm text-gray-400 dark:text-[#A9B7C6] mb-4">
               {t('turnstileLabel')}
             </label>
             <Turnstile
@@ -157,7 +159,7 @@ export const NewsletterSignupForm: React.FC<Props> = ({
               onError={handleTurnstileError}
               onExpire={() => setTurnstileToken(null)}
               options={{
-                theme: 'light',
+                theme: resolvedTheme === 'dark' ? 'dark' : 'light',
                 size: 'normal',
               }}
             />

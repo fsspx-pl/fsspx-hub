@@ -16,6 +16,11 @@
   text-transform: none;
   font-weight: 700;
   font-size: 0.875em;
+  color: #4a4b4f;
+}
+
+.dark .calendar :global(.react-calendar__month-view__weekdays) {
+  color: #CCCCCC !important;
 }
 
 .calendar :global(abbr) {
@@ -28,11 +33,33 @@
   background: none;
   font-size: 0.875em;
   transition: all 0.2s ease-in-out;
+  color: #4a4b4f;
+}
+
+.dark .calendar :global(.react-calendar__month-view__days__day) {
+  color: #CCCCCC !important;
 }
 
 .calendar :global(.react-calendar__tile) {
   border-radius: 0.375rem;
   padding: unset;
+  color: #4a4b4f;
+}
+
+.dark .calendar :global(.react-calendar__tile) {
+  color: #CCCCCC !important;
+}
+
+.dark .calendar :global(.react-calendar) {
+  background: transparent !important;
+}
+
+.dark .calendar :global(.react-calendar__month-view__weekdays__weekday) {
+  color: #CCCCCC !important;
+}
+
+.dark .calendar :global(.react-calendar__month-view__weekdays__weekday abbr) {
+  color: #CCCCCC !important;
 }
 
 .calendar :global(.react-calendar__tile--now) {
@@ -43,7 +70,44 @@
   }
 }
 
+.dark .calendar :global(.react-calendar__tile--now) {
+  &:enabled:hover {
+    background: #3C3F41 !important;
+  }
+}
+
+.calendar :global(.react-calendar__tile:enabled:hover),
+.calendar :global(.react-calendar__tile:enabled:focus) {
+  background-color: #f0f0f0;
+}
+
+.dark .calendar :global(.react-calendar__tile:enabled:hover),
+.dark .calendar :global(.react-calendar__tile:enabled:focus) {
+  background-color: #3C3F41;
+}
+
+.calendar :global(.react-calendar__tile--active) {
+  background: #f0f0f0;
+  color: #4a4b4f;
+}
+
+.dark .calendar :global(.react-calendar__tile--active) {
+  background: #3C3F41 !important;
+  color: #CCCCCC !important;
+}
+
+.dark .calendar :global(.react-calendar__tile--now) {
+  color: #CCCCCC !important;
+}
+
 .calendar :global(.react-calendar__month-view__days__day--neighboringMonth) {
   color: #f8f7f7;
 }
 
+.dark .calendar :global(.react-calendar__month-view__days__day--neighboringMonth) {
+  color: #515658 !important;
+}
+
+.dark .calendar :global(.react-calendar__tile--neighboringMonth) {
+  color: #515658 !important;
+}

@@ -3,7 +3,7 @@ import React, { Fragment } from 'react'
 import { CMSLink } from '@/_components/Link'
 import { Page, Media } from '@/payload-types'
 import { Heading } from '@/_components/Heading'
-import { PageAttachment } from '@/_components/PageAttachment'
+import { PageAttachments } from '@/_components/PageAttachments'
 
 // Text format constants
 const IS_BOLD = 1
@@ -117,7 +117,7 @@ const serializeInternal = (
         // Otherwise it's just the ID string
         if (value && typeof value === 'object' && 'id' in value) {
           const media = value as Media;
-          return <PageAttachment key={i} media={media} />;
+          return <PageAttachments key={i} attachments={media} />;
         }
         
         // If we only have the ID, we can't render it inline without fetching
