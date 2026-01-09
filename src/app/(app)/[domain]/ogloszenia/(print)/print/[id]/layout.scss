@@ -78,6 +78,41 @@
     break-inside: avoid !important;
   }
   
+  /* Attachment styling for print - override dark mode and use print-friendly styles */
+  .my-4 {
+    margin-top: 1rem !important;
+    margin-bottom: 1rem !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* Force light backgrounds for attachment boxes */
+  .bg-gray-50,
+  .dark\:bg-\[\#3C3F41\] {
+    background-color: #f9fafb !important;
+  }
+  
+  /* Force dark text for attachments */
+  .dark\:text-\[var\(--text-primary\)\],
+  .text-gray-900 {
+    color: #111827 !important;
+  }
+  
+  /* Attachment icon color */
+  .text-\[var\(--color-primary\)\] {
+    color: #C81910 !important;
+  }
+  
+  /* Attachment label */
+  .text-\[var\(--text-secondary\)\] {
+    color: #6b7280 !important;
+  }
+  
+  /* Ensure borders are visible */
+  .border-gray-200,
+  .dark\:border-gray-600 {
+    border-color: #e5e7eb !important;
+  }
   
   /* Hide browser headers/footers */
   body {
