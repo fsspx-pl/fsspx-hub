@@ -2,6 +2,15 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { serialize, serializeForEmail } from './serialize'
 
+// Mock PageAttachments component
+jest.mock('@/_components/PageAttachments', () => ({
+  PageAttachments: ({ attachments }: { attachments: any }) => (
+    <div data-testid="page-attachments" data-media-id={attachments?.id}>
+      Attachment: {attachments?.filename}
+    </div>
+  ),
+}))
+
 describe('RichText serialize - Link handling', () => {
   const createLinkNode = (url: string, text: string, newTab?: boolean) => ({
     type: 'link',
@@ -216,3 +225,149 @@ describe('RichText serialize - Link handling', () => {
   })
 })
 
+describe('RichText serialize - Attachment handling', () => {
+  const createUploadNode = (mediaId: string, filename: string) => ({
+    type: 'upload',
+    fields: {
+      relationTo: 'media',
+      value: {
+        id: mediaId,
+        filename,
+        url: `/media/\${filename}`,
+      },
+    },
+  })
+
+  const createParagraphNode = (text: string) => ({
+    type: 'paragraph',
+    children: [{ text }],
+  })
+
+  describe('serialize (web)', () => {
+    it('should render upload nodes as PageAttachments when hideAttachments is false', () => {
+      const children = [createUploadNode('media-123', 'document.pdf')]
+      const result = serialize(children, false)
+
+      const { getByTestId } = render(<>{result}</>)
+      
+      const attachment = getByTestId('page-attachments')
+      expect(attachment).toBeInTheDocument()
+      expect(attachment).toHaveAttribute('data-media-id', 'media-123')
+      expect(attachment).toHaveTextContent('document.pdf')
+    })
+
+    it('should render upload nodes as PageAttachments when hideAttachments is undefined', () => {
+      const children = [createUploadNode('media-456', 'image.png')]
+      const result = serialize(children)
+
+      const { getByTestId } = render(<>{result}</>)
+      
+      const attachment = getByTestId('page-attachments')
+      expect(attachment).toBeInTheDocument()
+      expect(attachment).toHaveTextContent('image.png')
+    })
+
+    it('should hide upload nodes when hideAttachments is true', () => {
+      const children = [createUploadNode('media-789', 'hidden.pdf')]
+      const result = serialize(children, true)
+
+      const { queryByTestId } = render(<>{result}</>)
+      
+      const attachment = queryByTestId('page-attachments')
+      expect(attachment).not.toBeInTheDocument()
+    })
+
+
+    it('should show attachments in mixed content when hideAttachments is false', () => {
+      const children = [
+        createParagraphNode('Before attachment'),
+        createUploadNode('media-abc', 'file.pdf'),
+        createParagraphNode('After attachment'),
+      ]
+
+      const result = serialize(children, false)
+      const { container, getByTestId } = render(<>{result}</>)
+      expect(container.textContent).toContain('Before attachment')
+      expect(container.textContent).toContain('After attachment')
+      expect(getByTestId('page-attachments')).toBeInTheDocument()
+    })
+
+    it('should hide attachments in mixed content when hideAttachments is true', () => {
+      const children = [
+        createParagraphNode('Before attachment'),
+        createUploadNode('media-abc', 'file.pdf'),
+        createParagraphNode('After attachment'),
+      ]
+
+      const result = serialize(children, true)
+      const { container, queryByTestId } = render(<>{result}</>)
+      expect(container.textContent).toContain('Before attachment')
+      expect(container.textContent).toContain('After attachment')
+      expect(queryByTestId('page-attachments')).not.toBeInTheDocument()
+    })
+
+    it('should handle upload nodes without populated media value', () => {
+      const children = [{
+        type: 'upload',
+        fields: {
+          relationTo: 'media',
+          value: 'just-an-id-string',
+        },
+      }]
+      const result = serialize(children, false)
+
+      const { queryByTestId } = render(<>{result}</>)
+      
+      // Should not render when value is just a string ID
+      const attachment = queryByTestId('page-attachments')
+      expect(attachment).not.toBeInTheDocument()
+    })
+  })
+
+  describe('serializeForEmail', () => {
+    it('should hide attachments by default', () => {
+      const children = [createUploadNode('media-email', 'email-attachment.pdf')]
+      const result = serializeForEmail(children)
+
+      const { queryByTestId } = render(<>{result}</>)
+      
+      const attachment = queryByTestId('page-attachments')
+      expect(attachment).not.toBeInTheDocument()
+    })
+
+    it('should hide attachments when hideAttachments is explicitly true', () => {
+      const children = [createUploadNode('media-email', 'email-attachment.pdf')]
+      const result = serializeForEmail(children, true)
+
+      const { queryByTestId } = render(<>{result}</>)
+      
+      const attachment = queryByTestId('page-attachments')
+      expect(attachment).not.toBeInTheDocument()
+    })
+
+    it('should show attachments when hideAttachments is explicitly false', () => {
+      const children = [createUploadNode('media-email', 'email-attachment.pdf')]
+      const result = serializeForEmail(children, false)
+
+      const { getByTestId } = render(<>{result}</>)
+      
+      const attachment = getByTestId('page-attachments')
+      expect(attachment).toBeInTheDocument()
+    })
+
+    it('should handle mixed content in email with hidden attachments', () => {
+      const children = [
+        createParagraphNode('Email content start'),
+        createUploadNode('media-inline', 'inline-file.pdf'),
+        createParagraphNode('Email content end'),
+      ]
+      const result = serializeForEmail(children)
+
+      const { container, queryByTestId } = render(<>{result}</>)
+      
+      expect(container.textContent).toContain('Email content start')
+      expect(container.textContent).toContain('Email content end')
+      expect(queryByTestId('page-attachments')).not.toBeInTheDocument()
+    })
+  })
+})
