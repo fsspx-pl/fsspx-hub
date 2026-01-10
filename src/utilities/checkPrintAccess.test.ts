@@ -1,6 +1,7 @@
 jest.mock('@payload-config', () => ({}), { virtual: true });
 jest.mock('payload', () => ({
   getPayload: jest.fn(),
+  JWTAuthentication: jest.fn(),
 }));
 jest.mock('next/headers', () => ({
   headers: jest.fn(),
@@ -10,21 +11,21 @@ jest.mock('@/collections/Users/utilities/isSuperOrTenantAdmin', () => ({
 }));
 
 import { checkPrintAccess } from './checkPrintAccess';
-import { getPayload } from 'payload';
+import { getPayload, JWTAuthentication } from 'payload';
 import { headers } from 'next/headers';
 import { isSuperOrTenantAdmin } from '@/collections/Users/utilities/isSuperOrTenantAdmin';
-import { User, Tenant } from '@/payload-types';
+import { User } from '@/payload-types';
 
 const mockGetPayload = getPayload as jest.MockedFunction<typeof getPayload>;
 const mockHeaders = headers as jest.MockedFunction<typeof headers>;
 const mockIsSuperOrTenantAdmin = isSuperOrTenantAdmin as jest.MockedFunction<typeof isSuperOrTenantAdmin>;
-
-// Mock global fetch
-global.fetch = jest.fn();
+const mockJWTAuthentication = JWTAuthentication as jest.MockedFunction<typeof JWTAuthentication>;
 
 function createMockPayload() {
   return {
-    findByID: jest.fn(),
+    config: {
+      cookiePrefix: 'payload',
+    },
   };
 }
 
@@ -53,94 +54,64 @@ function setupMockPayloadAndGetPayload() {
   return mockPayload;
 }
 
-function setupSuccessfulAuth(
-  mockPayload: ReturnType<typeof createMockPayload>,
-  mockUser: User,
-  isAuthorized: boolean = true
-) {
-  (global.fetch as jest.Mock).mockResolvedValue({
-    ok: true,
-    json: jest.fn().mockResolvedValue({ user: { id: mockUser.id } }),
-  });
-  mockPayload.findByID = jest.fn().mockResolvedValue(mockUser);
+function setupSuccessfulAuth(mockUser: User, isAuthorized: boolean = true) {
+  mockJWTAuthentication.mockResolvedValue({ user: mockUser as any });
   mockIsSuperOrTenantAdmin.mockResolvedValue(isAuthorized);
 }
 
-function setupFailedAuth(status: number = 401) {
-  (global.fetch as jest.Mock).mockResolvedValue({
-    ok: false,
-    status,
-    statusText: 'Unauthorized',
-  });
+function setupFailedAuth() {
+  mockJWTAuthentication.mockResolvedValue({ user: null });
 }
 
 describe('checkPrintAccess', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (global.fetch as jest.Mock).mockClear();
   });
 
-  it('should return false when no cookie header is present', async () => {
+  it('should return false when no cookie header and no token is present', async () => {
     setupMockHeaders(null);
+    setupMockPayloadAndGetPayload();
 
     const result = await checkPrintAccess('test-domain');
 
     expect(result).toBe(false);
   });
 
-  it('should return false when no token is found in cookies', async () => {
-    setupMockHeaders('some-other-cookie=value');
-
-    const result = await checkPrintAccess('test-domain');
-
-    expect(result).toBe(false);
-  });
-
-  it('should extract token from payload-token cookie', async () => {
-    const mockPayload = setupMockPayloadAndGetPayload();
+  it('should use JWTAuthentication to verify token from cookies', async () => {
+    setupMockPayloadAndGetPayload();
     setupMockHeaders('payload-token=test-token-123');
     const mockUser = createMockUser();
-    setupSuccessfulAuth(mockPayload, mockUser);
+    setupSuccessfulAuth(mockUser);
 
     const result = await checkPrintAccess('test-domain');
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/users/me'),
+    expect(mockJWTAuthentication).toHaveBeenCalledWith(
       expect.objectContaining({
-        method: 'GET',
-        headers: expect.objectContaining({
-          Cookie: expect.stringContaining('payload-token=test-token-123'),
-        }),
+        headers: expect.any(Headers),
+        payload: expect.any(Object),
       })
     );
-    expect(mockPayload.findByID).toHaveBeenCalledWith({
-      collection: 'users',
-      id: mockUser.id,
-      depth: 2,
-    });
     expect(result).toBe(true);
   });
 
   it('should use token from parameter when provided', async () => {
-    const mockPayload = setupMockPayloadAndGetPayload();
+    setupMockPayloadAndGetPayload();
     setupMockHeaders('other-cookie=value');
     const mockUser = createMockUser();
-    setupSuccessfulAuth(mockPayload, mockUser);
+    setupSuccessfulAuth(mockUser);
 
     const result = await checkPrintAccess('test-domain', 'provided-token');
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/users/me'),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Cookie: expect.stringContaining('payload-token=provided-token'),
-        }),
-      })
-    );
+    // Verify JWTAuthentication was called
+    expect(mockJWTAuthentication).toHaveBeenCalled();
+    // Get the headers passed to JWTAuthentication
+    const callArgs = mockJWTAuthentication.mock.calls[0][0];
+    const cookieHeader = callArgs.headers.get('cookie');
+    expect(cookieHeader).toContain('payload-token=provided-token');
     expect(result).toBe(true);
   });
 
-  it('should return false when /api/users/me returns error', async () => {
+  it('should return false when JWTAuthentication returns no user', async () => {
     setupMockPayloadAndGetPayload();
     setupMockHeaders('payload-token=test-token');
     setupFailedAuth();
@@ -150,24 +121,11 @@ describe('checkPrintAccess', () => {
     expect(result).toBe(false);
   });
 
-  it('should return false when /api/users/me does not return user', async () => {
+  it('should return false when user is not authorized (not super admin or tenant admin)', async () => {
     setupMockPayloadAndGetPayload();
     setupMockHeaders('payload-token=test-token');
-    (global.fetch as jest.Mock).mockResolvedValue({
-      ok: true,
-      json: jest.fn().mockResolvedValue({}),
-    });
-
-    const result = await checkPrintAccess('test-domain');
-
-    expect(result).toBe(false);
-  });
-
-  it('should return false when user is not authorized (not super admin or tenant admin)', async () => {
-    const mockPayload = setupMockPayloadAndGetPayload();
-    setupMockHeaders('payload-token=test-token');
     const mockUser = createMockUser();
-    setupSuccessfulAuth(mockPayload, mockUser, false);
+    setupSuccessfulAuth(mockUser, false);
 
     const result = await checkPrintAccess('test-domain');
 
@@ -175,67 +133,52 @@ describe('checkPrintAccess', () => {
   });
 
   it('should return true when user is authorized (super admin or tenant admin)', async () => {
-    const mockPayload = setupMockPayloadAndGetPayload();
+    setupMockPayloadAndGetPayload();
     setupMockHeaders('payload-token=test-token');
     const mockUser = createMockUser();
-    setupSuccessfulAuth(mockPayload, mockUser);
+    setupSuccessfulAuth(mockUser);
 
     const result = await checkPrintAccess('test-domain');
 
     expect(result).toBe(true);
   });
 
-  it('should handle fetch errors gracefully', async () => {
+  it('should handle JWTAuthentication errors gracefully', async () => {
     setupMockPayloadAndGetPayload();
     setupMockHeaders('payload-token=test-token');
-    (global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+    mockJWTAuthentication.mockRejectedValue(new Error('Auth error'));
 
     const result = await checkPrintAccess('test-domain');
 
     expect(result).toBe(false);
   });
 
-  it('should try different cookie names for token extraction', async () => {
-    const mockPayload = setupMockPayloadAndGetPayload();
-    setupMockHeaders('payload-token-preview=preview-token');
+  it('should pass host header to the auth headers', async () => {
+    setupMockPayloadAndGetPayload();
+    setupMockHeaders('payload-token=test-token', 'custom-host.example.com');
     const mockUser = createMockUser();
-    setupSuccessfulAuth(mockPayload, mockUser);
-
-    const result = await checkPrintAccess('test-domain');
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Cookie: expect.stringContaining('payload-token=preview-token'),
-        }),
-      })
-    );
-    expect(result).toBe(true);
-  });
-
-  it('should use PAYLOAD_PUBLIC_SERVER_URL when available', async () => {
-    const originalEnv = process.env.PAYLOAD_PUBLIC_SERVER_URL;
-    process.env.PAYLOAD_PUBLIC_SERVER_URL = 'https://custom-server.com';
-
-    const mockPayload = setupMockPayloadAndGetPayload();
-    setupMockHeaders('payload-token=test-token');
-    const mockUser = createMockUser();
-    setupSuccessfulAuth(mockPayload, mockUser);
+    setupSuccessfulAuth(mockUser);
 
     await checkPrintAccess('test-domain');
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      'https://custom-server.com/api/users/me',
-      expect.any(Object)
-    );
+    const callArgs = mockJWTAuthentication.mock.calls[0][0];
+    const hostHeader = callArgs.headers.get('host');
+    expect(hostHeader).toBe('custom-host.example.com');
+  });
 
-    if (originalEnv) {
-      process.env.PAYLOAD_PUBLIC_SERVER_URL = originalEnv;
-    } else {
-      delete process.env.PAYLOAD_PUBLIC_SERVER_URL;
-    }
+  it('should work when only token parameter is provided (no cookies)', async () => {
+    setupMockPayloadAndGetPayload();
+    setupMockHeaders(null); // No cookies
+    const mockUser = createMockUser();
+    mockJWTAuthentication.mockResolvedValue({ user: mockUser as any });
+    mockIsSuperOrTenantAdmin.mockResolvedValue(true);
+
+    const result = await checkPrintAccess('test-domain', 'standalone-token');
+
+    expect(mockJWTAuthentication).toHaveBeenCalled();
+    const callArgs = mockJWTAuthentication.mock.calls[0][0];
+    const cookieHeader = callArgs.headers.get('cookie');
+    expect(cookieHeader).toContain('payload-token=standalone-token');
+    expect(result).toBe(true);
   });
 });
-
-
