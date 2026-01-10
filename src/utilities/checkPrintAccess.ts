@@ -1,14 +1,15 @@
 import { headers } from 'next/headers';
-import { getPayload } from 'payload';
+import { getPayload, JWTAuthentication } from 'payload';
 import configPromise from '@payload-config';
 import { isSuperOrTenantAdmin } from '@/collections/Users/utilities/isSuperOrTenantAdmin';
 import { PayloadRequest } from 'payload';
 
 /**
  * Checks if the current user is authenticated and authorized to access print pages.
+ * Uses PayloadCMS's built-in JWTAuthentication to verify tokens directly via local API.
  * Returns true if user is a super admin or tenant admin for the given domain.
  * @param domain - The tenant domain
- * @param token - Optional authentication token (from query parameter or header)
+ * @param token - Optional authentication token (from query parameter)
  */
 export async function checkPrintAccess(domain: string, token?: string): Promise<boolean> {
   try {
@@ -16,7 +17,7 @@ export async function checkPrintAccess(domain: string, token?: string): Promise<
     const cookieHeader = headersList.get('cookie');
     const hostHeader = headersList.get('host');
     
-    if (!cookieHeader) {
+    if (!cookieHeader && !token) {
       return false;
     }
 
@@ -24,85 +25,44 @@ export async function checkPrintAccess(domain: string, token?: string): Promise<
       config: configPromise,
     });
 
-    // Use token from parameter if provided, otherwise try to extract from cookies
-    let authToken: string | null = token || null;
-
-    if (!authToken && cookieHeader) {
-      // Try different possible cookie names for PayloadCMS authentication
-      const possibleTokenCookies = [
-        'payload-token',
-        'payload-token-preview',
-        'token',
-        'accessToken',
-      ];
-      
-      for (const cookieName of possibleTokenCookies) {
-        const regex = new RegExp(`${cookieName}=([^;]+)`);
-        const tokenMatch = cookieHeader.match(regex);
-        if (tokenMatch) {
-          authToken = tokenMatch[1];
-          break;
-        }
-      }
+    // Create a Headers object that JWTAuthentication expects
+    // If a token is provided as a parameter, inject it into the cookie header
+    let effectiveCookieHeader = cookieHeader || '';
+    if (token) {
+      const tokenCookieName = `${payload.config.cookiePrefix || 'payload'}-token`;
+      effectiveCookieHeader = effectiveCookieHeader 
+        ? `${effectiveCookieHeader}; ${tokenCookieName}=${token}`
+        : `${tokenCookieName}=${token}`;
     }
 
-    if (!authToken) {
+    const authHeaders = new Headers();
+    authHeaders.set('cookie', effectiveCookieHeader);
+    if (hostHeader) {
+      authHeaders.set('host', hostHeader);
+    }
+
+    // Use PayloadCMS's built-in JWT authentication via local API
+    const { user } = await JWTAuthentication({
+      headers: authHeaders,
+      payload,
+    });
+
+    if (!user) {
       return false;
     }
 
-    // Create a PayloadRequest-like object with token for authentication
-    // PayloadCMS expects the token in a cookie, so we'll add it to the cookie header
-    const cookieHeaderWithToken = authToken 
-      ? `${cookieHeader || ''}; payload-token=${authToken}`.replace(/^; /, '')
-      : cookieHeader || '';
-
+    // Create a PayloadRequest-like object for isSuperOrTenantAdmin
     const req = {
       headers: {
         get: (name: string) => {
-          if (name === 'cookie') return cookieHeaderWithToken;
+          if (name === 'cookie') return cookieHeader;
           if (name === 'host') return hostHeader || domain;
           return null;
         },
       },
       payload,
-      user: null,
+      user,
     } as unknown as PayloadRequest;
-
-    // Use PayloadCMS local API to authenticate user from token
-    // Make an internal HTTP request to PayloadCMS's /api/users/me endpoint
-    // This will properly authenticate using cookies since it goes through PayloadCMS's HTTP handlers
-    try {
-      const baseUrl = process.env.PAYLOAD_PUBLIC_SERVER_URL || `http://${hostHeader || domain}`;
-      const meUrl = `${baseUrl}/api/users/me`;
-
-      const meResponse = await fetch(meUrl, {
-        method: 'GET',
-        headers: {
-          'Cookie': cookieHeaderWithToken,
-          'Host': hostHeader || domain,
-        },
-      });
-
-      if (meResponse.ok) {
-        const meData = await meResponse.json();
-        if (meData?.user) {
-          // Fetch the full user object from PayloadCMS
-          const user = await payload.findByID({
-            collection: 'users',
-            id: meData.user.id,
-            depth: 2,
-          });
-          req.user = user as any;
-        }
-      }
-    } catch (fetchError) {
-      // Silently fail - authentication will be denied below
-    }
-
-    // After the operation, PayloadCMS should have set req.user if authenticated
-    if (!req.user) {
-      return false;
-    }
 
     // Check if user is super admin or tenant admin
     const isAuthorized = await isSuperOrTenantAdmin({ req });
@@ -114,4 +74,3 @@ export async function checkPrintAccess(domain: string, token?: string): Promise<
     return false;
   }
 }
-
