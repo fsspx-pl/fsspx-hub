@@ -14,7 +14,7 @@ export default async function AnnouncementLayout({
     const { domain } = await params;
     const [subdomain] = domain.split('.');
     const tenant = await fetchTenant(subdomain);
-    navItems = (tenant as any)?.navItems;
+    navItems = tenant?.navItems;
   } catch (error) {
     // Silently fail - navItems are optional
   }
