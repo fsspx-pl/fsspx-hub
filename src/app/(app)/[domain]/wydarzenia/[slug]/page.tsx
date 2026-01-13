@@ -8,6 +8,7 @@ import { Alert } from '@/_components/Alert';
 import { Media as MediaComponent } from '@/_components/Media';
 import { Event, Tenant, Media } from '@/payload-types';
 import { notFound } from 'next/navigation';
+import { parseISO, isPast } from 'date-fns';
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
@@ -27,6 +28,14 @@ export default async function EventPage({
 
   if (!event) {
     notFound();
+  }
+
+  // 404 events that have passed their end date
+  if (event.endDate) {
+    const endDate = parseISO(event.endDate as string);
+    if (isPast(endDate)) {
+      notFound();
+    }
   }
 
   const tenant = typeof event.tenant === 'string' ? null : (event.tenant as Tenant);
