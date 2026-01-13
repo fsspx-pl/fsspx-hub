@@ -9,7 +9,7 @@ export const HeaderNav: React.FC<Pick<HeaderType, 'navItems'>> = ({ navItems }) 
   if(!navItems) return null
 
   return (
-    <nav>
+    <nav className="flex items-center gap-6">
       {navItems.map(({ link }, i) => {
         return <CMSLink key={i} {...link} />
       })}

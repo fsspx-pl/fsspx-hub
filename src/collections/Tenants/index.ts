@@ -6,6 +6,7 @@ import { superAdmins } from '../../access/superAdmins'
 import { isSuperAdmin } from '@/utilities/isSuperAdmin'
 import { checkTenantRoles } from '../Users/utilities/checkTenantRoles'
 import { Tenant } from '@/payload-types'
+import link from '@/fields/link'
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
@@ -168,6 +169,26 @@ export const Tenants: CollectionConfig = {
           }
         },
       ]
+    },
+    {
+      name: 'navItems',
+      label: {
+        en: 'Navigation Items',
+        pl: 'Elementy nawigacji',
+      },
+      type: 'array',
+      maxRows: 4,
+      admin: {
+        description: {
+          en: 'Custom navigation items for this tenant. If set, these will replace the global header navigation items.',
+          pl: 'Własne elementy nawigacji dla tej lokalizacji. Jeśli ustawione, zastąpią globalne elementy nawigacji w nagłówku.',
+        },
+      },
+      fields: [
+        link({
+          appearances: false,
+        }),
+      ],
     },
     {
       name: 'feastTemplates',

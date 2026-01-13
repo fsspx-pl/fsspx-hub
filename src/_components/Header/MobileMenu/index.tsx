@@ -40,20 +40,12 @@ export const MobileMenu: React.FC<
             <CloseIcon />
           </div>
         </div>
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start gap-2">
           {navItems?.map(({ link }, i) => {
             return (
               <CMSLink className="w-full !justify-start" key={i} {...link} />
             )
           })}
-          {/* <li className="mb-1">
-              <a
-                className="block p-4 text-sm font-semibold text-gray-400 hover:bg-blue-50 hover:text-blue-600 rounded"
-                href="#"
-              >
-                Home
-              </a>
-            </li> */}
         </div>
         <div className="mt-auto">
           <p className="my-4 text-xs text-center text-gray-400">
