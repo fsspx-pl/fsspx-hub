@@ -31,6 +31,7 @@ const HeaderWrapper: React.FC<{
 
 const mockSettings: Settings = {
   id: '1',
+  logo: 'mock-logo-id',
   copyright: 'Parafia Świętego Krzyża',
 }
 
