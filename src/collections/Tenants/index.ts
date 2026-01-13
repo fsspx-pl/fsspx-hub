@@ -181,7 +181,7 @@ export const Tenants: CollectionConfig = {
       admin: {
         description: {
           en: 'Custom navigation items for this tenant. If set, these will replace the global header navigation items.',
-          pl: 'Własne elementy nawigacji dla tej lokalizacji. Jeśli ustawione, zastąpią globalne elementy nawigacji w nagłówku.',
+          pl: 'Elementy menu nagówka dla tej lokalizacji. Zastępują globalne elementy nawigacji w nagłówku.',
         },
       },
       fields: [
