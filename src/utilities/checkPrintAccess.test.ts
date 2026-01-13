@@ -91,6 +91,10 @@ describe('checkPrintAccess', () => {
         payload: expect.any(Object),
       })
     );
+    // Token is passed via Authorization header
+    const callArgs = mockJWTAuthentication.mock.calls[0][0];
+    const authHeader = callArgs.headers.get('Authorization');
+    expect(authHeader).toBe('JWT test-token-123');
     expect(result).toBe(true);
   });
 
@@ -102,12 +106,11 @@ describe('checkPrintAccess', () => {
 
     const result = await checkPrintAccess('test-domain', 'provided-token');
 
-    // Verify JWTAuthentication was called
+    // Verify JWTAuthentication was called with Authorization header
     expect(mockJWTAuthentication).toHaveBeenCalled();
-    // Get the headers passed to JWTAuthentication
     const callArgs = mockJWTAuthentication.mock.calls[0][0];
-    const cookieHeader = callArgs.headers.get('cookie');
-    expect(cookieHeader).toContain('payload-token=provided-token');
+    const authHeader = callArgs.headers.get('Authorization');
+    expect(authHeader).toBe('JWT provided-token');
     expect(result).toBe(true);
   });
 
@@ -177,8 +180,9 @@ describe('checkPrintAccess', () => {
 
     expect(mockJWTAuthentication).toHaveBeenCalled();
     const callArgs = mockJWTAuthentication.mock.calls[0][0];
-    const cookieHeader = callArgs.headers.get('cookie');
-    expect(cookieHeader).toContain('payload-token=standalone-token');
+    // Token is passed via Authorization header, not cookies
+    const authHeader = callArgs.headers.get('Authorization');
+    expect(authHeader).toBe('JWT standalone-token');
     expect(result).toBe(true);
   });
 });
