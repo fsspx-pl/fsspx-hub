@@ -11,6 +11,7 @@ import { RichText } from "@/_components/RichText";
 import { Announcement as AnnouncementType, Media, Settings, Tenant, User } from "@/payload-types";
 import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
 import { prewarmCalendarCache } from "../../../../../../common/getFeasts";
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
@@ -89,13 +90,11 @@ export default async function AnnouncementPage({
   
   const tenant = await fetchTenant(domain);
   if (!tenant) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
   const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
