@@ -3,11 +3,21 @@ import configPromise from '@payload-config';
 import { startOfMonth, endOfMonth } from "date-fns";
 import { getPayload } from 'payload';
 
+const isBuildPhase =
+  process.env.NEXT_PHASE === 'phase-production-build' || process.env.npm_lifecycle_event === 'build'
+
+const hasPayloadEnv = Boolean(process.env.PAYLOAD_SECRET && process.env.DATABASE_URI)
+
 export const fetchAnnouncementsByMonth = (domain: string, year: number, month: number): Promise<Announcement[]> => {
   const startDate = startOfMonth(new Date(year, month - 1, 1));
   const endDate = endOfMonth(new Date(year, month - 1, 1));
   
   return (async (): Promise<Announcement[]> => {
+    if (!hasPayloadEnv) {
+      if (isBuildPhase) return []
+      throw new Error('Missing required env: PAYLOAD_SECRET and/or DATABASE_URI')
+    }
+
     const payload = await getPayload({
       config: configPromise,
     });
