@@ -32,7 +32,7 @@ export const fetchTenants = async () => {
 
 export const fetchTenant = async (name: string) => {
   assertPayloadEnv()
-  if (!hasPayloadEnv && isBuildPhase) return undefined
+  if (!hasPayloadEnv && isBuildPhase) return null
 
   const payload = await getPayload({
     config: configPromise,
@@ -47,7 +47,7 @@ export const fetchTenant = async (name: string) => {
         }
       }
     })
-    return result.docs[0]
+    return result.docs[0] ?? null
   } catch(err) {
     return Promise.reject(err)
   }
@@ -55,7 +55,7 @@ export const fetchTenant = async (name: string) => {
 
 export const fetchTenantById = async (id: string) => {
   assertPayloadEnv()
-  if (!hasPayloadEnv && isBuildPhase) return undefined
+  if (!hasPayloadEnv && isBuildPhase) return null
 
   const payload = await getPayload({
     config: configPromise,
