@@ -1,9 +1,9 @@
 import React, { Fragment } from 'react'
 
 import { CMSLink } from '@/_components/Link'
-import { Page, Media } from '@/payload-types'
+import { Announcement, Media } from '@/payload-types'
 import { Heading } from '@/_components/Heading'
-import { PageAttachments } from '@/_components/PageAttachments'
+import { AnnouncementAttachments } from '@/_components/AnnouncementAttachments'
 
 // Text format constants
 const IS_BOLD = 1
@@ -78,8 +78,8 @@ type LinkRenderer = (props: {
   newTab?: boolean | null
   children: React.ReactNode
   reference?: {
-    value: string | Page
-    relationTo: 'pages'
+    value: string | Announcement
+    relationTo: 'announcements'
   } | null
 }) => React.ReactNode
 
@@ -117,7 +117,7 @@ const serializeInternal = (
         // Otherwise it's just the ID string
         if (value && typeof value === 'object' && 'id' in value) {
           const media = value as Media;
-          return <PageAttachments key={i} attachments={media} />;
+          return <AnnouncementAttachments key={i} attachments={media} />;
         }
         
         // If we only have the ID, we can't render it inline without fetching
@@ -178,7 +178,7 @@ const serializeInternal = (
             newTab: typedNode.fields?.newTab,
             children: serializedChildren,
             reference: typedNode.fields?.doc ? {
-              value: typedNode.fields.doc.value as Page,
+              value: typedNode.fields.doc.value as Announcement,
               relationTo: typedNode.fields.doc.relationTo,
             } : null,
           })
@@ -191,7 +191,7 @@ const serializeInternal = (
             type={typedNode.fields?.doc ? 'reference' : 'custom'}
             url={typedNode.fields?.url}
             reference={{
-              value: typedNode.fields?.doc?.value as Page,
+              value: typedNode.fields?.doc?.value as Announcement,
               relationTo: typedNode.fields?.doc?.relationTo,
             }}
             newTab={typedNode.fields?.newTab}

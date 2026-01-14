@@ -1,7 +1,7 @@
 import { getFeasts } from "@/common/getFeasts";
 import { getServices } from "@/common/getMasses";
 import { Feast } from "@/feast";
-import { Page as PageType, Service, Tenant } from "@/payload-types";
+import { Announcement as AnnouncementType, Service, Tenant } from "@/payload-types";
 import { parseISO, startOfMonth, endOfMonth, subMonths, addMonths, startOfYear, endOfYear } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 import { POLISH_TIMEZONE } from "@/common/timezone";
@@ -51,7 +51,7 @@ const matchFeastsWithMasses = (feasts: Feast[], masses: Service[]): FeastWithMas
 };
 
 export async function getFeastsWithMasses(
-  period: PageType['period'] | undefined, 
+  period: AnnouncementType['period'] | undefined, 
   tenant: Tenant,
   referenceDate?: Date,
   servicesDateRange?: ServicesDateRange

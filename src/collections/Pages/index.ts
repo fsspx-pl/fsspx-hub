@@ -10,14 +10,16 @@ import { addPeriodStartDate } from './hooks/addPeriodStartDate'
 import formatSlug from './hooks/formatSlug'
 import { user } from '@/fields/user'
 
-export const Pages: CollectionConfig = {
-  slug: 'pages',
+export const Announcements: CollectionConfig = {
+  slug: 'announcements',
   labels: {
     singular: {
-      pl: 'Strona',
+      en: 'Announcement',
+      pl: 'Ogłoszenie',
     },
     plural: {
-      pl: 'Strony',
+      en: 'Announcements',
+      pl: 'Ogłoszenia',
     },
   },
   admin: {
@@ -154,8 +156,8 @@ export const Pages: CollectionConfig = {
       type: 'richText',
       admin: {
         description: {
-          en: 'Files used in the editor will be automatically organized into Media/Pages folder when the page is published',
-          pl: 'Pliki użyte w edytorze będą automatycznie umieszczone w folderze Media/Pages po opublikowaniu Strony',
+          en: 'Files used in the editor will be automatically organized into Media/Announcements folder when the announcement is published',
+          pl: 'Pliki użyte w edytorze będą automatycznie umieszczone w folderze Media/Announcements po opublikowaniu ogłoszenia',
         },
       },
     },

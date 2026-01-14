@@ -22,7 +22,7 @@ export interface Config {
   collections: {
     users: User;
     tenants: Tenant;
-    pages: Page;
+    announcements: Announcement;
     media: Media;
     services: Service;
     serviceWeeks: ServiceWeek;
@@ -49,7 +49,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
-    pages: PagesSelect<false> | PagesSelect<true>;
+    announcements: AnnouncementsSelect<false> | AnnouncementsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     serviceWeeks: ServiceWeeksSelect<false> | ServiceWeeksSelect<true>;
@@ -248,7 +248,7 @@ export interface Tenant {
   topicName?: string | null;
   pastoralAnnouncements?: {
     /**
-     * When disabled, pastoral announcements will not be publicly available. Pages can still be published internally.
+     * When disabled, pastoral announcements will not be publicly available. Announcements can still be published internally.
      */
     displayPastoralAnnouncements?: boolean | null;
     /**
@@ -279,8 +279,8 @@ export interface Tenant {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
           reference?: {
-            relationTo: 'pages';
-            value: string | Page;
+            relationTo: 'announcements';
+            value: string | Announcement;
           } | null;
           url?: string | null;
           label: string;
@@ -361,9 +361,9 @@ export interface Tenant {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
+ * via the `definition` "announcements".
  */
-export interface Page {
+export interface Announcement {
   id: string;
   type: 'pastoral-announcements';
   title: string;
@@ -384,7 +384,7 @@ export interface Page {
   author?: (string | null) | User;
   tenant: string | Tenant;
   /**
-   * Files used in the editor will be automatically organized into Media/Pages folder when the page is published
+   * Files used in the editor will be automatically organized into Media/Announcements folder when the announcement is published
    */
   content?: {
     root: {
@@ -868,8 +868,8 @@ export interface PayloadLockedDocument {
         value: string | Tenant;
       } | null)
     | ({
-        relationTo: 'pages';
-        value: string | Page;
+        relationTo: 'announcements';
+        value: string | Announcement;
       } | null)
     | ({
         relationTo: 'media';
@@ -1065,9 +1065,9 @@ export interface TenantsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages_select".
+ * via the `definition` "announcements_select".
  */
-export interface PagesSelect<T extends boolean = true> {
+export interface AnnouncementsSelect<T extends boolean = true> {
   type?: T;
   title?: T;
   period?:
@@ -1459,8 +1459,8 @@ export interface Header {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
           reference?: {
-            relationTo: 'pages';
-            value: string | Page;
+            relationTo: 'announcements';
+            value: string | Announcement;
           } | null;
           url?: string | null;
           label: string;
@@ -1484,8 +1484,8 @@ export interface Footer {
           type?: ('reference' | 'custom') | null;
           newTab?: boolean | null;
           reference?: {
-            relationTo: 'pages';
-            value: string | Page;
+            relationTo: 'announcements';
+            value: string | Announcement;
           } | null;
           url?: string | null;
           label: string;
@@ -1594,8 +1594,8 @@ export interface TaskSchedulePublish {
     type?: ('publish' | 'unpublish') | null;
     locale?: string | null;
     doc?: {
-      relationTo: 'pages';
-      value: string | Page;
+      relationTo: 'announcements';
+      value: string | Announcement;
     } | null;
     global?: string | null;
     user?: (string | null) | User;

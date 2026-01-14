@@ -1,4 +1,4 @@
-import { fetchLatestPage } from "@/_api/fetchPage";
+import { fetchLatestAnnouncement } from "@/_api/fetchAnnouncement";
 import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
 import { format, parseISO } from "date-fns";
 import { redirect } from "next/navigation";
@@ -81,7 +81,7 @@ export default async function RedirectToNewestPage({
     );
   }
   
-  const latestPost = await fetchLatestPage(domain);
+  const latestPost = await fetchLatestAnnouncement(domain);
   
   if (!latestPost?.createdAt) {
     return <div>No announcements found</div>;

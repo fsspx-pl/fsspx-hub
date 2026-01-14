@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { AnnouncementList } from './index';
-import { Page, User, Media, Tenant } from '@/payload-types';
+import { Announcement, User, Media, Tenant } from '@/payload-types';
 import { defaultAvatar } from '../ArticleInfo/consts';
 
 const meta: Meta<typeof AnnouncementList> = {
@@ -52,7 +52,7 @@ const mockUser: User = {
   updatedAt: '2024-01-01T00:00:00.000Z',
 };
 
-const baseAnnouncement: Omit<Page, 'id' | 'title' | 'period' | 'content' | 'createdAt' | 'updatedAt'> = {
+const baseAnnouncement: Omit<Announcement, 'id' | 'title' | 'period' | 'content' | 'createdAt' | 'updatedAt'> = {
   ...{
     type: 'pastoral-announcements',
     author: mockUser,
@@ -70,7 +70,7 @@ const createMockAnnouncement = (
   title: string,
   date: string,
   content: string = LOREM_TEXT
-): Page => ({
+): Announcement => ({
   ...baseAnnouncement,
   id,
   title,
@@ -105,7 +105,7 @@ const createMockAnnouncement = (
   updatedAt: date,
 });
 
-const mockAnnouncements: Page[] = [
+const mockAnnouncements: Announcement[] = [
   // January 2024
   createMockAnnouncement(
     '1',

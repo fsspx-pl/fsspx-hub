@@ -1,9 +1,9 @@
 import { addPeriodStartDate } from './addPeriodStartDate';
-import { Page } from '@/payload-types';
+import { Announcement } from '@/payload-types';
 import { FieldHookArgs } from 'payload';
 
 describe('addPeriodStartDate', () => {
-  const mockDataWithPeriod: Partial<Page> = {
+  const mockDataWithPeriod: Partial<Announcement> = {
     period: {
       start: '2024-03-15T00:00:00.000Z',
       end: '2024-03-21T00:00:00.000Z',
@@ -11,8 +11,8 @@ describe('addPeriodStartDate', () => {
   };
 
   // Helper to create mock hook args with type assertion
-  const createMockArgs = (args: Partial<FieldHookArgs<Page>>): FieldHookArgs<Page> => {
-    return args as FieldHookArgs<Page>;
+  const createMockArgs = (args: Partial<FieldHookArgs<Announcement>>): FieldHookArgs<Announcement> => {
+    return args as FieldHookArgs<Announcement>;
   };
 
   it('should return value unchanged for non-create operations', () => {
@@ -20,7 +20,7 @@ describe('addPeriodStartDate', () => {
       operation: 'update',
       value: 'test-slug',
       data: mockDataWithPeriod,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -34,7 +34,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 'test-slug',
       data: {},
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -48,7 +48,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 123,
       data: mockDataWithPeriod,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -62,7 +62,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 'test-slug',
       data: mockDataWithPeriod,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -81,7 +81,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 'test-slug',
       data: dataWithId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -102,7 +102,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: valueWithDate,
       data: dataWithId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -123,7 +123,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: valueWithOldDate,
       data: dataWithId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -144,7 +144,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: valueWithOldDate,
       data: dataWithId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -166,7 +166,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: valueWithMultipleDates,
       data: dataWithId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -186,7 +186,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 'test-slug',
       data: dataWithEmptyId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -205,7 +205,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 'test-slug',
       data: dataWithShortId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -227,7 +227,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 'test-slug',
       data: dataWithDifferentDate,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},
@@ -246,7 +246,7 @@ describe('addPeriodStartDate', () => {
       operation: 'create',
       value: 'owsze-ogloszenia',
       data: dataWithId,
-      originalDoc: {} as Page,
+      originalDoc: {} as Announcement,
       field: {} as any,
       req: {} as any,
       siblingData: {},

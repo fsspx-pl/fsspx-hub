@@ -1,18 +1,18 @@
-import { Media } from '@/payload-types';
-import { CMSLink } from '@/_components/Link';
+import { Media } from '@/payload-types'
+import { CMSLink } from '@/_components/Link'
 
-interface PageAttachmentsProps {
-  attachments?: Media | (string | Media)[] | null;
+interface AnnouncementAttachmentsProps {
+  attachments?: Media | (string | Media)[] | null
 }
 
 /**
  * Internal component to render a single attachment link item
  */
 function AttachmentLink({ media }: { media: Media }) {
-  const filename = media.filename || 'Unknown file';
+  const filename = media.filename || 'Unknown file'
   // PayloadCMS serves files via /api/media/file/{filename} or uses the url field
-  const url = media.url || (media.filename ? `/api/media/file/${media.filename}` : '#');
-  
+  const url = media.url || (media.filename ? `/api/media/file/${media.filename}` : '#')
+
   return (
     <div className="flex items-center gap-2">
       <svg
@@ -37,7 +37,7 @@ function AttachmentLink({ media }: { media: Media }) {
         {filename}
       </CMSLink>
     </div>
-  );
+  )
 }
 
 /**
@@ -46,16 +46,16 @@ function AttachmentLink({ media }: { media: Media }) {
  * - Multiple attachments: renders in one block with "ZAŁĄCZNIKI" label (plural) and grouped links
  * Accepts either a single Media object or an array of Media objects.
  */
-export function PageAttachments({ attachments }: PageAttachmentsProps) {
+export function AnnouncementAttachments({ attachments }: AnnouncementAttachmentsProps) {
   if (!attachments) {
-    return null;
+    return null
   }
 
   // Handle single Media object
   if (typeof attachments === 'object' && 'id' in attachments && !Array.isArray(attachments)) {
-    const filename = attachments.filename || 'Unknown file';
-    const url = attachments.url || (attachments.filename ? `/api/media/file/${attachments.filename}` : '#');
-    
+    const filename = attachments.filename || 'Unknown file'
+    const url = attachments.url || (attachments.filename ? `/api/media/file/${attachments.filename}` : '#')
+
     return (
       <div className="my-4 w-full">
         <div className="text-xs text-[var(--text-secondary)] mb-1">ZAŁĄCZNIK</div>
@@ -83,25 +83,25 @@ export function PageAttachments({ attachments }: PageAttachmentsProps) {
           </CMSLink>
         </div>
       </div>
-    );
+    )
   }
 
   // Handle array of attachments
   if (Array.isArray(attachments)) {
     const validMedia = attachments
       .map((attachment) => (typeof attachment === 'string' ? null : attachment))
-      .filter((media): media is Media => media !== null);
+      .filter((media): media is Media => media !== null)
 
     if (validMedia.length === 0) {
-      return null;
+      return null
     }
 
     // Single attachment in array - render as singular
     if (validMedia.length === 1) {
-      const media = validMedia[0];
-      const filename = media.filename || 'Unknown file';
-      const url = media.url || (media.filename ? `/api/media/file/${media.filename}` : '#');
-      
+      const media = validMedia[0]
+      const filename = media.filename || 'Unknown file'
+      const url = media.url || (media.filename ? `/api/media/file/${media.filename}` : '#')
+
       return (
         <div className="my-4 w-full">
           <div className="text-xs text-[var(--text-secondary)] mb-1">ZAŁĄCZNIK</div>
@@ -120,16 +120,12 @@ export function PageAttachments({ attachments }: PageAttachmentsProps) {
                 d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
               />
             </svg>
-            <CMSLink
-              url={url}
-              newTab={true}
-              className="text-sm font-medium"
-            >
+            <CMSLink url={url} newTab={true} className="text-sm font-medium">
               {filename}
             </CMSLink>
           </div>
         </div>
-      );
+      )
     }
 
     // Multiple attachments - render in one block with plural label
@@ -144,8 +140,9 @@ export function PageAttachments({ attachments }: PageAttachmentsProps) {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
-  return null;
+  return null
 }
+

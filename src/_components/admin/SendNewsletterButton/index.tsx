@@ -1,9 +1,9 @@
-import { Page } from '@/payload-types'
+import { Announcement } from '@/payload-types'
 import React from 'react'
 import { SendButton } from './SendButton'
 import classes from './index.module.scss'
 
-export const SendNewsletterButton: React.FC<{ data: Page }> = async ({ 
+export const SendNewsletterButton: React.FC<{ data: Announcement }> = async ({ 
   data 
 }) => {
 

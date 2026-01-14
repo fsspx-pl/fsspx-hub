@@ -230,7 +230,7 @@ describe('extractMediaFromLexical', () => {
           {
             type: 'upload',
             fields: {
-              relationTo: 'pages',
+              relationTo: 'announcements',
               value: 'page-id-123',
             },
           },

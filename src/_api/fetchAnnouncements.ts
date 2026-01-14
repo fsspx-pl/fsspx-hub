@@ -1,20 +1,20 @@
-import { Page } from "@/payload-types";
+import { Announcement } from "@/payload-types";
 import configPromise from '@payload-config';
 import { startOfMonth, endOfMonth } from "date-fns";
 import { getPayload } from 'payload';
 
-export const fetchAnnouncementsByMonth = (domain: string, year: number, month: number): Promise<Page[]> => {
+export const fetchAnnouncementsByMonth = (domain: string, year: number, month: number): Promise<Announcement[]> => {
   const startDate = startOfMonth(new Date(year, month - 1, 1));
   const endDate = endOfMonth(new Date(year, month - 1, 1));
   
-  return (async (): Promise<Page[]> => {
+  return (async (): Promise<Announcement[]> => {
     const payload = await getPayload({
       config: configPromise,
     });
 
           try {
         const result = await payload.find({
-          collection: 'pages',
+          collection: 'announcements',
           where: {
             ['tenant.domain']: {
               contains: domain

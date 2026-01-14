@@ -1,5 +1,5 @@
 import { CollectionAfterChangeHook } from 'payload';
-import { Page, Tenant } from '@/payload-types';
+import { Announcement, Tenant } from '@/payload-types';
 import { extractMediaFromLexical } from './extractMediaFromLexical';
 import { Media as MediaType } from '@/payload-types';
 import { format, parseISO } from 'date-fns';
@@ -7,9 +7,9 @@ import { format, parseISO } from 'date-fns';
 type MediaWithFolders = MediaType & { folder: string | null, prefix: string | null };
 
 /**
- * Hook to organize media files into Payload folder structure when page is published
- * Creates Pages/<Tenant>/<slug> folder structure for admin UI organization
- * Uses the page slug (which contains date + guid shorthand) for folder name
+ * Hook to organize media files into Payload folder structure when announcement is published
+ * Creates Announcements/<Tenant>/<slug> folder structure for admin UI organization
+ * Uses the announcement slug (which contains date + guid shorthand) for folder name
  * 
  * Note: Only updates Payload folder field (admin UI organization), NOT S3 prefix.
  * Files stay in their original S3 location to preserve previews and avoid broken URLs.
@@ -18,11 +18,11 @@ type MediaWithFolders = MediaType & { folder: string | null, prefix: string | nu
  * This prevents accidental or malicious media file movement when updating published pages.
  * 
  * Runs when:
- * - Page is created and published
- * - Page transitions from draft to published
- * - Page is updated and slug changed (logs warning)
+ * - Announcement is created and published
+ * - Announcement transitions from draft to published
+ * - Announcement is updated and slug changed (logs warning)
  */
-export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
+export const organizeMediaFolders: CollectionAfterChangeHook<Announcement> = async ({
   doc,
   req,
   operation,
@@ -51,12 +51,12 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
       await ensureSlugHasDate(doc, req);
       
       req.payload.logger.warn(
-        `Page ${doc.id} slug changed from "${previousDoc.slug}" to "${doc.slug}". Reorganizing media files.`
+        `Announcement ${doc.id} slug changed from "${previousDoc.slug}" to "${doc.slug}". Reorganizing media files.`
       );
     }
   }
 
-  async function ensureSlugHasDate(doc: Page, req: any) {
+  async function ensureSlugHasDate(doc: Announcement, req: any) {
     const datePattern = /-\d{2}-\d{2}-\d{4}/;
     
     if (datePattern.test(doc.slug!)) {
@@ -65,7 +65,7 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
     
     if (!doc.period?.start) {
       req.payload.logger.warn(
-        `Page ${doc.id} slug changed to "${doc.slug}" without date pattern, but no period.start available to add date.`
+        `Announcement ${doc.id} slug changed to "${doc.slug}" without date pattern, but no period.start available to add date.`
       );
       return;
     }
@@ -76,7 +76,7 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
     const updatedSlug = `${doc.slug}-${periodStartDate}-${pageIdShort}`;
     
     await req.payload.update({
-      collection: 'pages',
+      collection: 'announcements',
       id: doc.id,
       data: { slug: updatedSlug },
     });
@@ -84,7 +84,7 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
     doc.slug = updatedSlug;
     
     req.payload.logger.info(
-      `Page ${doc.id} slug updated to include date: "${updatedSlug}"`
+      `Announcement ${doc.id} slug updated to include date: "${updatedSlug}"`
     );
   }
 
@@ -108,7 +108,7 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
     : doc.tenant;
   
   if (!tenant) {
-    req.payload.logger.error(`Tenant not found for page ${pageId}`);
+    req.payload.logger.error(`Tenant not found for announcement ${pageId}`);
     return;
   }
   
@@ -126,7 +126,7 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
   } else {
     // Fallback: generate folder name from period start date + guid
     if (!doc.period?.start) {
-      req.payload.logger.error(`Page ${pageId} has no period start date and no slug`);
+      req.payload.logger.error(`Announcement ${pageId} has no period start date and no slug`);
       return;
     }
     
@@ -188,14 +188,14 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
       return newFolder.id;
     };
 
-    // Create folder structure: Pages → <Tenant> → <slug>
+    // Create folder structure: Announcements → <Tenant> → <slug>
     // No "Media" folder needed - we're already in the Media collection
-    const pagesFolderId = await findOrCreateFolder('Pages');
+    const pagesFolderId = await findOrCreateFolder('Announcements');
     const tenantFolderId = await findOrCreateFolder(tenantName, pagesFolderId);
     const pageFolderId = await findOrCreateFolder(pageFolderName, tenantFolderId);
 
     req.payload.logger.info(
-      `Created folder structure: Pages/${tenantName}/${pageFolderName} (folder ID: ${pageFolderId})`
+      `Created folder structure: Announcements/${tenantName}/${pageFolderName} (folder ID: ${pageFolderId})`
     );
 
     // Update each media document's Payload folder (admin UI organization only)
@@ -231,7 +231,7 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
           });
 
           req.payload.logger.info(
-            `Organized Media ${mediaId} into folder: Pages/${tenantName}/${pageFolderName}`
+            `Organized Media ${mediaId} into folder: Announcements/${tenantName}/${pageFolderName}`
           );
         }
       } catch (error) {
@@ -242,7 +242,7 @@ export const organizeMediaFolders: CollectionAfterChangeHook<Page> = async ({
     }
   } catch (error) {
     req.payload.logger.error(
-      `Failed to organize media folders for page ${pageId}: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to organize media folders for announcement ${pageId}: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 };

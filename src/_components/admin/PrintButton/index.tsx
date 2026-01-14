@@ -1,11 +1,11 @@
-import { Page, Tenant } from '@/payload-types'
+import { Announcement, Tenant } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import { PrintPageButton } from './PrintPageButton'
 import classes from './index.module.scss'
 
-export const PrintButton: React.FC<{ data: Page }> = async ({ 
+export const PrintButton: React.FC<{ data: Announcement }> = async ({ 
   data 
 }) => {
   const id = data.id;

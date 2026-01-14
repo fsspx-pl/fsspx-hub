@@ -1,5 +1,5 @@
 import { FeastWithMasses } from "@/_components/Calendar";
-import { Media as MediaType, Page, Tenant } from "@/payload-types";
+import { Announcement, Media as MediaType, Tenant } from "@/payload-types";
 import { formatInPolishTime } from "@/common/timezone";
 import { romanize } from "@/_components/Calendar/utils/romanize";
 import { vestmentColorToTailwind } from "@/_components/Calendar/utils/vestmentColorToHex";
@@ -10,7 +10,7 @@ import { Media } from "@/_components/Media";
 import { garamond } from "@/fonts";
 import { RichText } from "@/_components/RichText";
 import { DateDisplay } from "./DateDisplay";
-import { PageAttachments } from "@/_components/PageAttachments";
+import { AnnouncementAttachments } from "@/_components/AnnouncementAttachments";
 
 interface PrintableAnnouncementsProps {
   title: string;
@@ -18,7 +18,7 @@ interface PrintableAnnouncementsProps {
   feastsWithMasses: FeastWithMasses[];
   tenant: Tenant | null;
   attachments?: MediaType[];
-  attachmentDisplay?: Page['attachmentDisplay'];
+  attachmentDisplay?: Announcement['attachmentDisplay'];
 }
 
 const getServiceTitle = (service: ServiceType) => {
@@ -167,7 +167,7 @@ export function PrintableAnnouncements({
               </div>
               {showAttachmentsAtBottom && attachments.length > 0 && (
                 <div className="mt-4 print:mt-2">
-                  <PageAttachments attachments={attachments} />
+                  <AnnouncementAttachments attachments={attachments} />
                 </div>
               )}
             </div>

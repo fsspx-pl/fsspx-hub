@@ -5,7 +5,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
   let page = 1;
   for (;;) {
     const res = await payload.find({
-      collection: 'pages',
+      collection: 'announcements',
       where: {
         type: { equals: 'pastoral-announcements' },
       },
@@ -21,7 +21,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
       if (!('campaignId' in doc) || !doc.campaignId) continue;
 
       await payload.update({
-        collection: 'pages',
+        collection: 'announcements',
         id: doc.id,
         data: { newsletter: { sent: true } },
         depth: 0,
@@ -40,7 +40,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
   let page = 1;
   for (;;) {
     const res = await payload.find({
-      collection: 'pages',
+      collection: 'announcements',
       where: { type: { equals: 'pastoral-announcements' } },
       limit: pageSize,
       page,
@@ -49,7 +49,7 @@ export async function down({ payload }: MigrateDownArgs): Promise<void> {
     if (!res.docs.length) break;
     for (const doc of res.docs) {
       await payload.update({
-        collection: 'pages',
+        collection: 'announcements',
         id: doc.id,
         data: { newsletter: { sent: false } },
         depth: 0,

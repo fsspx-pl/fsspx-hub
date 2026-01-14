@@ -5,7 +5,7 @@ import { superAdmins } from '../../access/superAdmins'
 import { superAndTenantAdmins } from '../../access/superAndTenantAdmins'
 import { loginAfterCreate } from './hooks/loginAfterCreate'
 import { recordLastLoggedInTenant } from './hooks/recordLastLoggedInTenant'
-import { revalidatePagesByAuthor } from './hooks/revalidateTenantPagesByAuthor'
+import { revalidateAnnouncementsByAuthor } from './hooks/revalidateTenantPagesByAuthor'
 import { isSuperOrTenantAdmin } from './utilities/isSuperOrTenantAdmin'
 
 export const Users: CollectionConfig = {
@@ -33,7 +33,7 @@ export const Users: CollectionConfig = {
     admin: isSuperOrTenantAdmin,
   },
   hooks: {
-    afterChange: [loginAfterCreate, revalidatePagesByAuthor],
+    afterChange: [loginAfterCreate, revalidateAnnouncementsByAuthor],
     afterLogin: [recordLastLoggedInTenant],
   },
   fields: [

@@ -1,8 +1,8 @@
-import { Page } from "@/payload-types"
+import { Announcement } from "@/payload-types"
 import { format, parseISO } from "date-fns"
 import { FieldHook } from "payload"
 
-export const addPeriodStartDate: FieldHook<Page> = ({ operation, value, data }) => {
+export const addPeriodStartDate: FieldHook<Announcement> = ({ operation, value, data }) => {
   if(operation !== 'create') {
     return value
   }

@@ -1,15 +1,15 @@
 import Link from 'next/link'
 import React from 'react'
 
-import { Page } from '@/payload-types'
+import { Announcement } from '@/payload-types'
 
 type CMSLinkType = {
   type?: 'custom' | 'reference' | null
   url?: string | null
   newTab?: boolean | null
   reference?: {
-    value: string | Page
-    relationTo: 'pages'
+    value: string | Announcement
+    relationTo: 'announcements'
   } | null
   label?: string |  null
   children?: React.ReactNode
@@ -52,7 +52,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
+      ? `${reference?.relationTo !== 'announcements' ? `/${reference?.relationTo}` : ''}/${
           reference.value.slug
         }`
       : url
