@@ -5,10 +5,12 @@ import { getPayload } from 'payload';
 const isBuildPhase =
   process.env.NEXT_PHASE === 'phase-production-build' || process.env.npm_lifecycle_event === 'build'
 
+const isTestEnv = process.env.NODE_ENV === 'test'
+
 const hasPayloadEnv = Boolean(process.env.PAYLOAD_SECRET && process.env.DATABASE_URI)
 
 const FetchGlobalsFactory = <T>(slug: 'settings' | 'header' | 'footer') => async () => {
-  if (!hasPayloadEnv) {
+  if (!hasPayloadEnv && !isTestEnv) {
     if (isBuildPhase) return null as unknown as T
     throw new Error('Missing required env: PAYLOAD_SECRET and/or DATABASE_URI')
   }
