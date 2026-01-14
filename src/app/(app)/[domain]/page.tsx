@@ -54,8 +54,10 @@ export default async function RedirectToNewestPage({
       },
     ];
     
+    const navItems = tenant.navItems;
+    
     return (
-      <PageLayout breadcrumbs={breadcrumbs}>
+      <PageLayout breadcrumbs={breadcrumbs} navItems={navItems}>
         <Gutter className="mt-4 py-6 flex flex-wrap gap-8">
             {infoNote ? (
               <RichText 
