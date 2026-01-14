@@ -5,6 +5,7 @@ import { FeastWithMasses } from "@/_components/Calendar";
 import { Announcement as AnnouncementType, Tenant } from "@/payload-types";
 import { parse } from "date-fns";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
 import { PrintableAnnouncements } from "./PrintableAnnouncements";
 import { checkPrintAccess } from "@/utilities/checkPrintAccess";
@@ -66,13 +67,11 @@ export default async function PrintPage({
     }
   }
   if (!tenant) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
   const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
@@ -81,7 +80,6 @@ export default async function PrintPage({
   const isAuthenticated = await checkPrintAccess(fullDomain, token);
   
   if (!isAuthenticated) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
@@ -89,7 +87,6 @@ export default async function PrintPage({
   const page = await fetchAnnouncementById(id);
 
   if (!page || !page.content) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
@@ -98,7 +95,6 @@ export default async function PrintPage({
 
   // Verify it's a pastoral announcements page
   if (validPage.type !== 'pastoral-announcements') {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
@@ -106,7 +102,6 @@ export default async function PrintPage({
   const pageTenant = validPage.tenant ? (typeof validPage.tenant === 'string' ? null : validPage.tenant as Tenant) : null;
   
   if (!pageTenant || pageTenant.id !== tenant.id) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
