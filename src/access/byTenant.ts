@@ -5,7 +5,10 @@ import { Tenant, User } from '@/payload-types'
 function getLastTenantId(user: User | null | undefined): string | undefined {
   const last = (user?.lastLoggedInTenant as Tenant | string | undefined)
   if (!last) return undefined
-  return typeof last === 'string' ? last : last.id
+  // Be resilient to ObjectId-like values in legacy DBs
+  const id = typeof last === 'string' ? last : (last as any)?.id
+  if (!id) return undefined
+  return String(id)
 }
 
 // Restrict access strictly to the user's last logged-in tenant (or allow super-admins fully)
@@ -18,14 +21,15 @@ export const tenantOnlyAccess: Access = ({ req: { user }, data }) => {
 
   // Document-level guard
   if (data?.tenant) {
-    const docTenant = typeof data.tenant === 'string' ? data.tenant : data.tenant?.id
-    return docTenant === lastTenantId
+    const docTenant = typeof data.tenant === 'string' ? data.tenant : (data.tenant as any)?.id
+    if (!docTenant) return false
+    return String(docTenant) === String(lastTenantId)
   }
 
   // Collection-level guard
   return {
     tenant: {
-      equals: lastTenantId,
+      equals: String(lastTenantId),
     },
   }
 }
@@ -40,7 +44,7 @@ export const tenantReadOrPublic: Access = ({ req: { user } }) => {
 
   return {
     tenant: {
-      equals: lastTenantId,
+      equals: String(lastTenantId),
     },
   }
 }
