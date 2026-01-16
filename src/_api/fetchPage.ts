@@ -55,18 +55,9 @@ export const fetchLatestPage = (subdomain: string): Promise<Page | undefined> =>
   )();
 };
 
-interface FetchPageOptions {
-  includeDrafts?: boolean;
-}
-
-export const fetchTenantPageByDate = (
-  subdomain: string, 
-  isoDate: string,
-  options: FetchPageOptions = {}
-): Promise<Page | undefined> => {
-  const { includeDrafts = false } = options;
+export const fetchTenantPageByDate = (subdomain: string, isoDate: string): Promise<Page | undefined> => {
   const date = format(isoDate, 'dd-MM-yyyy')
-  const cacheKey = `page-${subdomain}-${date}${includeDrafts ? '-all' : ''}`;
+  const cacheKey = `page-${subdomain}-${date}`;
   return unstable_cache(
     async (): Promise<Page | undefined> => {
       return findPage({
@@ -76,7 +67,7 @@ export const fetchTenantPageByDate = (
         ['period.start']: {
           equals: isoDate,
         },
-        ...(includeDrafts ? {} : published),
+        ...published,
       });
     },
     [cacheKey],
@@ -86,20 +77,3 @@ export const fetchTenantPageByDate = (
     }
   )();
 };
-
-export const fetchPageById = (pageId: string): Promise<Page | undefined> => {
-  const cacheKey = `page-${pageId}`;
-  return unstable_cache(
-    async (): Promise<Page | undefined> => {
-      return findPage({
-        id: pageId
-      });
-    },
-    [cacheKey],
-    {
-      revalidate: 60 * 60 * 24, // 24 hours
-      tags: [`page:${pageId}`],
-    }
-  )();
-};
-
