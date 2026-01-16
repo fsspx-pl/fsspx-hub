@@ -86,20 +86,3 @@ export const fetchTenantPageByDate = (
     }
   )();
 };
-
-export const fetchPageById = (pageId: string): Promise<Page | undefined> => {
-  const cacheKey = `page-${pageId}`;
-  return unstable_cache(
-    async (): Promise<Page | undefined> => {
-      return findPage({
-        id: pageId
-      });
-    },
-    [cacheKey],
-    {
-      revalidate: 60 * 60 * 24, // 24 hours
-      tags: [`page:${pageId}`],
-    }
-  )();
-};
-

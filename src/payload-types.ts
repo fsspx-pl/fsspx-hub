@@ -270,6 +270,24 @@ export interface Tenant {
       [k: string]: unknown;
     } | null;
   };
+  /**
+   * Custom navigation items for this tenant. If set, these will replace the global header navigation items.
+   */
+  navItems?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?: {
+            relationTo: 'pages';
+            value: string | Page;
+          } | null;
+          url?: string | null;
+          label: string;
+        };
+        id?: string | null;
+      }[]
+    | null;
   feastTemplates?: {
     /**
      * Template for Sunday services. These services will be automatically created for new Week Order.
@@ -993,6 +1011,20 @@ export interface TenantsSelect<T extends boolean = true> {
     | {
         displayPastoralAnnouncements?: T;
         infoNote?: T;
+      };
+  navItems?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+            };
+        id?: T;
       };
   feastTemplates?:
     | T
