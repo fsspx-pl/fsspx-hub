@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow, parseISO, differenceInDays, differenceInWeeks, differenceInHours, differenceInMinutes } from "date-fns";
 import { pl } from "date-fns/locale";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useId } from "react";
 import { Tooltip } from "react-tooltip";
 import { format } from "date-fns";
 import { CMSLink } from "../Link";
@@ -109,6 +109,8 @@ export const DateWithTooltip: React.FC<{
   const inputDate = parseISO(date);
   const tooltip = format(inputDate, 'EEEE, d MMMM yyyy, HH:mm', { locale: pl });
   const { id } = dateConfig[label];
+  const reactId = useId();
+  const anchorId = `${id}-${reactId}`;
 
   if (!formattedDate) {
     return null;
@@ -118,12 +120,12 @@ export const DateWithTooltip: React.FC<{
     <>
       <Icon className="w-4 h-4" />
       <span className="hidden lg:flex">{label}</span>
-      <div id={id}>
+      <div id={anchorId}>
         <CMSLink isStatic>
           {formattedDate}
         </CMSLink>
       </div>
-      <Tooltip anchorSelect={`#${id}`} content={tooltip} />
+      <Tooltip anchorSelect={`#${anchorId}`} content={tooltip} place="top" className="z-[9999]" />
     </>
   );
 };

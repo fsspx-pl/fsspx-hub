@@ -37,13 +37,13 @@ export const ArticleInfo: React.FC<Props> = ({
       )}
       <span>{author}</span>
       {!noDates && <div className="flex flex-row text-[var(--text-secondary)] gap-4 ml-2">
-        <div className="hidden sm:flex items-center gap-2">
+        {!updatedAt && (<div className="hidden sm:flex items-center gap-2">
           <DateWithTooltip
             icon={Clock}
             label={DateLabel.CREATED}
             date={createdAt}
           />
-        </div>
+        </div>)}
         {updatedAt && (
           <div className="hidden sm:flex items-center gap-2">
             {updatedAt && (

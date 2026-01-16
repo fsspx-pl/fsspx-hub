@@ -32,7 +32,6 @@ fonts
 .cursorrules
 tasks
 .cursor/rules
-.cursor/debug.log
 
 #playwirght
 playwright-report
