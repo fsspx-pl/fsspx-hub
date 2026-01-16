@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { CMSLink } from './index';
-import { Page } from '@/payload-types';
 
 const meta = {
   title: 'Components/Link',

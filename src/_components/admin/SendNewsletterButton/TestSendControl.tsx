@@ -21,7 +21,7 @@ export const TestSendControl: React.FC<{ disabled?: boolean } > = ({ disabled })
 
   const onSendTest = async () => {
     if (!id) {
-      toast.error('Save the page before sending a test email')
+      toast.error('Save the announcement before sending a test email')
       return
     }
     if (!email) {
@@ -37,7 +37,7 @@ export const TestSendControl: React.FC<{ disabled?: boolean } > = ({ disabled })
     const toastId = toast.loading('Sending test email...')
     const boilerplateError = 'Failed to send test email'
     try {
-      const res = await fetch(`/api/pages/${id}/send-newsletter?testEmail=${email}&skipCalendar=${skipCalendar}`, {
+      const res = await fetch(`/api/announcements/${id}/send-newsletter?testEmail=${email}&skipCalendar=${skipCalendar}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       })

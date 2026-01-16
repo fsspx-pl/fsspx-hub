@@ -46,7 +46,7 @@ global.fetch = jest.fn();
 
 describe('SendButton - skipCalendar functionality', () => {
   const mockProps = {
-    id: 'test-page-id',
+    id: 'test-announcement-id',
     newsletterSent: false,
     isDraft: false,
     tenantId: 'test-tenant-id',
@@ -63,7 +63,7 @@ describe('SendButton - skipCalendar functionality', () => {
           json: async () => ({ subscribersCount: 10 }),
         });
       }
-      if (url.includes('/api/pages/') && url.includes('/send-newsletter')) {
+      if (url.includes('/api/announcements/') && url.includes('/send-newsletter')) {
         return Promise.resolve({
           ok: true,
           json: async () => ({ message: 'Success' }),
@@ -105,7 +105,7 @@ describe('SendButton - skipCalendar functionality', () => {
     // Verify newsletter API was called with skipCalendar=true
     await waitFor(() => {
       const newsletterCalls = (global.fetch as jest.Mock).mock.calls.filter((call: any[]) =>
-        call[0]?.includes('/api/pages/test-page-id/send-newsletter')
+        call[0]?.includes('/api/announcements/test-announcement-id/send-newsletter')
       );
       expect(newsletterCalls.length).toBeGreaterThan(0);
       expect(newsletterCalls[newsletterCalls.length - 1][0]).toContain('skipCalendar=true');
@@ -136,7 +136,7 @@ describe('SendButton - skipCalendar functionality', () => {
 
     await waitFor(() => {
       const newsletterCalls = (global.fetch as jest.Mock).mock.calls.filter((call: any[]) =>
-        call[0]?.includes('/api/pages/test-page-id/send-newsletter')
+        call[0]?.includes('/api/announcements/test-announcement-id/send-newsletter')
       );
       expect(newsletterCalls.length).toBeGreaterThan(0);
       expect(newsletterCalls[newsletterCalls.length - 1][0]).toContain('skipCalendar=false');
@@ -161,7 +161,7 @@ describe('SendButton - skipCalendar functionality', () => {
 
     await waitFor(() => {
       const newsletterCalls = (global.fetch as jest.Mock).mock.calls.filter((call: any[]) =>
-        call[0]?.includes('/api/pages/test-page-id/send-newsletter')
+        call[0]?.includes('/api/announcements/test-announcement-id/send-newsletter')
       );
       expect(newsletterCalls.length).toBeGreaterThan(0);
       expect(newsletterCalls[newsletterCalls.length - 1][0]).toContain('skipCalendar=false');

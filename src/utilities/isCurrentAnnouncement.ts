@@ -1,6 +1,6 @@
-import { Page } from '@/payload-types';
+import { Announcement } from '@/payload-types';
 
-export const isCurrentAnnouncement = (announcement: Page): boolean => {
+export const isCurrentAnnouncement = (announcement: Announcement): boolean => {
   if (!announcement.period?.start || !announcement.period?.end) {
     return false;
   }

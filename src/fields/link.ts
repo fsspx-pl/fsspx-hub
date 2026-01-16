@@ -100,7 +100,7 @@ const link: LinkType = ({ appearances, disableLabel = false, overrides = {} } = 
         pl: 'Dokument do linku',
       },
       type: 'relationship',
-      relationTo: ['pages'],
+      relationTo: ['announcements'],
       required: true,
       maxDepth: 1,
       admin: {

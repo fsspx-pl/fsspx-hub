@@ -1,9 +1,9 @@
-import { Page } from '@/payload-types';
+import { Announcement } from '@/payload-types';
 import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb';
 
-// Removes legacy campaignId values from existing Page documents.
+// Removes legacy campaignId values from existing Announcement documents.
 // Note: Keep the schema field temporarily so this migration can query it.
-// After running this, you can safely remove the field from the Pages schema.
+// After running this, you can safely remove the field from the Announcements schema.
 
 export async function up({ payload }: MigrateUpArgs): Promise<void> {
   const pageSize = 100
@@ -11,7 +11,7 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
 
   for (;;) {
     const res = await payload.find({
-      collection: 'pages',
+      collection: 'announcements',
       where: {
         type: { equals: 'pastoral-announcements' },
       },
@@ -27,9 +27,9 @@ export async function up({ payload }: MigrateUpArgs): Promise<void> {
       if (!('campaignId' in doc) || !doc.campaignId) continue
 
       await payload.update({
-        collection: 'pages',
+        collection: 'announcements',
         id: doc.id,
-        data: { ['campaignId' as keyof Page]: undefined },
+        data: { ['campaignId' as keyof Announcement]: undefined },
         depth: 0,
         context: { skipRevalidate: true },
       })

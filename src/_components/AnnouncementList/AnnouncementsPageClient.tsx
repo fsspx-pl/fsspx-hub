@@ -4,11 +4,11 @@ import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PeriodNavigator } from '../PeriodNavigator';
 import { AnnouncementList } from './index';
-import { Page } from '@/payload-types';
+import { Announcement } from '@/payload-types';
 import { LoadingIndicator } from '../LoadingIndicator';
 
 type Props = {
-  announcements: Page[];
+  announcements: Announcement[];
   currentYear: number;
   currentMonth: number;
   domain: string;
@@ -31,7 +31,7 @@ export const AnnouncementsPageClient: React.FC<Props> = ({
     : new Date(initialYear, initialMonth - 1, 1);
   
   const [currentDate, setCurrentDate] = useState(initialDate);
-  const [announcements, setAnnouncements] = useState<Page[]>(initialAnnouncements);
+  const [announcements, setAnnouncements] = useState<Announcement[]>(initialAnnouncements);
   const [isLoading, setIsLoading] = useState(false);
   
   const now = new Date();

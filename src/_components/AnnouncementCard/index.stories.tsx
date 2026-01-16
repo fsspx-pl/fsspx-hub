@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { AnnouncementCard } from './index';
-import { Page, User, Media, Tenant } from '@/payload-types';
+import { Announcement, User, Media, Tenant } from '@/payload-types';
 import { defaultAvatar } from '../ArticleInfo/consts';
 
 const meta: Meta<typeof AnnouncementCard> = {
@@ -52,7 +52,7 @@ const mockUser: User = {
   updatedAt: '2024-01-01T00:00:00.000Z',
 };
 
-const baseAnnouncement: Partial<Page> = {
+const baseAnnouncement: Partial<Announcement> = {
   type: 'pastoral-announcements',
   period: {
     start: '2024-01-15T00:00:00.000Z',
@@ -85,12 +85,12 @@ const baseAnnouncement: Partial<Page> = {
   _status: 'published',
 };
 
-const mockAnnouncement: Page = {
+const mockAnnouncement: Announcement = {
   ...baseAnnouncement,
   id: '1',
   title: 'Ogłoszenia duszpasterskie na niedzielę 15 stycznia 2024',
   author: mockUser,
-} as Page;
+} as Announcement;
 
 export const Default: Story = {
   args: {

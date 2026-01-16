@@ -1,5 +1,5 @@
 import { organizeMediaFolders } from './organizeMediaFolders';
-import { Page, Tenant } from '@/payload-types';
+import { Announcement, Tenant } from '@/payload-types';
 
 // Mock dependencies
 jest.mock('./extractMediaFromLexical', () => ({
@@ -38,7 +38,7 @@ describe('organizeMediaFolders', () => {
     createdAt: '2024-01-01T00:00:00.000Z',
   };
 
-  const mockPage: Page = {
+  const mockPage: Announcement = {
     id: 'page-12345678-abcdef',
     type: 'pastoral-announcements',
     title: 'Test Page Title',
@@ -156,21 +156,21 @@ describe('organizeMediaFolders', () => {
       data: {},
     });
 
-    // Should create Pages folder (root level - no redundant "Media" folder)
+    // Should create Announcements folder (root level - no redundant "Media" folder)
     // We're already in the Media collection, so no need for a "Media" folder
     expect(mockReq.payload.find).toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'payload-folders',
         where: expect.objectContaining({
           and: expect.arrayContaining([
-            expect.objectContaining({ name: { equals: 'Pages' } }),
+            expect.objectContaining({ name: { equals: 'Announcements' } }),
             expect.objectContaining({ folder: { equals: null } }),
           ]),
         }),
       })
     );
 
-    // Should create tenant folder (poznan from domain, under Pages)
+    // Should create tenant folder (poznan from domain, under Announcements)
     expect(mockReq.payload.find).toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'payload-folders',
@@ -288,7 +288,7 @@ describe('organizeMediaFolders', () => {
     extractMediaFromLexical.mockReturnValue(['media-1']);
 
     // Mock the folder ID that would be created (no Media folder in path)
-    const expectedFolderId = 'folder-test-page-15-03-2024-page-12-folder-poznan-folder-Pages-root';
+    const expectedFolderId = 'folder-test-page-15-03-2024-page-12-folder-poznan-folder-Announcements-root';
     
     const mockMedia = {
       id: 'media-1',
@@ -426,7 +426,7 @@ describe('organizeMediaFolders', () => {
 
     // Should update the slug to include date and guid (first 8 chars of page ID)
     expect(mockReq.payload.update).toHaveBeenCalledWith({
-      collection: 'pages',
+      collection: 'announcements',
       id: updatedPage.id,
       data: {
         slug: 'new-slug-without-date-15-03-2024-page-123',

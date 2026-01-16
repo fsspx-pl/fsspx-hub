@@ -1,5 +1,5 @@
 import { fetchSettings } from "@/_api/fetchGlobals";
-import { fetchLatestPage, fetchTenantPageByDate } from "@/_api/fetchPage";
+import { fetchLatestAnnouncement, fetchTenantAnnouncementByDate } from "@/_api/fetchAnnouncement";
 import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
 import { BreadcrumbItem, Breadcrumbs } from "@/_components/Breadcrumbs";
 import { Calendar, FeastWithMasses } from "@/_components/Calendar";
@@ -8,9 +8,10 @@ import { Gutter } from "@/_components/Gutter";
 import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
 import { RichText } from "@/_components/RichText";
 
-import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
+import { Announcement as AnnouncementType, Media, Settings, Tenant, User } from "@/payload-types";
 import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
 import { prewarmCalendarCache } from "../../../../../../common/getFeasts";
 import { formatAuthorName } from "../../../../../../utilities/formatAuthorName";
@@ -19,8 +20,8 @@ import { CMSLink } from "@/_components/Link";
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
 import { RelatedEvents } from "@/_components/RelatedEvents";
-import { PageAttachments } from "@/_components/PageAttachments";
-import { fetchPageAttachments } from "@/utilities/fetchPageAttachments";
+import { AnnouncementAttachments } from "@/_components/AnnouncementAttachments";
+import { fetchAnnouncementAttachments } from "@/utilities/fetchAnnouncementAttachments";
 import { Alert } from "@/_components/Alert";
 
 export async function generateStaticParams() {
@@ -31,7 +32,7 @@ export async function generateStaticParams() {
   const params = [];
 
   for (const tenant of tenants.filter((tenant) => tenant.domain)) {
-    const latestPost = await fetchLatestPage(tenant.domain.split('.')[0]);
+    const latestPost = await fetchLatestAnnouncement(tenant.domain.split('.')[0]);
     if (latestPost?.createdAt) {
       const date = format(new Date(latestPost.createdAt), 'dd-MM-yyyy');
       params.push({
@@ -89,24 +90,22 @@ export default async function AnnouncementPage({
   
   const tenant = await fetchTenant(domain);
   if (!tenant) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
   const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
   const isoDate = parse(date, 'dd-MM-yyyy', now).toISOString();
-  const page = await fetchTenantPageByDate(domain, isoDate);
+  const page = await fetchTenantAnnouncementByDate(domain, isoDate);
   const serverNow = now.toISOString();
 
   if (!page?.content) return null;
 
   const pageTenant = page.tenant ? page.tenant as Tenant : null;
-  const period = page?.period ? page.period as PageType['period'] : null;
+  const period = page?.period ? page.period as AnnouncementType['period'] : null;
 
   // Calculate the date range for initial data fetch
   const currentDate = parseISO(isoDate);
@@ -149,7 +148,7 @@ export default async function AnnouncementPage({
     : null;
 
   // Fetch attachments and display settings
-  const { attachments, attachmentDisplay } = await fetchPageAttachments(page);
+  const { attachments, attachmentDisplay } = await fetchAnnouncementAttachments(page);
   const showAttachmentsAtBottom = attachmentDisplay.displayMode === 'collect-bottom';
   const showTopAlert = attachmentDisplay.showTopAlert === true;
 
@@ -194,7 +193,7 @@ export default async function AnnouncementPage({
             hideAttachments={showAttachmentsAtBottom}
           />
           {showAttachmentsAtBottom && attachments.length > 0 && (
-            <PageAttachments attachments={attachments} />
+            <AnnouncementAttachments attachments={attachments} />
           )}
           <NewsletterSignupForm subdomain={domain.split('.')[0]} className="mt-4" />
           <CMSLink url={'/ogloszenia'}

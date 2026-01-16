@@ -1,16 +1,16 @@
-import { Page } from '@/payload-types';
+import { Announcement } from '@/payload-types';
 import { format } from 'date-fns';
 import React from 'react';
 import { AnnouncementCard } from '../AnnouncementCard';
 
 type Props = {
-  announcements: Page[];
+  announcements: Announcement[];
   className?: string;
   currentMonth?: Date;
 };
 
 type GroupedAnnouncements = {
-  [key: string]: Page[];
+  [key: string]: Announcement[];
 };
 
 export const AnnouncementList: React.FC<Props> = ({

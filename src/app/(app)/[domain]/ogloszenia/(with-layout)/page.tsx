@@ -4,7 +4,7 @@ import { BreadcrumbItem, Breadcrumbs } from "@/_components/Breadcrumbs";
 import { Gutter } from "@/_components/Gutter";
 import { Media as MediaComponent } from "@/_components/Media";
 import { AnnouncementsPageClient } from "@/_components/AnnouncementList/AnnouncementsPageClient";
-import { Media, Tenant, Page } from "@/payload-types";
+import { Media, Tenant, Announcement } from "@/payload-types";
 import { Metadata } from "next";
 import { getMonthFromParams } from "./utils";
 import { garamond } from "@/fonts";
@@ -93,7 +93,7 @@ export default async function AnnouncementsListingPage({
 
   const searchParamsData = await searchParams;
   const { year, month } = getMonthFromParams(searchParamsData);
-  let announcements: Page[];
+  let announcements: Announcement[];
   
   try {
     announcements = await fetchAnnouncementsByMonth(subdomain, year, month);

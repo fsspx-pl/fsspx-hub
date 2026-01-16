@@ -33,7 +33,7 @@ export const SendButton: React.FC<{
     setIsLoading(true)
     const toastId = toast.loading('Sending newsletter...')
     try {
-      const response = await fetch(`/api/pages/${id}/send-newsletter?skipCalendar=${skipCalendar}`, {
+      const response = await fetch(`/api/announcements/${id}/send-newsletter?skipCalendar=${skipCalendar}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

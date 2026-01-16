@@ -2,10 +2,10 @@ import React from 'react'
 import { render } from '@testing-library/react'
 import { serialize, serializeForEmail } from './serialize'
 
-// Mock PageAttachments component
-jest.mock('@/_components/PageAttachments', () => ({
-  PageAttachments: ({ attachments }: { attachments: any }) => (
-    <div data-testid="page-attachments" data-media-id={attachments?.id}>
+// Mock AnnouncementAttachments component
+jest.mock('@/_components/AnnouncementAttachments', () => ({
+  AnnouncementAttachments: ({ attachments }: { attachments: any }) => (
+    <div data-testid="announcement-attachments" data-media-id={attachments?.id}>
       Attachment: {attachments?.filename}
     </div>
   ),
@@ -244,25 +244,25 @@ describe('RichText serialize - Attachment handling', () => {
   })
 
   describe('serialize (web)', () => {
-    it('should render upload nodes as PageAttachments when hideAttachments is false', () => {
+    it('should render upload nodes as AnnouncementAttachments when hideAttachments is false', () => {
       const children = [createUploadNode('media-123', 'document.pdf')]
       const result = serialize(children, false)
 
       const { container, getByTestId } = render(<>{result}</>)
       
-      const attachment = getByTestId('page-attachments')
+      const attachment = getByTestId('announcement-attachments')
       expect(attachment).toBeInTheDocument()
       expect(attachment).toHaveAttribute('data-media-id', 'media-123')
       expect(attachment).toHaveTextContent('document.pdf')
     })
 
-    it('should render upload nodes as PageAttachments when hideAttachments is undefined', () => {
+    it('should render upload nodes as AnnouncementAttachments when hideAttachments is undefined', () => {
       const children = [createUploadNode('media-456', 'image.png')]
       const result = serialize(children)
 
       const { getByTestId } = render(<>{result}</>)
       
-      const attachment = getByTestId('page-attachments')
+      const attachment = getByTestId('announcement-attachments')
       expect(attachment).toBeInTheDocument()
       expect(attachment).toHaveTextContent('image.png')
     })
@@ -273,7 +273,7 @@ describe('RichText serialize - Attachment handling', () => {
 
       const { container, queryByTestId } = render(<>{result}</>)
       
-      const attachment = queryByTestId('page-attachments')
+      const attachment = queryByTestId('announcement-attachments')
       expect(attachment).not.toBeInTheDocument()
     })
 
@@ -288,7 +288,7 @@ describe('RichText serialize - Attachment handling', () => {
       const { container, getByTestId } = render(<>{result}</>)
       expect(container.textContent).toContain('Before attachment')
       expect(container.textContent).toContain('After attachment')
-      expect(getByTestId('page-attachments')).toBeInTheDocument()
+      expect(getByTestId('announcement-attachments')).toBeInTheDocument()
     })
 
     it('should hide attachments in mixed content when hideAttachments is true', () => {
@@ -302,7 +302,7 @@ describe('RichText serialize - Attachment handling', () => {
       const { container, queryByTestId } = render(<>{result}</>)
       expect(container.textContent).toContain('Before attachment')
       expect(container.textContent).toContain('After attachment')
-      expect(queryByTestId('page-attachments')).not.toBeInTheDocument()
+      expect(queryByTestId('announcement-attachments')).not.toBeInTheDocument()
     })
 
     it('should handle upload nodes without populated media value', () => {
@@ -318,7 +318,7 @@ describe('RichText serialize - Attachment handling', () => {
       const { queryByTestId } = render(<>{result}</>)
       
       // Should not render when value is just a string ID
-      const attachment = queryByTestId('page-attachments')
+      const attachment = queryByTestId('announcement-attachments')
       expect(attachment).not.toBeInTheDocument()
     })
   })
@@ -330,7 +330,7 @@ describe('RichText serialize - Attachment handling', () => {
 
       const { queryByTestId } = render(<>{result}</>)
       
-      const attachment = queryByTestId('page-attachments')
+      const attachment = queryByTestId('announcement-attachments')
       expect(attachment).not.toBeInTheDocument()
     })
 
@@ -340,7 +340,7 @@ describe('RichText serialize - Attachment handling', () => {
 
       const { queryByTestId } = render(<>{result}</>)
       
-      const attachment = queryByTestId('page-attachments')
+      const attachment = queryByTestId('announcement-attachments')
       expect(attachment).not.toBeInTheDocument()
     })
 
@@ -350,7 +350,7 @@ describe('RichText serialize - Attachment handling', () => {
 
       const { getByTestId } = render(<>{result}</>)
       
-      const attachment = getByTestId('page-attachments')
+      const attachment = getByTestId('announcement-attachments')
       expect(attachment).toBeInTheDocument()
     })
 
@@ -366,7 +366,7 @@ describe('RichText serialize - Attachment handling', () => {
       
       expect(container.textContent).toContain('Email content start')
       expect(container.textContent).toContain('Email content end')
-      expect(queryByTestId('page-attachments')).not.toBeInTheDocument()
+      expect(queryByTestId('announcement-attachments')).not.toBeInTheDocument()
     })
   })
 })

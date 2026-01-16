@@ -1,7 +1,7 @@
 import { Badge } from '@/_components/Badge';
 import Arrow from '@/_components/Calendar/ArrowButton/arrow.svg';
 import { garamond } from '@/fonts';
-import { Media, Page, User } from '@/payload-types';
+import { Announcement, Media, User } from '@/payload-types';
 import { formatAuthorName } from '@/utilities/formatAuthorName';
 import { generateExcerpt } from '@/utilities/generateExcerpt';
 import { isCurrentAnnouncement } from '@/utilities/isCurrentAnnouncement';
@@ -12,7 +12,7 @@ import { ArticleInfo } from '../ArticleInfo';
 import { CMSLink } from '../Link';
 
 type Props = {
-  announcement: Page;
+  announcement: Announcement;
   className?: string;
   currentMonth?: Date;
 };

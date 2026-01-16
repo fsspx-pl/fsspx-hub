@@ -25,7 +25,7 @@ const setMediaPrefix: CollectionBeforeChangeHook<MediaType> = async ({
   // Check if this upload is coming from a page's attachment field
   // When uploading through an upload field, PayloadCMS may include context in req
   const referer = req.headers?.get?.('referer') || '';
-  const isPageAttachment = referer.includes('/admin/collections/pages');
+  const isPageAttachment = referer.includes('/admin/collections/announcements');
 
   // If it's a page attachment and we have a page ID in the context, set custom prefix
   // Note: This will be updated by the Pages afterChange hook if needed

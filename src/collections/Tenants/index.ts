@@ -148,8 +148,8 @@ export const Tenants: CollectionConfig = {
           defaultValue: true,
           admin: {
             description: {
-              pl: 'Gdy wyłączone, ogłoszenia duszpasterskie nie będą dostępne publicznie. Strony nadal mogą być publikowane wewnętrznie.',
-              en: 'When disabled, pastoral announcements will not be publicly available. Pages can still be published internally.'
+              pl: 'Gdy wyłączone, ogłoszenia duszpasterskie nie będą dostępne publicznie. Ogłoszenia nadal mogą być publikowane wewnętrznie.',
+              en: 'When disabled, pastoral announcements will not be publicly available. Announcements can still be published internally.'
             }
           }
         },

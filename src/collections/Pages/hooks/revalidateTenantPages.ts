@@ -1,9 +1,9 @@
 import { revalidateTag } from "next/cache";
 import { CollectionAfterChangeHook } from "payload";
 import { format, parseISO } from "date-fns";
-import { Page } from "@/payload-types";
+import { Announcement } from "@/payload-types";
 
-export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
+export const revalidateTenantPages: CollectionAfterChangeHook<Announcement> = async ({
   doc,
   req: { payload },
   operation,
@@ -28,7 +28,7 @@ export const revalidateTenantPages: CollectionAfterChangeHook<Page> = async ({
     payload.logger.info(`Revalidated date tag: ${dateTag}`);
 
     const newestPage = await payload.find({
-      collection: "pages",
+      collection: "announcements",
       where: {
         tenant: { equals: doc.tenant },
         _status: { equals: "published" }

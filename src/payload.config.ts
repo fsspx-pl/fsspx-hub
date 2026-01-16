@@ -20,7 +20,7 @@ import { Events } from './collections/Events'
 import { revalidateEventPages } from './collections/Events/hooks/revalidateEventPages'
 import { Media } from './collections/Media'
 import { NewsletterSubscriptions } from './collections/NewsletterSubscriptions'
-import { Pages } from './collections/Pages'
+import { Announcements } from './collections/Pages'
 import { ServiceWeeks } from './collections/ServiceWeeks'
 import { Services } from './collections/Services'
 import { Tenants } from './collections/Tenants'
@@ -70,7 +70,7 @@ export default buildConfig({
     browseByFolder: false, // Disable global folder view - folders only work within Media collection
   },
   globals: [Settings, Header, Footer],
-  collections: [Users, Tenants, Pages, Media, Services, ServiceWeeks, NewsletterSubscriptions, Events],
+  collections: [Users, Tenants, Announcements, Media, Services, ServiceWeeks, NewsletterSubscriptions, Events],
   plugins: [
     s3Storage({
       collections: {

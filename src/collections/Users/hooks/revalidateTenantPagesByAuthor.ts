@@ -5,7 +5,7 @@ import { Tenant, User } from "@/payload-types";
 
 const revalidationProps: (keyof User)[] = ['firstName', 'lastName', 'avatar', 'salutation']
 
-export const revalidatePagesByAuthor: CollectionAfterChangeHook = async ({
+export const revalidateAnnouncementsByAuthor: CollectionAfterChangeHook = async ({
   doc,
   req: { payload },
   operation,
@@ -19,7 +19,7 @@ export const revalidatePagesByAuthor: CollectionAfterChangeHook = async ({
     if (!shouldRevalidate.length) return;
 
     const pages = await payload.find({
-      collection: 'pages',
+      collection: 'announcements',
       where: {
         author: {
           equals: doc.id
@@ -49,7 +49,7 @@ export const revalidatePagesByAuthor: CollectionAfterChangeHook = async ({
       const pageEndDate = page.period.end ? new Date(page.period.end) : null;
 
       const newestPage = await payload.find({
-        collection: "pages",
+        collection: "announcements",
         where: {
           tenant: { equals: tenant.id },
           ['period.start']: { less_than_equal: pageStartDate },

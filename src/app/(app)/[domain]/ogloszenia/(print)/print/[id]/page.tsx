@@ -1,14 +1,15 @@
-import { fetchPageById } from "@/_api/fetchPage";
+import { fetchAnnouncementById } from "@/_api/fetchAnnouncement";
 import { fetchTenant } from "@/_api/fetchTenants";
 import { FeastWithMasses } from "@/_components/Calendar";
 
-import { Page as PageType, Tenant } from "@/payload-types";
+import { Announcement as AnnouncementType, Tenant } from "@/payload-types";
 import { parse } from "date-fns";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { getFeastsWithMasses } from "../../../../../../../common/getFeastsWithMasses";
 import { PrintableAnnouncements } from "./PrintableAnnouncements";
 import { checkPrintAccess } from "@/utilities/checkPrintAccess";
-import { fetchPageAttachments } from "@/utilities/fetchPageAttachments";
+import { fetchAnnouncementAttachments } from "@/utilities/fetchAnnouncementAttachments";
 
 // Force dynamic rendering since we use headers() for authentication
 export const dynamic = 'force-dynamic';
@@ -66,13 +67,11 @@ export default async function PrintPage({
     }
   }
   if (!tenant) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
   const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
@@ -81,15 +80,13 @@ export default async function PrintPage({
   const isAuthenticated = await checkPrintAccess(fullDomain, token);
   
   if (!isAuthenticated) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
   // Authenticated users can see both drafts and published pages
-  const page = await fetchPageById(id);
+  const page = await fetchAnnouncementById(id);
 
   if (!page || !page.content) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
@@ -98,7 +95,6 @@ export default async function PrintPage({
 
   // Verify it's a pastoral announcements page
   if (validPage.type !== 'pastoral-announcements') {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
@@ -106,11 +102,10 @@ export default async function PrintPage({
   const pageTenant = validPage.tenant ? (typeof validPage.tenant === 'string' ? null : validPage.tenant as Tenant) : null;
   
   if (!pageTenant || pageTenant.id !== tenant.id) {
-    const { notFound } = await import('next/navigation');
     notFound();
   }
 
-  const period = validPage.period ? validPage.period as PageType['period'] : null;
+  const period = validPage.period ? validPage.period as AnnouncementType['period'] : null;
 
   if(!period?.start || !period?.end) return null;
 
@@ -133,7 +128,7 @@ export default async function PrintPage({
   );
 
   // Fetch attachments and display settings
-  const { attachments, attachmentDisplay } = await fetchPageAttachments(validPage);
+  const { attachments, attachmentDisplay } = await fetchAnnouncementAttachments(validPage);
 
   return (
     <PrintableAnnouncements

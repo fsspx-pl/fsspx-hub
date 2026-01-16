@@ -1,8 +1,8 @@
 import { CollectionBeforeChangeHook } from "payload";
 import { endOfDay, startOfDay } from "date-fns";
-import { Page } from "@/payload-types";
+import { Announcement } from "@/payload-types";
 
-export const normalizePeriodDates: CollectionBeforeChangeHook<Page> = async ({
+export const normalizePeriodDates: CollectionBeforeChangeHook<Announcement> = async ({
   data,
 }) => {
   // Fix period dates to start/end of day

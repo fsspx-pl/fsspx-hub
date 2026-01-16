@@ -1,7 +1,7 @@
 import { CollectionBeforeChangeHook } from "payload";
-import { Page } from "@/payload-types";
+import { Announcement } from "@/payload-types";
 
-export const resetNewsletterSentOnCreate: CollectionBeforeChangeHook<Page> = async ({
+export const resetNewsletterSentOnCreate: CollectionBeforeChangeHook<Announcement> = async ({
   operation,
   data,
 }) => {
