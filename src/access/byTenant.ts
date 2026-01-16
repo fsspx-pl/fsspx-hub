@@ -46,11 +46,11 @@ export const tenantOnlyAccess: Access = ({ req: { user }, data }) => {
     return allowedTenantIds.includes(String(docTenant))
   }
 
-  // Collection-level guard (limit to allowed tenants)
+  // Collection-level guard (Payload "where" syntax)
   return {
-    tenant: {
-      in: allowedTenantIds,
-    },
+    or: allowedTenantIds.map((tenantId) => ({
+      tenant: { equals: tenantId },
+    })),
   }
 }
 
@@ -63,9 +63,9 @@ export const tenantReadOrPublic: Access = ({ req: { user } }) => {
   if (!allowedTenantIds.length) return false
 
   return {
-    tenant: {
-      in: allowedTenantIds,
-    },
+    or: allowedTenantIds.map((tenantId) => ({
+      tenant: { equals: tenantId },
+    })),
   }
 }
 
