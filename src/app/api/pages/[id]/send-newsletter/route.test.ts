@@ -5,7 +5,7 @@ jest.mock('payload', () => ({
 jest.mock('@/_api/fetchGlobals');
 jest.mock('@/common/getFeastsWithMasses');
 jest.mock('@/_components/RichText/serialize');
-jest.mock('@/utilities/awsSes', () => ({
+jest.mock('@/utilities/aws/ses', () => ({
   sendBulkEmail: jest.fn(),
 }));
 jest.mock('@/utilities/nodemailerSes');
