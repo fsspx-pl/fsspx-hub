@@ -9,7 +9,7 @@ import { render } from "@react-email/components";
 import { fetchFooter, fetchSettings } from "@/_api/fetchGlobals";
 import { getFeastsWithMasses } from "@/common/getFeastsWithMasses";
 import { serializeForEmail } from "@/_components/RichText/serialize";
-import { sendBulkEmailToRecipients } from "@/utilities/awsSes";
+import { sendBulkEmailToRecipients } from "@/utilities/aws/ses";
 import { sendEmail, sendNewsletterToRecipients } from "@/utilities/nodemailerSes";
 import { personalizeUnsubscribeUrl } from "@/utilities/personalizeUnsubscribe";
 import { formatAttachmentsForEmail } from "@/utilities/s3Download";

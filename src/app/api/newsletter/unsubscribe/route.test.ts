@@ -3,7 +3,7 @@ jest.mock('payload', () => ({
   getPayload: jest.fn(),
 }));
 jest.mock('@/_api/fetchTenants');
-jest.mock('@/utilities/awsSes', () => ({
+jest.mock('@/utilities/aws/ses', () => ({
   unsubscribeFromTopic: jest.fn(),
 }));
 jest.mock('next/server', () => ({
@@ -27,7 +27,7 @@ jest.mock('next/server', () => ({
 import { POST } from './route';
 import { NextRequest } from 'next/server';
 import { getPayload } from 'payload';
-import { unsubscribeFromTopic } from '@/utilities/awsSes';
+import { unsubscribeFromTopic } from '@/utilities/aws/ses';
 
 const mockGetPayload = getPayload as jest.MockedFunction<typeof getPayload>;
 const mockUnsubscribeFromTopic = unsubscribeFromTopic as jest.MockedFunction<typeof unsubscribeFromTopic>;

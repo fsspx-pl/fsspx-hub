@@ -1,5 +1,5 @@
 import { NewsletterStatusPage } from '@/_components/Newsletter/NewsletterStatusPage';
-import { addContactToList } from '@/utilities/awsSes';
+import { addContactToList } from '@/utilities/aws/ses';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { redirect } from 'next/navigation';
