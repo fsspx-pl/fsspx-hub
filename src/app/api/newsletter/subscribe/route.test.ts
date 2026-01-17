@@ -4,7 +4,7 @@ jest.mock('payload', () => ({
 }));
 jest.mock('@/_api/fetchTenants');
 jest.mock('@/_api/fetchGlobals');
-jest.mock('@/utilities/awsSes', () => ({
+jest.mock('@/utilities/aws/ses', () => ({
   addContactToList: jest.fn(),
   contactExistsInList: jest.fn(),
 }));
@@ -37,7 +37,7 @@ import { NextRequest } from 'next/server';
 import { getPayload } from 'payload';
 import { fetchTenant } from '@/_api/fetchTenants';
 import { fetchSettings } from '@/_api/fetchGlobals';
-import { contactExistsInList } from '@/utilities/awsSes';
+import { contactExistsInList } from '@/utilities/aws/ses';
 import { sendEmail } from '@/utilities/nodemailerSes';
 import { render } from '@react-email/components';
 

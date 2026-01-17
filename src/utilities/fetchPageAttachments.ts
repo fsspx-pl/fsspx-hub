@@ -69,5 +69,10 @@ export async function prepareEmailAttachments(
     })
   );
 
-  return results.filter((att): att is EmailAttachment => att !== null);
+  return results.filter((att): att is EmailAttachment => 
+    att !== null && 
+    att.filename !== null && 
+    att.filename !== undefined && 
+    att.filename.trim().length > 0
+  );
 }
