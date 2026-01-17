@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchTenant } from '@/_api/fetchTenants';
 import { fetchSettings } from '@/_api/fetchGlobals';
-import { addContactToList, contactExistsInList } from '@/utilities/awsSes';
+import { addContactToList, contactExistsInList } from '@/utilities/aws/ses';
 import { sendEmail } from '@/utilities/nodemailerSes';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';

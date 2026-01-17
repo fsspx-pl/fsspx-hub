@@ -1,5 +1,6 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
+import mimeTypes from 'mime-types';
 
 if (!process.env.AWS_S3_BUCKET) {
   console.error('AWS_S3_BUCKET environment variable is not set');
@@ -83,8 +84,8 @@ export async function getMediaAsEmailAttachment(
   content: Buffer;
   contentType?: string;
 }> {
-  if (!media.filename) {
-    throw new Error(`Media document ${media.id} has no filename`);
+  if (!media.filename || media.filename.trim().length === 0) {
+    throw new Error(`Media document ${media.id} has no valid filename`);
   }
 
   // Use prefix from Media document, fallback to 'media' for backward compatibility
@@ -97,7 +98,9 @@ export async function getMediaAsEmailAttachment(
     return {
       filename: media.filename,
       content: buffer,
-      contentType: media.mimeType || 'application/pdf',
+      contentType: media.mimeType?.trim().length
+        ? media.mimeType
+        : mimeTypes.lookup(media.filename) || 'application/octet-stream',
     };
   } catch (error: any) {
     // If the file is not found with the specified prefix, try alternative prefixes
@@ -125,7 +128,9 @@ export async function getMediaAsEmailAttachment(
           return {
             filename: media.filename,
             content: buffer,
-            contentType: media.mimeType || 'application/pdf',
+            contentType: media.mimeType?.trim().length
+              ? media.mimeType
+              : mimeTypes.lookup(media.filename) || 'application/octet-stream',
           };
         } catch (altError) {
           // Continue to next alternative or re-throw original error

@@ -1,9 +1,7 @@
-import { SESv2Client, SendEmailCommand, CreateContactCommand, GetContactCommand, UpdateContactCommand } from '@aws-sdk/client-sesv2';
+import { CreateContactCommand, SESv2Client, UpdateContactCommand } from '@aws-sdk/client-sesv2';
+import { prepareAwsSesAttachments } from '@/utilities/aws/prepareSesAttachments';
+import mimeTypes from 'mime-types';
 
-// Note: Using console for now as these utilities don't have access to payload instance
-// In production, consider passing logger from the calling context
-
-// Validate AWS configuration
 if (!process.env.AWS_REGION) {
   console.error('AWS_REGION environment variable is not set');
 }
@@ -17,7 +15,6 @@ if (!process.env.FROM_ADDRESS) {
   console.error('FROM_ADDRESS environment variable is not set');
 }
 
-// Initialize SES v2 client
 const sesClient = new SESv2Client({
   region: process.env.AWS_REGION,
   credentials: {
@@ -45,7 +42,13 @@ export async function sendBulkEmailToRecipients(emailData: {
     console.info('Sending bulk email to recipients:', {
       subject: emailData.subject,
       fromName: emailData.fromName,
-      recipientCount: emailData.recipients.length
+      recipientCount: emailData.recipients.length,
+      attachmentCount: emailData.attachments?.length || 0,
+      attachments: emailData.attachments?.map(att => ({
+        filename: att.filename,
+        contentType: att.contentType || mimeTypes.lookup(att.filename) || 'application/octet-stream',
+        size: att.content.length
+      })) || []
     });
 
     if (emailData.recipients.length === 0) {
@@ -69,6 +72,8 @@ export async function sendBulkEmailToRecipients(emailData: {
       errors: [] as string[]
     };
 
+    const preparedAttachments = prepareAwsSesAttachments(emailData.attachments);
+
     // Send emails in batches to respect rate limits
     const batchSize = 10;
     for (let i = 0; i < emailData.recipients.length; i += batchSize) {
@@ -86,7 +91,6 @@ export async function sendBulkEmailToRecipients(emailData: {
             }
           }
 
-          // Build email content with attachments if present
           const emailContent: any = {
             Subject: {
               Data: emailData.subject,
@@ -100,15 +104,8 @@ export async function sendBulkEmailToRecipients(emailData: {
             },
           };
 
-          // Add attachments if present
-          if (emailData.attachments && emailData.attachments.length > 0) {
-            emailContent.Attachments = emailData.attachments.map(att => ({
-              Filename: att.filename,
-              RawContent: att.content.toString('base64'),
-              ContentType: att.contentType || 'application/pdf',
-              ContentDisposition: 'ATTACHMENT',
-              ContentTransferEncoding: 'BASE64',
-            }));
+          if (preparedAttachments && preparedAttachments.length > 0) {
+            emailContent.Attachments = preparedAttachments;
           }
 
           const sendCommand = new SendEmailCommand({
@@ -122,7 +119,42 @@ export async function sendBulkEmailToRecipients(emailData: {
             ReplyToAddresses: [emailData.replyTo],
           });
 
-          const response = await sesClient.send(sendCommand);
+          let response;
+          try {
+            response = await sesClient.send(sendCommand);
+          } catch (error: any) {
+            // Handle known SerializationException bug when using Buffer for RawContent
+            // Fall back to base64 string encoding
+            if (error.name === 'SerializationException' && preparedAttachments && preparedAttachments.length > 0) {
+              console.warn(`SerializationException for ${email}, retrying with base64 string encoding`);
+              
+              // Convert Buffer RawContent to base64 string
+              const fallbackAttachments = preparedAttachments.map(att => ({
+                ...att,
+                RawContent: Buffer.isBuffer(att.RawContent) 
+                  ? att.RawContent.toString('base64')
+                  : att.RawContent,
+              }));
+              
+              emailContent.Attachments = fallbackAttachments;
+              
+              const retryCommand = new SendEmailCommand({
+                Destination: {
+                  ToAddresses: [email],
+                },
+                Content: {
+                  Simple: emailContent,
+                },
+                FromEmailAddress: emailData.fromEmail,
+                ReplyToAddresses: [emailData.replyTo],
+              });
+              
+              response = await sesClient.send(retryCommand);
+            } else {
+              throw error;
+            }
+          }
+          
           results.successful++;
           console.info(`✅ Sent to ${email}: ${response.MessageId}`);
           return response.MessageId;

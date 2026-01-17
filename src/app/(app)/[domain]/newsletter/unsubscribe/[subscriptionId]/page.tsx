@@ -1,5 +1,5 @@
 import { NewsletterStatusPage } from '@/_components/Newsletter/NewsletterStatusPage';
-import { unsubscribeFromTopic } from '@/utilities/awsSes';
+import { unsubscribeFromTopic } from '@/utilities/aws/ses';
 import configPromise from '@payload-config';
 import { getPayload } from 'payload';
 import { redirect } from 'next/navigation';

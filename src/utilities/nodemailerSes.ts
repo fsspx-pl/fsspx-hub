@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { personalizeUnsubscribeUrl } from './personalizeUnsubscribe';
+import mimeTypes from 'mime-types';
 
 // Note: Using console for now as these utilities don't have access to payload instance
 // In production, consider passing logger from the calling context
@@ -84,72 +85,6 @@ export async function sendEmail(emailData: {
   }
 }
 
-/**
- * Send bulk emails to multiple recipients
- * Note: In sandbox mode, recipients must be verified
- */
-export async function sendBulkEmails(emailData: {
-  recipients: string[];
-  subject: string;
-  html: string;
-  text?: string;
-  from?: string;
-  replyTo?: string;
-  batchSize?: number;
-}) {
-  try {
-    console.info('Sending bulk emails via Nodemailer + AWS SES:', {
-      recipientCount: emailData.recipients.length,
-      subject: emailData.subject,
-      batchSize: emailData.batchSize || 10
-    });
-
-    const transporter = createSESTransporter();
-    const batchSize = emailData.batchSize || 10;
-    const results = {
-      total: emailData.recipients.length,
-      successful: 0,
-      failed: 0,
-      errors: [] as string[]
-    };
-
-    // Process recipients in batches
-    for (let i = 0; i < emailData.recipients.length; i += batchSize) {
-      const batch = emailData.recipients.slice(i, i + batchSize);
-      
-      const mailOptions = {
-        from: emailData.from || process.env.FROM_ADDRESS,
-        to: batch.join(', '),
-        subject: emailData.subject,
-        html: emailData.html,
-        text: emailData.text,
-        replyTo: emailData.replyTo,
-      };
-
-      try {
-        const result = await transporter.sendMail(mailOptions);
-        results.successful += batch.length;
-        console.info(`Batch ${Math.floor(i / batchSize) + 1} sent successfully:`, result.messageId);
-      } catch (error) {
-        results.failed += batch.length;
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        results.errors.push(`Batch ${Math.floor(i / batchSize) + 1}: ${errorMsg}`);
-        console.error(`Batch ${Math.floor(i / batchSize) + 1} failed:`, errorMsg);
-      }
-
-      // Add delay between batches to respect rate limits
-      if (i + batchSize < emailData.recipients.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    }
-
-    console.info('Bulk email sending completed:', results);
-    return results;
-  } catch (error) {
-    console.error('Failed to send bulk emails:', error);
-    throw new Error(`Bulk email sending failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
-}
 
 /**
  * Send newsletter to a list of recipients using Nodemailer
@@ -169,7 +104,13 @@ export async function sendNewsletterToRecipients(emailData: {
   try {
     console.info('Sending newsletter to recipients:', {
       recipientCount: emailData.recipients.length,
-      subject: emailData.subject
+      subject: emailData.subject,
+      attachmentCount: emailData.attachments?.length || 0,
+      attachments: emailData.attachments?.map(att => ({
+        filename: att.filename,
+        contentType: att.contentType || mimeTypes.lookup(att.filename) || 'application/octet-stream',
+        size: att.content.length
+      })) || []
     });
 
     if (emailData.recipients.length === 0) {
