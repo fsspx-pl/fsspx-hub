@@ -115,7 +115,7 @@ export async function sendBulkEmailToRecipients(emailData: {
             Content: {
               Simple: emailContent,
             },
-            FromEmailAddress: emailData.fromEmail,
+            FromEmailAddress: emailData.fromName,
             ReplyToAddresses: [emailData.replyTo],
           });
 
@@ -145,7 +145,7 @@ export async function sendBulkEmailToRecipients(emailData: {
                 Content: {
                   Simple: emailContent,
                 },
-                FromEmailAddress: emailData.fromEmail,
+                FromEmailAddress: emailData.fromName,
                 ReplyToAddresses: [emailData.replyTo],
               });
               
