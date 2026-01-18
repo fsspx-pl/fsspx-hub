@@ -27,6 +27,11 @@ export async function GET(request: NextRequest) {
 
     const announcements = await fetchAnnouncementsByMonth(domain, yearNum, monthNum);
 
+    // Log for debugging - remove in production if not needed
+    if (process.env.NODE_ENV === 'development' && announcements.length === 0) {
+      console.log(`[DEBUG] No announcements found for domain: ${domain}, year: ${yearNum}, month: ${monthNum}`);
+    }
+
     return NextResponse.json(announcements);
   } catch (error) {
     console.error('Error in announcements API:', error);
