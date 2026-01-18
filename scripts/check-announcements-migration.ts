@@ -1,7 +1,8 @@
-#!/usr/bin/env ts-node
 /**
  * Diagnostic script to check the state of pages vs announcements collections
  * and ensure data is properly migrated.
+ * 
+ * Run with: pnpm check:announcements
  */
 
 import configPromise from '@payload-config';

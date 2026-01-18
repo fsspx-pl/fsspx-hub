@@ -1,7 +1,8 @@
-#!/usr/bin/env ts-node
 /**
  * Force migration script to copy data from pages to announcements collection.
  * This script will upsert all documents from pages into announcements.
+ * 
+ * Run with: pnpm migrate:announcements
  */
 
 import configPromise from '@payload-config';
