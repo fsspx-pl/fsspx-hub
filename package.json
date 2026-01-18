@@ -22,6 +22,8 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "ci": "payload migrate && pnpm build",
+    "check:announcements": "ts-node --project tsconfig.json scripts/check-announcements-migration.ts",
+    "migrate:announcements": "ts-node --project tsconfig.json scripts/force-migrate-pages-to-announcements.ts",
     "generate:types": "payload generate:types",
     "generate:schema": "payload-graphql generate:schema",
     "storybook": "storybook dev -p 6006",
