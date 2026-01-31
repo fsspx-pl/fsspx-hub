@@ -11,7 +11,7 @@
  *   - Note: This is best-effort and may not perfectly reverse the migration
  */
 
-import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb';
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-d1-sqlite';
 import { SESv2Client, ListContactsCommand } from '@aws-sdk/client-sesv2';
 import { Tenant } from '@/payload-types';
 

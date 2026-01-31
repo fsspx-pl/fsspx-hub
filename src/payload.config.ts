@@ -1,4 +1,6 @@
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import fs from 'fs'
+import path from 'path'
+import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -10,10 +12,11 @@ import {
 } from '@payloadcms/richtext-lexical'
 import { en } from '@payloadcms/translations/languages/en'
 import { pl } from '@payloadcms/translations/languages/pl'
-import path from 'path'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 import { fileURLToPath } from 'url'
+import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
+import { GetPlatformProxyOptions } from 'wrangler'
 import { newsletterTranslations } from './_components/Newsletter/translations'
 import { tenantOnlyAccess } from './access/byTenant'
 import { Events } from './collections/Events'
@@ -32,10 +35,22 @@ import { anyone } from './access/anyone'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+const realpath = (value: string) => (fs.existsSync(value) ? fs.realpathSync(value) : undefined)
+
+const isCLI = process.argv.some((value) => realpath(value)?.endsWith(path.join('payload', 'bin.js')))
+const isProduction = process.env.NODE_ENV === 'production'
+
+const cloudflare =
+  isCLI || !isProduction
+    ? await getCloudflareContextFromWrangler()
+    : await getCloudflareContext({ async: true })
 
 export default buildConfig({
   admin: {
     user: Users.slug,
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
     timezones: {
       defaultTimezone: 'Europe/Warsaw',
       supportedTimezones: [
@@ -140,14 +155,7 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
-    connectOptions: {
-      directConnection: process.env.DATABASE_DIRECT_CONNECTION === 'true',
-      tls: process.env.DATABASE_TLS === 'true',
-      tlsAllowInvalidCertificates: true,
-    },
-  }),
+  db: sqliteD1Adapter({ binding: cloudflare.env.DB }),
   sharp,
   email: nodemailerAdapter({
     defaultFromAddress: process.env.FROM_ADDRESS as string,
@@ -162,3 +170,14 @@ export default buildConfig({
     },
   }),
 })
+
+// Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46
+function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
+  return import(/* webpackIgnore: true */ `${'__wrangler'.replaceAll('_', '')}`).then(
+    ({ getPlatformProxy }) =>
+      getPlatformProxy({
+        environment: process.env.CLOUDFLARE_ENV,
+        remoteBindings: isProduction,
+      } satisfies GetPlatformProxyOptions),
+  )
+}

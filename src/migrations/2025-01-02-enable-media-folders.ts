@@ -1,4 +1,4 @@
-import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb';
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-d1-sqlite';
 
 /**
  * Migration to enable folders feature for Media collection
