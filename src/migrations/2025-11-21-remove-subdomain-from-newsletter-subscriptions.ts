@@ -1,4 +1,4 @@
-import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-d1';
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-d1-sqlite';
 
 const SUBSCRIPTIONS_COLLECTION = 'newsletterSubscriptions';
 const TENANTS_COLLECTION = 'tenants';

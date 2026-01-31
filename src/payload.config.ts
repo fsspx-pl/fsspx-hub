@@ -1,4 +1,4 @@
-import { d1Adapter } from '@payloadcms/db-d1'
+import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -140,9 +140,12 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: d1Adapter({
-    // D1 database is provided via Cloudflare's runtime environment
-    // In local development, use wrangler to provide the D1 binding
+  db: sqliteD1Adapter({
+    // D1 database binding is provided via Cloudflare's runtime environment
+    // The binding name 'DB' matches the wrangler.toml configuration
+    // Note: For full Cloudflare integration, consider using @opennextjs/cloudflare
+    // For now, this will work with wrangler in local dev and Cloudflare Pages in production
+    binding: (globalThis as any).DB,
   }),
   sharp,
   email: nodemailerAdapter({
