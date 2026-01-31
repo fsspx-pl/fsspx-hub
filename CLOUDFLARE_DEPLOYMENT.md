@@ -1,12 +1,13 @@
 # Cloudflare Deployment Guide
 
-This guide explains how to deploy this PayloadCMS application to Cloudflare Pages with D1 database.
+This guide explains how to deploy this PayloadCMS application to Cloudflare Pages with D1 database using the official PayloadCMS Cloudflare template approach.
 
 ## Prerequisites
 
 1. Cloudflare account
 2. Wrangler CLI installed: `npm install -g wrangler` or `pnpm add -g wrangler`
 3. Cloudflare account authenticated: `wrangler login`
+4. Install dependencies: `pnpm install`
 
 ## Setup Steps
 
@@ -69,17 +70,33 @@ Set the following environment variables in Cloudflare Pages dashboard:
 
 The project is configured to work with Cloudflare Pages. The build output is set in `next.config.mjs`.
 
-### 5. Deploy to Cloudflare Pages
+### 5. Generate TypeScript Types
+
+Generate Cloudflare environment types:
+
+```bash
+pnpm generate:types:cloudflare
+```
+
+This creates/updates `cloudflare-env.d.ts` with the correct TypeScript types for your Cloudflare bindings.
+
+### 6. Deploy to Cloudflare Pages
 
 #### Option A: Deploy via Wrangler CLI
 
 ```bash
-# Build the project
-pnpm build
+# Set your Cloudflare environment (optional, defaults to production)
+export CLOUDFLARE_ENV=production
 
-# Deploy to Cloudflare Pages
+# Deploy database migrations and app
 pnpm deploy
 ```
+
+This will:
+1. Run database migrations
+2. Optimize the D1 database
+3. Build the app with `@opennextjs/cloudflare`
+4. Deploy to Cloudflare Pages
 
 #### Option B: Deploy via GitHub Actions
 
@@ -88,36 +105,38 @@ Connect your repository to Cloudflare Pages:
 1. Go to Cloudflare Dashboard > Pages
 2. Create a new project
 3. Connect your Git repository
-4. Set build command: `pnpm ci`
-5. Set build output directory: `.next`
+4. Set build command: `pnpm ci && pnpm generate:types:cloudflare && opennextjs-cloudflare build`
+5. Set build output directory: `.open-next` (created by opennextjs-cloudflare)
 6. Add environment variables in the dashboard
+7. Configure D1 database binding in Pages settings
 
-### 6. Local Development with Cloudflare
+### 7. Local Development with Cloudflare
 
 To test locally with Cloudflare D1:
 
 ```bash
-# Start local D1 database
-wrangler d1 execute fsspx-hub-db --local
-
-# Run development server with Cloudflare bindings
-pnpm dev:cloudflare
+# Run development server (wrangler will automatically provide D1 bindings)
+pnpm dev
 ```
+
+The Cloudflare context will automatically use wrangler's platform proxy in development mode, providing access to your local D1 database.
 
 ## Important Notes
 
-1. **Database Migration**: Always run migrations after creating the database or when schema changes occur.
+1. **Database Migration**: Always run migrations after creating the database or when schema changes occur. The `deploy:database` script handles this automatically.
 
 2. **D1 Limitations**: D1 is SQLite-based and has some limitations compared to MongoDB:
    - No transactions across multiple statements in some cases
    - Different data types
    - PayloadCMS will handle the migration automatically
 
-3. **Storage**: Media files are still stored in S3. Ensure your S3 credentials are properly configured.
+3. **Storage**: Media files are still stored in S3. Ensure your S3 credentials are properly configured. You can migrate to Cloudflare R2 later if desired.
 
 4. **Email**: Email functionality uses Nodemailer. Ensure SMTP credentials are set correctly.
 
-5. **Build Output**: The project uses Next.js standalone output for Cloudflare Pages compatibility.
+5. **Build System**: The project uses `@opennextjs/cloudflare` for building and deploying to Cloudflare Pages. This handles the conversion of Next.js to Cloudflare Workers format.
+
+6. **Cloudflare Context**: The app uses `@opennextjs/cloudflare` to access Cloudflare bindings (D1, R2, etc.) in both development and production environments.
 
 ## Troubleshooting
 

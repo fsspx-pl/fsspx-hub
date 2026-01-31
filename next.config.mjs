@@ -3,6 +3,9 @@ import { withPostHogConfig } from "@posthog/nextjs-config";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Packages with Cloudflare Workers (workerd) specific code
+  // Read more: https://opennext.js.org/cloudflare/howtos/workerd
+  serverExternalPackages: ['jose', 'pg-cloudflare'],
   output: "standalone",
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,
@@ -45,6 +48,12 @@ const nextConfig = {
     ],
   },
   webpack(config) {
+    config.resolve.extensionAlias = {
+      '.cjs': ['.cts', '.cjs'],
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.mjs': ['.mts', '.mjs'],
+    };
+
     config.module.rules.push({
       test: /\.svg$/,
       // Match both Unix (/) and Windows (\) path separators
@@ -59,7 +68,7 @@ const nextConfig = {
 };
 
 export default withPostHogConfig(
-  withPayload(nextConfig),
+  withPayload(nextConfig, { devBundleServerPackages: false }),
   {
     personalApiKey: process.env.POSTHOG_ERROR_TRACKING_APIKEY,
     envId: process.env.POSTHOG_ENV_ID,
