@@ -1,5 +1,5 @@
 import { Page } from '@/payload-types';
-import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb';
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-d1';
 
 // Removes legacy campaignId values from existing Page documents.
 // Note: Keep the schema field temporarily so this migration can query it.

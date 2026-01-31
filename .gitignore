@@ -36,3 +36,7 @@ tasks
 #playwirght
 playwright-report
 test-results
+
+# cloudflare
+.wrangler
+.wrangler-state

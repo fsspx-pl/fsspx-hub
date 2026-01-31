@@ -1,4 +1,4 @@
-import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-mongodb';
+import type { MigrateDownArgs, MigrateUpArgs } from '@payloadcms/db-d1';
 
 export async function up({ payload }: MigrateUpArgs): Promise<void> {
   const pageSize = 100;

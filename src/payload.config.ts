@@ -1,4 +1,4 @@
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
+import { d1Adapter } from '@payloadcms/db-d1'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { s3Storage } from '@payloadcms/storage-s3'
@@ -140,13 +140,9 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: mongooseAdapter({
-    url: process.env.DATABASE_URI || '',
-    connectOptions: {
-      directConnection: process.env.DATABASE_DIRECT_CONNECTION === 'true',
-      tls: process.env.DATABASE_TLS === 'true',
-      tlsAllowInvalidCertificates: true,
-    },
+  db: d1Adapter({
+    // D1 database is provided via Cloudflare's runtime environment
+    // In local development, use wrangler to provide the D1 binding
   }),
   sharp,
   email: nodemailerAdapter({

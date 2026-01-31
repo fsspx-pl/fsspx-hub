@@ -22,6 +22,8 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "ci": "payload migrate && pnpm build",
+    "deploy": "wrangler pages deploy .next",
+    "dev:cloudflare": "wrangler pages dev .next --compatibility-date=2024-01-01",
     "generate:types": "payload generate:types",
     "generate:schema": "payload-graphql generate:schema",
     "storybook": "storybook dev -p 6006",
@@ -32,7 +34,7 @@
     "@aws-sdk/client-s3": "^3.948.0",
     "@aws-sdk/client-sesv2": "^3.916.0",
     "@marsidev/react-turnstile": "^1.3.1",
-    "@payloadcms/db-mongodb": "3.67.0",
+    "@payloadcms/db-d1": "3.67.0",
     "@payloadcms/email-nodemailer": "3.67.0",
     "@payloadcms/next": "3.67.0",
     "@payloadcms/plugin-form-builder": "3.67.0",
@@ -102,7 +104,8 @@
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
     "typescript": "5.4.5",
-    "uglify-js": "3.19.3"
+    "uglify-js": "3.19.3",
+    "wrangler": "^3.0.0"
   },
   "peerDependencies": {
     "uglify-js": "3.19.3"
