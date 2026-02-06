@@ -63,7 +63,7 @@ export async function generateMetadata({
     console.error(error);
   }
 
-  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  const displayPastoralAnnouncements = tenant?.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) return null;
   
   const titlePrefix = getTenantTitlePrefix(settings, tenant);

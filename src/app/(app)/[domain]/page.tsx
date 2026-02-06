@@ -92,7 +92,7 @@ export default async function RedirectToNewestPage({
             {infoNote ? (
               <RichText 
                 data={infoNote} 
-                className="prose prose-lg max-w-none text-left prose-a:no-underline m-0"
+                className="prose prose-lg max-w-none text-left prose-a:no-underline m-0 dark:text-[var(--text-primary)]"
               />
             ) : (
               <div className="prose prose-lg max-w-none">
