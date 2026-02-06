@@ -4,7 +4,9 @@ import { BreadcrumbItem, Breadcrumbs } from "@/_components/Breadcrumbs";
 import { Gutter } from "@/_components/Gutter";
 import { Media as MediaComponent } from "@/_components/Media";
 import { AnnouncementsPageClient } from "@/_components/AnnouncementList/AnnouncementsPageClient";
-import { Media, Tenant, Page } from "@/payload-types";
+import { Media, Tenant, Page, Settings } from "@/payload-types";
+import { fetchSettings } from "@/_api/fetchGlobals";
+import { getTenantTitlePrefix } from "@/utilities/getTenantTitlePrefix";
 import { Metadata } from "next";
 import { getMonthFromParams } from "./utils";
 import { garamond } from "@/fonts";
@@ -15,50 +17,40 @@ export const revalidate = 0; // No caching, always fresh data
 
 export async function generateMetadata({
   params,
-  searchParams,
 }: {
   params: Promise<{ domain: string }>;
-  searchParams: Promise<URLSearchParams>;
 }): Promise<Metadata | null> {
   const { domain } = await params;
   const [subdomain] = domain.split(".");
 
+  let settings: Settings | null = null;
   let tenant: Tenant | null = null;
 
   try {
+    settings = await fetchSettings();
     tenant = await fetchTenant(subdomain);
   } catch (error) {
     console.error(error);
   }
 
-  if (!tenant) return null;
+  const titlePrefix = getTenantTitlePrefix(settings, tenant);
+  if (!titlePrefix) return null;
 
-  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  const displayPastoralAnnouncements = tenant?.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) return null;
 
-  const searchParamsData = await searchParams;
-  const { year, month } = getMonthFromParams(searchParamsData);
-  const monthName = new Date(year, month - 1, 1).toLocaleDateString('pl-PL', { 
-    month: 'long', 
-    year: 'numeric' 
-  });
   
-  const location = `${tenant.city} - ${tenant.type} ${tenant.patron}`;
-  const title = `Ogłoszenia duszpasterskie ${monthName} - ${location}`;
-  const description = `Ogłoszenia duszpasterskie z ${monthName} z ${location}. Przeglądaj ogłoszenia parafialne i informacje duszpasterskie.`;
+  const title = `${titlePrefix} - Ogłoszenia Duszpasterskie`;
   
   return {
     title,
-    description,
     openGraph: {
       title,
-      description,
       type: 'website',
     },
     twitter: {
       card: 'summary',
       title,
-      description,
     },
   };
 }

@@ -43,7 +43,6 @@ export const location: Field[] = [
     },
     type: 'upload',
     relationTo: 'media',
-    required: true,
   },
   {
     name: 'address',

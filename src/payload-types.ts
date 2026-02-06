@@ -231,7 +231,7 @@ export interface Tenant {
   city: string;
   type: 'Kaplica' | 'Misja';
   patron?: string | null;
-  coverBackground: string | Media;
+  coverBackground?: (string | null) | Media;
   address: {
     street: string;
     zipcode: string;
