@@ -1,4 +1,3 @@
-import { fetchSettings } from "@/_api/fetchGlobals";
 import { fetchLatestPage, fetchTenantPageByDate } from "@/_api/fetchPage";
 import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
 import { BreadcrumbItem, Breadcrumbs } from "@/_components/Breadcrumbs";
@@ -9,6 +8,8 @@ import { NewMediumImpact } from "@/_components/_heros/NewMediumImpact";
 import { RichText } from "@/_components/RichText";
 
 import { Media, Page as PageType, Settings, Tenant, User } from "@/payload-types";
+import { getTenantTitlePrefix } from "@/utilities/getTenantTitlePrefix";
+import { fetchSettings } from "@/_api/fetchGlobals";
 import { format, parse, parseISO, addMonths, subMonths, startOfMonth, endOfMonth } from "date-fns";
 import { Metadata } from "next";
 import { getFeastsWithMasses } from "../../../../../../common/getFeastsWithMasses";
@@ -49,7 +50,7 @@ export async function generateMetadata({
 }: {
   params: Promise<{ domain: string; date: string }>;
 }): Promise<Metadata | null> {
-  const { domain } = await params;
+  const { domain, date } = await params;
   const [subdomain] = domain.split(".");
 
   let settings: Settings | null = null;
@@ -62,17 +63,15 @@ export async function generateMetadata({
     console.error(error);
   }
 
-  if (!tenant) return null;
-  if (!settings?.copyright) return null;
-
   const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) return null;
+  
+  const titlePrefix = getTenantTitlePrefix(settings, tenant);
+  if (!titlePrefix) return null;
 
-  const copyright = settings?.copyright || "";
-  const location = tenant
-    ? `${tenant.city} - ${tenant.type} ${tenant.patron}`
-    : "";
-  const title = `${copyright} - ${location}`;
+  const parsedDate = parse(date, "dd-MM-yyyy", new Date());
+  const formattedDate = format(parsedDate, "dd.MM.yyyy");
+  const title = `${titlePrefix} - Ogłoszenia Duszpasterskie - ${formattedDate}`;
   
   return {
     title,

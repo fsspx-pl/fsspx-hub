@@ -1,12 +1,42 @@
 import { fetchLatestPage } from "@/_api/fetchPage";
 import { fetchTenant, fetchTenants } from "@/_api/fetchTenants";
-import { format, parseISO } from "date-fns";
-import { redirect } from "next/navigation";
-import { Gutter } from "@/_components/Gutter";
-import { RichText } from "@/_components/RichText";
 import { BreadcrumbItem } from "@/_components/Breadcrumbs";
-import { PageLayout } from "@/_components/PageLayout";
+import { Gutter } from "@/_components/Gutter";
 import { NewsletterSignupForm } from "@/_components/Newsletter/NewsletterSignupForm";
+import { PageLayout } from "@/_components/PageLayout";
+import { RichText } from "@/_components/RichText";
+import { fetchSettings } from "@/_api/fetchGlobals";
+import { Settings, Tenant } from "@/payload-types";
+import { getTenantTitlePrefix } from "@/utilities/getTenantTitlePrefix";
+import { format, parseISO } from "date-fns";
+import { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ domain: string }>;
+}): Promise<Metadata | null> {
+  const { domain } = await params;
+  const [subdomain] = domain.split(".");
+
+  let settings: Settings | null = null;
+  let tenant: Tenant | null = null;
+
+  try {
+    settings = await fetchSettings();
+    tenant = await fetchTenant(subdomain);
+  } catch (error) {
+    console.error(error);
+  }
+
+  const titlePrefix = getTenantTitlePrefix(settings, tenant);
+  if (!titlePrefix) return null;
+
+  return {
+    title: titlePrefix,
+  };
+}
 
 export async function generateStaticParams() {
   const tenants = await fetchTenants();
