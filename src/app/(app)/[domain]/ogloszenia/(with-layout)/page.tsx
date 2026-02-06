@@ -17,10 +17,8 @@ export const revalidate = 0; // No caching, always fresh data
 
 export async function generateMetadata({
   params,
-  searchParams,
 }: {
   params: Promise<{ domain: string }>;
-  searchParams: Promise<URLSearchParams>;
 }): Promise<Metadata | null> {
   const { domain } = await params;
   const [subdomain] = domain.split(".");
@@ -38,31 +36,21 @@ export async function generateMetadata({
   const titlePrefix = getTenantTitlePrefix(settings, tenant);
   if (!titlePrefix) return null;
 
-  const displayPastoralAnnouncements = tenant.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
+  const displayPastoralAnnouncements = tenant?.pastoralAnnouncements?.displayPastoralAnnouncements !== false;
   if (!displayPastoralAnnouncements) return null;
 
-  const searchParamsData = await searchParams;
-  const { year, month } = getMonthFromParams(searchParamsData);
-  const monthName = new Date(year, month - 1, 1).toLocaleDateString('pl-PL', { 
-    month: 'long', 
-    year: 'numeric' 
-  });
   
   const title = `${titlePrefix} - Ogłoszenia Duszpasterskie`;
-  const description = `Ogłoszenia duszpasterskie z ${monthName} dla ${tenant.city}. Przeglądaj ogłoszenia parafialne i informacje duszpasterskie.`;
   
   return {
     title,
-    description,
     openGraph: {
       title,
-      description,
       type: 'website',
     },
     twitter: {
       card: 'summary',
       title,
-      description,
     },
   };
 }
