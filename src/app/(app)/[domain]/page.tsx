@@ -104,6 +104,7 @@ export default async function RedirectToNewestPage({
             <NewsletterSignupForm
               className="flex-1"
               subdomain={tenant.domain as string}
+              turnstileSiteKey={tenant.turnstile?.siteKey ?? undefined}
             />
           )}
         </Gutter>

@@ -1,21 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { fetchTenant } from '@/_api/fetchTenants';
 import { fetchSettings } from '@/_api/fetchGlobals';
-import { addContactToList, contactExistsInList } from '@/utilities/aws/ses';
+import { fetchTenant } from '@/_api/fetchTenants';
+import { newsletterTranslations } from '@/_components/Newsletter/translations';
+import NewsletterConfirmationEmail from '@/emails/newsletter-confirmation';
+import { contactExistsInList } from '@/utilities/aws/ses';
 import { sendEmail } from '@/utilities/nodemailerSes';
 import configPromise from '@payload-config';
-import { getPayload } from 'payload';
 import { render } from '@react-email/components';
-import NewsletterConfirmationEmail from '@/emails/newsletter-confirmation';
-import { newsletterTranslations } from '@/_components/Newsletter/translations';
+import { NextRequest, NextResponse } from 'next/server';
+import { getPayload } from 'payload';
 import React from 'react';
 
 /**
- * Verify Cloudflare Turnstile token
+ * Verify Cloudflare Turnstile token using tenant secret key
  */
-async function verifyTurnstileToken(token: string): Promise<boolean> {
-  if (!process.env.TURNSTILE_SECRET_KEY) {
-    console.error('TURNSTILE_SECRET_KEY is not set');
+async function verifyTurnstileToken(token: string, secretKey: string | null | undefined): Promise<boolean> {
+  if (!secretKey) {
+    console.error('Turnstile secret key not set for tenant');
     return false;
   }
 
@@ -26,7 +26,7 @@ async function verifyTurnstileToken(token: string): Promise<boolean> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        secret: process.env.TURNSTILE_SECRET_KEY,
+        secret: secretKey,
         response: token,
       }),
     });
@@ -78,9 +78,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify Turnstile token (skip in development)
+    // Fetch tenant by subdomain (needed for Turnstile secret and newsletter config)
+    const tenant = await fetchTenant(subdomain);
+    if (!tenant) {
+      return NextResponse.json(
+        { error: 'Tenant not found' },
+        { status: 404 }
+      );
+    }
+
+    // Verify Turnstile token (skip in development); use tenant key or env fallback
     if (!isDevelopment) {
-      const isTokenValid = await verifyTurnstileToken(turnstileToken);
+      const isTokenValid = await verifyTurnstileToken(turnstileToken, tenant.turnstile?.secretKey);
       if (!isTokenValid) {
         return NextResponse.json(
           { error: 'Invalid or expired verification token' },
@@ -89,15 +98,6 @@ export async function POST(request: NextRequest) {
       }
     } else {
       console.log('⚠️  Development mode: Skipping Turnstile verification');
-    }
-
-    // Fetch tenant by subdomain
-    const tenant = await fetchTenant(subdomain);
-    if (!tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found' },
-        { status: 404 }
-      );
     }
 
     // Check if tenant has newsletter settings configured

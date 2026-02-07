@@ -10,6 +10,7 @@ import { useTheme } from 'next-themes';
 
 type Props = {
   subdomain: string;
+  turnstileSiteKey?: string | null;
   className?: string;
   locale?: 'pl' | 'en';
 };
@@ -18,6 +19,7 @@ type FormState = 'idle' | 'loading' | 'success' | 'error';
 
 export const NewsletterSignupForm: React.FC<Props> = ({
   subdomain,
+  turnstileSiteKey,
   className = '',
   locale = 'pl',
 }) => {
@@ -148,13 +150,13 @@ export const NewsletterSignupForm: React.FC<Props> = ({
           </Button>
         </div>
 
-        {process.env.NODE_ENV !== 'development' && (
+        {process.env.NODE_ENV !== 'development' && turnstileSiteKey && (
           <div>
             <label className="text-sm text-gray-400 dark:text-[#A9B7C6] mb-4">
               {t('turnstileLabel')}
             </label>
             <Turnstile
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ''}
+              siteKey={turnstileSiteKey}
               onSuccess={handleTurnstileSuccess}
               onError={handleTurnstileError}
               onExpire={() => setTurnstileToken(null)}

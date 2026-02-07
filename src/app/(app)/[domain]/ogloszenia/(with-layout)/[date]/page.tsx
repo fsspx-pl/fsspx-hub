@@ -195,7 +195,11 @@ export default async function AnnouncementPage({
           {showAttachmentsAtBottom && attachments.length > 0 && (
             <PageAttachments attachments={attachments} />
           )}
-          <NewsletterSignupForm subdomain={domain.split('.')[0]} className="mt-4" />
+          <NewsletterSignupForm
+            subdomain={domain.split('.')[0]}
+            turnstileSiteKey={tenant?.turnstile?.siteKey ?? undefined}
+            className="mt-4"
+          />
           <CMSLink url={'/ogloszenia'}
             className="flex items-center gap-2 mb-1 text-[#C81910] hover:text-[#C81910] dark:text-[#C81910]"
           >
