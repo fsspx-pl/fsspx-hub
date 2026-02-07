@@ -36,3 +36,6 @@ tasks
 #playwirght
 playwright-report
 test-results
+
+# potentially sensitive files
+.csv
