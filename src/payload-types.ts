@@ -246,6 +246,19 @@ export interface Tenant {
    * The topic name in AWS SES (e.g. poznan, warszawa). NOTE: changing the topic name will affect the newsletter recipients for this location.
    */
   topicName?: string | null;
+  /**
+   * Per-tenant Turnstile widget keys (Cloudflare free tier allows 10 hostnames per widget). Site key is public; secret key is used only server-side for verification.
+   */
+  turnstile?: {
+    /**
+     * Public site key for the Turnstile widget (used in the newsletter signup form).
+     */
+    siteKey?: string | null;
+    /**
+     * Secret key for server-side token verification. Never expose to the client.
+     */
+    secretKey?: string | null;
+  };
   pastoralAnnouncements?: {
     /**
      * When disabled, pastoral announcements will not be publicly available. Pages can still be published internally.
@@ -1006,6 +1019,12 @@ export interface TenantsSelect<T extends boolean = true> {
       };
   mailingGroupId?: T;
   topicName?: T;
+  turnstile?:
+    | T
+    | {
+        siteKey?: T;
+        secretKey?: T;
+      };
   pastoralAnnouncements?:
     | T
     | {

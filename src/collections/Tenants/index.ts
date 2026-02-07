@@ -131,6 +131,55 @@ export const Tenants: CollectionConfig = {
       }
     },
     {
+      name: 'turnstile',
+      label: {
+        en: 'Cloudflare Turnstile',
+        pl: 'Cloudflare Turnstile',
+      },
+      access: {
+        read: superAdmins,
+        update: superAdmins,
+        create: superAdmins
+      },
+      type: 'group',
+      admin: {
+        description: {
+          en: 'Per-tenant Turnstile widget keys (Cloudflare free tier allows 10 hostnames per widget). Site key is public; secret key is used only server-side for verification.',
+          pl: 'Klucze widgetu Turnstile dla tej lokalizacji (darmowy plan Cloudflare: 10 hostname\'ów/widget). Site key jest publiczny; secret key jest używany tylko po stronie serwera.',
+        },
+      },
+      fields: [
+        {
+          name: 'siteKey',
+          type: 'text',
+          label: {
+            en: 'Turnstile Site Key',
+            pl: 'Klucz Site Turnstile',
+          },
+          admin: {
+            description: {
+              en: 'Public site key for the Turnstile widget (used in the newsletter signup form).',
+              pl: 'Publiczny klucz site dla widgetu Turnstile (formularz zapisu do newslettera).',
+            },
+          },
+        },
+        {
+          name: 'secretKey',
+          type: 'text',
+          label: {
+            en: 'Turnstile Secret Key',
+            pl: 'Klucz Secret Turnstile',
+          },
+          admin: {
+            description: {
+              en: 'Secret key for server-side token verification. Never expose to the client.',
+              pl: 'Klucz secret do weryfikacji tokenu po stronie serwera. Nie udostępniaj klientowi.',
+            },
+          },
+        },
+      ],
+    },
+    {
       name: 'pastoralAnnouncements',
       label: {
         en: 'Pastoral Announcements',
