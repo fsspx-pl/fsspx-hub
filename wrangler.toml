@@ -4,6 +4,10 @@ pages_build_output_dir = ".next"
 
 [env.production]
 name = "fsspx-hub"
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "fsspx-hub-db"
+database_id = "" # Set this to your production D1 database ID
 
 [[d1_databases]]
 binding = "DB"
