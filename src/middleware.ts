@@ -16,6 +16,11 @@ export const config = {
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
+  // Exclude /kaplice from subdomain rewriting - it's a global route
+  if (url.pathname.startsWith('/kaplice')) {
+    return NextResponse.next();
+  }
+
   const subdomain = getSubdomain(req)
 
   if (!subdomain) {
