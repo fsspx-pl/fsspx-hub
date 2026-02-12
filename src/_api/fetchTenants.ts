@@ -9,6 +9,7 @@ export const fetchTenants = async () => {
   try {
     const result = await payload.find({
       collection: 'tenants',
+      depth: 2,
     })
     return result.docs
   } catch(err) {
