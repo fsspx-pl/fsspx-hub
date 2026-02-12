@@ -28,3 +28,7 @@ Information hub for [FSSPX](https://fsspx.org/) chapels in Poland.
     ```
 
 1. Open [http://localhost:3000/admin](http://localhost:3000/admi) with your browser to reach the Payload Admin panel.
+
+## API Security
+
+For information on generating and securing API tokens for the Events, Pages, and Tenants API endpoints, see [API Security Guide](./docs/API_SECURITY.md).
