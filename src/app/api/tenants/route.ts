@@ -1,7 +1,15 @@
 import { fetchTenants, fetchTenant, fetchTenantById } from '@/_api/fetchTenants'
+import { verifyApiToken } from '@/utilities/verifyApiToken'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
+  if (!verifyApiToken(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Valid API token required.' },
+      { status: 401 }
+    )
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')

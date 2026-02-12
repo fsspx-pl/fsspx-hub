@@ -1,8 +1,16 @@
 import { fetchEvents } from '@/_api/fetchEvents'
+import { verifyApiToken } from '@/utilities/verifyApiToken'
 import { parseISO } from 'date-fns'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
+  if (!verifyApiToken(request)) {
+    return NextResponse.json(
+      { error: 'Unauthorized. Valid API token required.' },
+      { status: 401 }
+    )
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const tenantId = searchParams.get('tenant')
